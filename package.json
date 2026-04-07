@@ -1,0 +1,26 @@
+{
+  "name": "smartbacklog",
+  "version": "1.0.0",
+  "description": "Sistema Inteligente para gestão de projectos",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/backend/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/josueclm/smartbacklog.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/josueclm/smartbacklog/issues"
+  },
+  "homepage": "https://github.com/josueclm/smartbacklog#readme",
+  "dependencies": {
+    "better-sqlite3": "^12.8.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  }
+}

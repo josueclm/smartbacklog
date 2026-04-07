@@ -1,0 +1,12 @@
+# iniciar projecto
+npm init -y
+
+# install express cros
+npm install express cors
+
+# iniciar servidor
+node src/backend/app.js | npm start
+
+#Install sql lite
+npm install better-sqlite3
+
