@@ -77,7 +77,7 @@ Principais entidades:
 
 ## ⚙️ Tecnologias
 
-- Frontend: React / HTML / CSS / JS
+- Frontend: HTML / CSS / JS
 - Backend: Node.js / Express
 - Base de dados: SQLite
 - Versionamento: Git
