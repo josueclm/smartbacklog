@@ -1,7 +1,4 @@
-# smartbacklog
-Sistema Inteligente para gestão de projectos
-
-# 🚀 Agile Project Management System
+#  Smartbacklog
 
 Sistema web de gestão ágil de projetos inspirado em ferramentas como Linear e Jira, com suporte a Kanban, Sprints e funcionalidades assistidas por IA.
 
@@ -103,6 +100,5 @@ cd smartbacklog
 
 npm install
 npm start
-```bash
 
 
