@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html class="light" lang="pt-BR">
+   <head>
+      <meta charset="utf-8"/>
+      <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+      <title>Linearis Pro - Backlog</title>
+      <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+      <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+      <script id="tailwind-config">
+         function toggleSidebar() {
+             const sidebar = document.getElementById('sidebar');
+             const overlay = document.getElementById('sidebar-overlay');
+             sidebar.classList.toggle('mobile-hidden');
+             overlay.classList.toggle('hidden');
+             if (!sidebar.classList.contains('mobile-hidden')) {
+                 document.body.classList.add('overflow-hidden');
+             } else {
+                 document.body.classList.remove('overflow-hidden');
+             }
+         }
+         
+         function openDrawer() {
+             const drawer = document.getElementById('task-drawer');
+             const content = document.getElementById('main-content');
+             drawer.classList.remove('hidden-drawer');
+             
+             if (window.innerWidth >= 1024) {
+                 content.style.paddingRight = '420px';
+             } else {
+                 document.body.classList.add('overflow-hidden');
+             }
+         }
+         
+         function closeDrawer() {
+             const drawer = document.getElementById('task-drawer');
+             const content = document.getElementById('main-content');
+             drawer.classList.add('hidden-drawer');
+             
+             if (window.innerWidth >= 1024) {
+                 content.style.paddingRight = '32px'; 
+             } else {
+                 document.body.classList.remove('overflow-hidden');
+             }
+         }
+         
+         function simulateSave() {
+             const btn = document.getElementById('save-btn');
+             const icon = document.getElementById('save-icon');
+             const spinner = document.getElementById('save-spinner');
+             const text = document.getElementById('save-text');
+             const toast = document.getElementById('save-toast');
+         
+             btn.disabled = true;
+             btn.classList.add('opacity-80', 'cursor-not-allowed');
+             icon.classList.add('hidden');
+             spinner.classList.remove('hidden');
+             text.innerText = "Salvando...";
+         
+             setTimeout(() => {
+                 btn.disabled = false;
+                 btn.classList.remove('opacity-80', 'cursor-not-allowed');
+                 icon.classList.remove('hidden');
+                 spinner.classList.add('hidden');
+                 text.innerText = "Salvar Alterações";
+         
+                 toast.classList.remove('opacity-0', 'translate-y-10');
+                 toast.classList.add('opacity-100', 'translate-y-0');
+         
+                 setTimeout(() => {
+                     toast.classList.add('opacity-0', 'translate-y-10');
+                     toast.classList.remove('opacity-100', 'translate-y-0');
+                 }, 3000);
+             }, 1500);
+         }
+         
+         window.addEventListener('DOMContentLoaded', () => {
+             const drawer = document.getElementById('task-drawer');
+             drawer.classList.add('hidden-drawer');
+             document.getElementById('main-content').style.paddingRight = '32px'; 
+         });
+      </script>
+      <style>
+         body { font-family: 'Inter', sans-serif; }
+         h1, h2, h3, .font-headline { font-family: 'Manrope', sans-serif; }
+         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+         .material-symbols-outlined.filled { font-variation-settings: 'FILL' 1; }
+         .bg-primary-vibrant { background-color: #0052cc; }
+         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+         .glass-panel { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); }
+         .transition-all { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+         #task-drawer.hidden-drawer {
+         transform: translateX(100%);
+         opacity: 0;
+         pointer-events: none;
+         }
+         #task-drawer {
+         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+         opacity: 1;
+         }
+         @media (max-width: 1024px) {
+         #task-drawer {
+         width: 100% !important;
+         top: 0 !important;
+         z-index: 60;
+         }
+         }
+         #sidebar.mobile-hidden {
+         transform: translateX(-100%);
+         }
+         @media (min-width: 1024px) {
+         #sidebar.mobile-hidden {
+         transform: translateX(0);
+         }
+         }
+         .checkbox-custom:checked + span {
+         opacity: 0.5;
+         text-decoration: line-through;
+         }
+         .checkbox-custom {
+         transition: transform 0.2s ease;
+         }
+         .checkbox-custom:active {
+         transform: scale(1.2);
+         }
+         .task-card-active {
+         background-color: #f1f3ff !important;
+         border-left: 6px solid #0052cc !important;
+         box-shadow: 0 4px 12px rgba(0, 82, 204, 0.08);
+         transform: translateX(4px);
+         }
+         /* Sidebar Item Styles */
+         .sidebar-item {
+         display: flex;
+         align-items: center;
+         gap: 12px;
+         padding: 10px 16px;
+         border-radius: 9999px;
+         font-size: 14px;
+         font-weight: 500;
+         color: #475569;
+         transition: all 0.2s;
+         }
+         .sidebar-item:hover {
+         background-color: #f1f5f9;
+         }
+         .sidebar-item.active {
+         background-color: #f1f3ff;
+         color: #0052cc;
+         }
+         .sidebar-item.active .material-symbols-outlined {
+         font-variation-settings: 'FILL' 1;
+         }
+      </style>
+   </head>
+   <body class="bg-surface text-on-surface overflow-x-hidden">
+      <!-- Mobile Menu Overlay -->
+      <div class="fixed inset-0 bg-slate-900/50 z-40 hidden lg:hidden" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+      <!-- SideNavBar -->
+      <aside class="h-screen w-64 fixed left-0 top-0 flex flex-col bg-slate-50 border-r border-slate-200 z-50 transition-transform duration-300 mobile-hidden" id="sidebar">
+         <div class="flex flex-col h-full p-4">
+            <div class="flex items-center justify-between lg:justify-start gap-3 px-2 mb-8">
+               <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 bg-primary-vibrant rounded-lg flex items-center justify-center text-white">
+                     <span class="material-symbols-outlined text-sm">linear_scale</span>
+                  </div>
+                  <div>
+                     <h1 class="text-xl font-bold tracking-tight text-slate-900 leading-tight">Linearis Pro</h1>
+                     <p class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Enterprise Workspace</p>
+                  </div>
+               </div>
+               <button class="lg:hidden p-1 text-slate-500" onclick="toggleSidebar()">
+               <span class="material-symbols-outlined">close</span>
+               </button>
+            </div>
+            <button class="mb-8 w-full py-3 px-4 bg-primary-vibrant text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 hover:bg-blue-700 active:scale-95 transition-all">
+            <span class="material-symbols-outlined text-lg">add</span>
+            Create Project
+            </button>
+            <nav class="space-y-1 flex-1">
+               <a class="sidebar-item" href="#">
+               <span class="material-symbols-outlined text-[22px]">grid_view</span>
+               <span>Dashboard</span>
+               </a>
+               <a class="sidebar-item" href="#">
+               <span class="material-symbols-outlined text-[22px]">folder</span>
+               <span>Projects</span>
+               </a>
+               <a class="sidebar-item active" href="#">
+               <span class="material-symbols-outlined text-[22px]">assignment</span>
+               <span>Backlog</span>
+               </a>
+               <a class="sidebar-item" href="#">
+               <span class="material-symbols-outlined text-[22px]">update</span>
+               <span>Sprint</span>
+               </a>
+               <a class="sidebar-item" href="#">
+               <span class="material-symbols-outlined text-[22px]">view_kanban</span>
+               <span>Board</span>
+               </a>
+               <a class="sidebar-item" href="#">
+               <span class="material-symbols-outlined text-[22px]">group</span>
+               <span>Team</span>
+               </a>
+            </nav>
+            <div class="pt-4 border-t border-slate-200 space-y-1">
+               <a class="sidebar-item" href="#">
+               <span class="material-symbols-outlined text-[22px]">settings</span>
+               <span>Settings</span>
+               </a>
+               <a class="sidebar-item text-red-600 hover:bg-red-50" href="#">
+               <span class="material-symbols-outlined text-[22px]">logout</span>
+               <span>Logout</span>
+               </a>
+            </div>
+         </div>
+      </aside>
+      <!-- TopNavBar -->
+      <header class="fixed top-0 right-0 left-0 lg:left-64 h-16 glass-panel border-b border-slate-200 z-40 flex items-center justify-between px-4 lg:px-8">
+         <div class="flex items-center gap-3 flex-1 max-w-xl">
+            <button class="lg:hidden p-2 hover:bg-slate-100 rounded-lg text-slate-600" onclick="toggleSidebar()">
+            <span class="material-symbols-outlined">menu</span>
+            </button>
+            <div class="relative w-full">
+               <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+               <input class="w-full bg-slate-100 border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Global search..." type="text"/>
+            </div>
+         </div>
+         <div class="flex items-center gap-2 lg:gap-4 ml-2">
+            <button class="hidden sm:block hover:bg-slate-100 p-2 rounded-full transition-colors text-slate-500">
+            <span class="material-symbols-outlined">help</span>
+            </button>
+            <button class="hover:bg-slate-100 p-2 rounded-full transition-colors text-slate-500 relative">
+            <span class="material-symbols-outlined">notifications</span>
+            <span class="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+            </button>
+            <div class="hidden sm:block h-8 w-[1px] bg-slate-200 mx-2"></div>
+            <img alt="User profile photo" class="w-8 h-8 lg:w-9 lg:h-9 rounded-full object-cover ring-2 ring-white shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFrNiPLIHkM9yazvLvgEBUb-zb236KxA_cyYe5YRSOaIR_USPAI2GPtAPtTQExGYbHpitAuIOeOHWFYAm0giTV1FeeiAvt3QZiD1BnkXMaNObjPmkdtnEp62BsumGJPGNpA2c0tQv2ECVYNP_FlmUad4pupfoRutmvF2QAb_kJVwLT4g1bfIHuMZ1IT85qpzxawtzkDnWdv4qP5SbyaPGbuEUvfA9rzBT5hG_Xgd0XhjF94mtlSJqbrXK7bgNM6LCC3Juag_KdYzI"/>
+         </div>
+      </header>
+      <!-- Main Content Area -->
+      <main class="lg:pl-64 pt-16 min-h-screen flex transition-all duration-300">
+         <!-- Backlog List Column -->
+         <div class="flex-1 p-4 lg:p-8 transition-all duration-300 main-content-wrapper lg:pr-8" id="main-content">
+            <!-- Header Section -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+               <div>
+                  <h2 class="text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight">Backlog</h2>
+                  <p class="text-slate-500 font-medium text-sm lg:text-base">Gestão e priorização de tarefas do projeto</p>
+               </div>
+               <div class="flex gap-2 lg:gap-3">
+                  <button class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 font-semibold rounded-lg hover:bg-slate-50 transition-colors shadow-sm text-sm">
+                  <span class="material-symbols-outlined text-lg lg:text-xl">filter_list</span>
+                  Filtros
+                  </button>
+                  <button class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 lg:px-6 py-2 bg-primary-vibrant text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 hover:scale-[1.02] active:scale-95 transition-all text-sm" onclick="openDrawer()">
+                  <span class="material-symbols-outlined text-lg lg:text-xl">add</span>
+                  Nova Tarefa
+                  </button>
+               </div>
+            </div>
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6 mb-8">
+               <div class="bg-white p-4 lg:p-6 rounded-xl shadow-sm border border-slate-100">
+                  <div class="flex items-center justify-between mb-2">
+                     <span class="text-slate-500 font-medium text-xs lg:text-sm">Total tasks</span>
+                     <div class="w-8 h-8 lg:w-10 lg:h-10 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center">
+                        <span class="material-symbols-outlined text-lg lg:text-xl">analytics</span>
+                     </div>
+                  </div>
+                  <div class="text-xl lg:text-2xl font-bold text-slate-900">124</div>
+                  <div class="text-[10px] lg:text-xs text-green-600 font-semibold mt-1">+12% vs last month</div>
+               </div>
+               <div class="bg-white p-4 lg:p-6 rounded-xl shadow-sm border border-slate-100">
+                  <div class="flex items-center justify-between mb-2">
+                     <span class="text-slate-500 font-medium text-xs lg:text-sm">Open tasks</span>
+                     <div class="w-8 h-8 lg:w-10 lg:h-10 bg-amber-50 text-amber-600 rounded-lg flex items-center justify-center">
+                        <span class="material-symbols-outlined text-lg lg:text-xl">pending_actions</span>
+                     </div>
+                  </div>
+                  <div class="text-xl lg:text-2xl font-bold text-slate-900">48</div>
+                  <div class="text-[10px] lg:text-xs text-slate-400 font-medium mt-1">Requiring triage</div>
+               </div>
+               <div class="bg-white p-4 lg:p-6 rounded-xl shadow-sm border border-slate-100">
+                  <div class="flex items-center justify-between mb-2">
+                     <span class="text-slate-500 font-medium text-xs lg:text-sm">Completed tasks</span>
+                     <div class="w-8 h-8 lg:w-10 lg:h-10 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center">
+                        <span class="material-symbols-outlined text-lg lg:text-xl">check_circle</span>
+                     </div>
+                  </div>
+                  <div class="text-xl lg:text-2xl font-bold text-slate-900">76</div>
+                  <div class="text-[10px] lg:text-xs text-emerald-600 font-semibold mt-1">84% velocity rate</div>
+               </div>
+            </div>
+            <!-- Quick Filters -->
+            <div class="flex flex-wrap items-center gap-2 lg:gap-4 mb-8">
+               <select class="bg-white border-slate-200 rounded-lg text-xs lg:text-sm px-3 lg:px-4 py-2 pr-8 lg:pr-10 focus:ring-blue-500 focus:border-blue-500 text-slate-700">
+                  <option>Projeto: Linearis</option>
+                  <option>Projeto: Nexus</option>
+               </select>
+               <select class="bg-white border-slate-200 rounded-lg text-xs lg:text-sm px-3 lg:px-4 py-2 pr-8 lg:pr-10 focus:ring-blue-500 focus:border-blue-500 text-slate-700">
+                  <option>Prioridade: Todas</option>
+                  <option>Alta</option>
+                  <option>Média</option>
+               </select>
+               <select class="bg-white border-slate-200 rounded-lg text-xs lg:text-sm px-3 lg:px-4 py-2 pr-8 lg:pr-10 focus:ring-blue-500 focus:border-blue-500 hidden sm:block text-slate-700">
+                  <option>Status: Todos</option>
+                  <option>A Fazer</option>
+                  <option>Em Progresso</option>
+               </select>
+            </div>
+            <!-- Task List Groups -->
+            <div class="space-y-8 lg:space-y-10">
+               <section>
+                  <div class="flex items-center justify-between mb-4 px-2">
+                     <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-slate-400">keyboard_arrow_down</span>
+                        <h3 class="font-headline text-base lg:text-lg font-bold text-slate-800">Sprint Atual</h3>
+                        <span class="px-2 py-0.5 bg-slate-200 text-slate-700 text-[10px] font-bold rounded">12</span>
+                     </div>
+                     <span class="text-slate-400 text-[10px] lg:text-xs font-medium">May 15 - May 29</span>
+                  </div>
+                  <div class="space-y-3">
+                     <!-- Task Item 1 (ACTIVE) -->
+                     <div class="bg-white border border-slate-200 rounded-lg p-3 lg:p-4 flex items-center gap-3 lg:gap-4 cursor-pointer transition-all hover:translate-x-1 hover:shadow-md task-card-active" onclick="openDrawer()">
+                        <span class="material-symbols-outlined text-slate-300 hidden sm:block">drag_indicator</span>
+                        <div class="flex-shrink-0 text-[10px] lg:text-xs font-bold text-slate-500 w-12 lg:w-16">LIN-422</div>
+                        <div class="flex-shrink-0">
+                           <span class="px-2 py-0.5 bg-red-100 text-red-700 text-[9px] lg:text-[10px] font-bold rounded uppercase">BUG</span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                           <p class="font-bold text-slate-900 text-xs lg:text-sm truncate">Refatoração do módulo de autenticação OAuth2</p>
+                        </div>
+                        <div class="flex items-center gap-2 lg:gap-4">
+                           <div class="flex items-center gap-1 text-red-600">
+                              <span class="material-symbols-outlined text-base lg:text-lg">priority_high</span>
+                           </div>
+                           <img alt="assignee" class="w-6 h-6 rounded-full object-cover border border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFrNiPLIHkM9yazvLvgEBUb-zb236KxA_cyYe5YRSOaIR_USPAI2GPtAPtTQExGYbHpitAuIOeOHWFYAm0giTV1FeeiAvt3QZiD1BnkXMaNObjPmkdtnEp62BsumGJPGNpA2c0tQv2ECVYNP_FlmUad4pupfoRutmvF2QAb_kJVwLT4g1bfIHuMZ1IT85qpzxawtzkDnWdv4qP5SbyaPGbuEUvfA9rzBT5hG_Xgd0XhjF94mtlSJqbrXK7bgNM6LCC3Juag_KdYzI"/>
+                        </div>
+                     </div>
+                     <!-- Task Item 2 -->
+                     <div class="bg-white border border-slate-200 rounded-lg p-3 lg:p-4 flex items-center gap-3 lg:gap-4 cursor-pointer transition-all hover:translate-x-1 hover:bg-slate-50 hover:shadow-md">
+                        <span class="material-symbols-outlined text-slate-300 hidden sm:block">drag_indicator</span>
+                        <div class="flex-shrink-0 text-[10px] lg:text-xs font-bold text-slate-500 w-12 lg:w-16">LIN-425</div>
+                        <div class="flex-shrink-0">
+                           <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[9px] lg:text-[10px] font-bold rounded uppercase">BACKLOG</span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                           <p class="font-bold text-slate-900 text-xs lg:text-sm truncate">Integração com API de pagamentos Stripe</p>
+                        </div>
+                        <div class="flex items-center gap-2 lg:gap-4">
+                           <div class="flex items-center gap-1 text-amber-600">
+                              <span class="material-symbols-outlined text-base lg:text-lg">low_priority</span>
+                           </div>
+                           <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center border border-dashed border-slate-300">
+                              <span class="material-symbols-outlined text-[10px] lg:text-[12px] text-slate-400">person_add</span>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </section>
+            </div>
+         </div>
+         <!-- Task Detail Drawer (Right) -->
+         <aside class="fixed top-16 right-0 bottom-0 w-[420px] bg-surface border-l border-slate-200 shadow-2xl flex flex-col z-40 transition-transform duration-300 transform" id="task-drawer">
+            <div class="p-4 lg:p-6 border-b border-slate-200 flex items-center justify-between bg-white/50 backdrop-blur-sm">
+               <div class="flex items-center gap-3 min-w-0">
+                  <span class="text-[10px] lg:text-xs font-bold text-slate-500 flex-shrink-0">LIN-422</span>
+                  <h4 class="font-headline font-bold text-slate-900 truncate">Refatoração módulo OAuth2</h4>
+               </div>
+               <button class="p-1.5 hover:bg-slate-200/50 rounded-full transition-colors flex-shrink-0" onclick="closeDrawer()">
+               <span class="material-symbols-outlined text-slate-500">close</span>
+               </button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-4 lg:p-6 custom-scrollbar space-y-6 lg:space-y-8">
+               <div class="grid grid-cols-2 gap-3 lg:gap-4">
+                  <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm transition-all hover:shadow-md">
+                     <span class="text-[9px] lg:text-[10px] uppercase font-bold text-slate-400 block mb-1">Projeto</span>
+                     <p class="text-[11px] lg:text-xs font-semibold text-slate-900">Linearis Core</p>
+                  </div>
+                  <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm transition-all hover:shadow-md">
+                     <span class="text-[9px] lg:text-[10px] uppercase font-bold text-slate-400 block mb-1">Sprint</span>
+                     <p class="text-[11px] lg:text-xs font-semibold text-slate-900">Sprint Atual #42</p>
+                  </div>
+               </div>
+               <!-- NOVO: Análise Inteligente -->
+               <section>
+                  <h5 class="text-[10px] lg:text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 ml-1">User Story</h5>
+                  <div class="bg-white border border-slate-200 rounded-xl p-4 text-[13px] lg:text-sm text-slate-600 leading-relaxed italic shadow-sm">
+                     "Como <span class="font-semibold text-slate-900">desenvolvedor front-end</span>, quero <span class="font-semibold text-slate-900">uma implementação limpa de OAuth2</span> para garantir segurança robusta..."
+                  </div>
+               </section>
+               <section>
+                  <h5 class="text-[10px] lg:text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 ml-1">Descrição</h5>
+                  <textarea class="w-full h-24 lg:h-32 text-[13px] lg:text-sm text-slate-700 bg-slate-50/50 border border-slate-200 rounded-xl p-5 focus:ring-2 focus:ring-primary-vibrant/20 focus:border-primary-vibrant shadow-sm resize-none transition-all" placeholder="Adicionar descrição detalhada...">A refatoração deve focar na remoção de dependências legadas e atualização para as bibliotecas v3 para suportar fluxos modernos de PKCE.</textarea>
+               </section>
+               <section>
+                  <div class="flex items-center justify-between mb-3 ml-1">
+                     <h5 class="text-[10px] lg:text-xs font-bold uppercase tracking-wider text-slate-500">Critérios de Aceitação</h5>
+                  </div>
+                  <div class="space-y-2">
+                     <label class="flex items-start gap-3 p-4 bg-white hover:bg-slate-50/80 border border-slate-200 rounded-xl cursor-pointer group shadow-sm transition-all hover:shadow-md">
+                     <input class="mt-0.5 rounded border-slate-300 text-primary-vibrant focus:ring-primary-vibrant/20 checkbox-custom" type="checkbox"/>
+                     <span class="text-[13px] text-slate-700 leading-snug transition-all">Implementação do fluxo Authorization Code com PKCE</span>
+                     </label>
+                     <label class="flex items-start gap-3 p-4 bg-white hover:bg-slate-50/80 border border-slate-200 rounded-xl cursor-pointer group shadow-sm transition-all hover:shadow-md">
+                     <input checked="" class="mt-0.5 rounded border-slate-300 text-primary-vibrant focus:ring-primary-vibrant/20 checkbox-custom" type="checkbox"/>
+                     <span class="text-[13px] text-slate-700 leading-snug transition-all">Documentação técnica no Confluence atualizada</span>
+                     </label>
+                     <button class="w-full py-2.5 border-2 border-dashed border-slate-200 rounded-xl text-[11px] font-bold text-slate-500 hover:text-primary-vibrant hover:border-primary-vibrant/40 hover:bg-blue-50/30 transition-all flex items-center justify-center gap-1.5 mt-4">
+                     <span class="material-symbols-outlined text-sm">add</span>
+                     Adicionar critério
+                     </button>
+                  </div>
+               </section>
+               <!-- Fields Section -->
+               <section class="space-y-4 pt-4 border-t border-slate-200 mb-6">
+                  <div class="flex items-center justify-between">
+                     <span class="text-[11px] lg:text-xs font-medium text-slate-500">Status</span>
+                     <button class="flex items-center gap-2 bg-white border border-slate-200 px-3 py-2 rounded-lg text-[11px] lg:text-xs font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition-colors">
+                     <span class="w-2 h-2 bg-amber-500 rounded-full"></span>
+                     Em Progresso
+                     <span class="material-symbols-outlined text-sm">expand_more</span>
+                     </button>
+                  </div>
+                  <div class="flex items-center justify-between">
+                     <span class="text-[11px] lg:text-xs font-medium text-slate-500">Prioridade</span>
+                     <button class="flex items-center gap-2 px-3 py-2 rounded-lg text-[11px] lg:text-xs font-bold text-red-600 bg-red-50 border border-red-100 shadow-sm hover:bg-red-100/50 transition-colors">
+                     <span class="material-symbols-outlined text-sm">priority_high</span>
+                     Alta
+                     <span class="material-symbols-outlined text-sm">expand_more</span>
+                     </button>
+                  </div>
+                  <!-- NOVO: Complexidade Field -->
+                  <div class="flex items-center justify-between">
+                     <span class="text-[11px] lg:text-xs font-medium text-slate-500">Complexidade</span>
+                     <button class="flex items-center gap-2 px-3 py-2 rounded-lg text-[11px] lg:text-xs font-bold text-amber-600 bg-amber-50 border border-amber-100 shadow-sm hover:bg-amber-100/50 transition-colors">
+                     <span class="w-2 h-2 bg-amber-500 rounded-full"></span>
+                     Média
+                     <span class="material-symbols-outlined text-sm">expand_more</span>
+                     </button>
+                  </div>
+               </section>
+               <section class="pt-6 border-t border-slate-200">
+                  <h5 class="text-[10px] lg:text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 ml-1">Atividade &amp; Comentários</h5>
+                  <div class="space-y-4 mb-6">
+                     <div class="flex gap-3">
+                        <img alt="User avatar" class="w-8 h-8 rounded-full flex-shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFrNiPLIHkM9yazvLvgEBUb-zb236KxA_cyYe5YRSOaIR_USPAI2GPtAPtTQExGYbHpitAuIOeOHWFYAm0giTV1FeeiAvt3QZiD1BnkXMaNObjPmkdtnEp62BsumGJPGNpA2c0tQv2ECVYNP_FlmUad4pupfoRutmvF2QAb_kJVwLT4g1bfIHuMZ1IT85qpzxawtzkDnWdv4qP5SbyaPGbuEUvfA9rzBT5hG_Xgd0XhjF94mtlSJqbrXK7bgNM6LCC3Juag_KdYzI"/>
+                        <div class="flex-1">
+                           <div class="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none shadow-sm">
+                              <div class="flex items-center justify-between mb-1">
+                                 <span class="text-[11px] font-bold text-slate-900">Rodrigo Silva</span>
+                                 <span class="text-[10px] text-slate-400">Há 2 horas</span>
+                              </div>
+                              <p class="text-[12px] text-slate-600 leading-relaxed">Já iniciei o levantamento das dependências que serão removidas. O fluxo de PKCE parece estável.</p>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="relative">
+                     <textarea class="w-full bg-white border border-slate-200 rounded-xl p-3 pr-12 text-sm focus:ring-2 focus:ring-primary-vibrant/20 focus:border-primary-vibrant shadow-inner transition-all resize-none min-h-[80px]" placeholder="Escreva um comentário..."></textarea>
+                     <button class="absolute bottom-3 right-3 p-2 bg-primary-vibrant text-white rounded-lg hover:bg-blue-700 transition-all shadow-md active:scale-90">
+                     <span class="material-symbols-outlined text-sm">send</span>
+                     </button>
+                  </div>
+               </section>
+            </div>
+            <div class="p-4 lg:p-6 border-t border-slate-200 flex gap-3 bg-white/50 backdrop-blur-md">
+               <button class="flex-[2] py-2.5 lg:py-3 bg-gradient-to-r from-blue-600 via-primary to-blue-700 hover:brightness-110 text-white font-bold rounded-xl text-xs lg:text-sm shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] ring-2 ring-white/20" id="save-btn" onclick="simulateSave()">
+                  <span class="material-symbols-outlined text-lg" id="save-icon">check_circle</span>
+                  <span class="hidden" id="save-spinner">
+                     <svg class="animate-spin h-5 w-5 text-white" fill="none" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor"></path>
+                     </svg>
+                  </span>
+                  <span id="save-text">Salvar Alterações</span>
+               </button>
+               <button class="flex-1 px-4 py-2.5 lg:py-3 bg-slate-100 text-slate-600 font-bold rounded-xl text-xs lg:text-sm hover:bg-slate-200 transition-colors border border-slate-200" onclick="closeDrawer()">
+               Cancelar
+               </button>
+            </div>
+         </aside>
+      </main>
+      <!-- Success Toast Notification -->
+      <div class="fixed bottom-6 right-6 lg:right-6 left-6 lg:left-auto z-[60] flex items-center gap-3 bg-emerald-600 text-white px-5 py-3.5 rounded-xl shadow-2xl transition-all duration-300 opacity-0 translate-y-10" id="save-toast">
+         <span class="material-symbols-outlined text-white">check_circle</span>
+         <span class="text-xs lg:text-sm font-semibold tracking-wide">Alterações guardadas com sucesso</span>
+      </div>
+      <script>
+         function toggleSidebar() {
+             const sidebar = document.getElementById('sidebar');
+             const overlay = document.getElementById('sidebar-overlay');
+             sidebar.classList.toggle('mobile-hidden');
+             overlay.classList.toggle('hidden');
+             if (!sidebar.classList.contains('mobile-hidden')) {
+                 document.body.classList.add('overflow-hidden');
+             } else {
+                 document.body.classList.remove('overflow-hidden');
+             }
+         }
+         
+         function openDrawer() {
+             const drawer = document.getElementById('task-drawer');
+             const content = document.getElementById('main-content');
+             drawer.classList.remove('hidden-drawer');
+             
+             if (window.innerWidth >= 1024) {
+                 content.style.paddingRight = '420px';
+             } else {
+                 document.body.classList.add('overflow-hidden');
+             }
+         }
+         
+         function closeDrawer() {
+             const drawer = document.getElementById('task-drawer');
+             const content = document.getElementById('main-content');
+             drawer.classList.add('hidden-drawer');
+             
+             if (window.innerWidth >= 1024) {
+                 content.style.paddingRight = '32px'; 
+             } else {
+                 document.body.classList.remove('overflow-hidden');
+             }
+         }
+         
+         function simulateSave() {
+             const btn = document.getElementById('save-btn');
+             const icon = document.getElementById('save-icon');
+             const spinner = document.getElementById('save-spinner');
+             const text = document.getElementById('save-text');
+             const toast = document.getElementById('save-toast');
+         
+             btn.disabled = true;
+             btn.classList.add('opacity-80', 'cursor-not-allowed');
+             icon.classList.add('hidden');
+             spinner.classList.remove('hidden');
+             text.innerText = "Salvando...";
+         
+             setTimeout(() => {
+                 btn.disabled = false;
+                 btn.classList.remove('opacity-80', 'cursor-not-allowed');
+                 icon.classList.remove('hidden');
+                 spinner.classList.add('hidden');
+                 text.innerText = "Salvar Alterações";
+         
+                 toast.classList.remove('opacity-0', 'translate-y-10');
+                 toast.classList.add('opacity-100', 'translate-y-0');
+         
+                 setTimeout(() => {
+                     toast.classList.add('opacity-0', 'translate-y-10');
+                     toast.classList.remove('opacity-100', 'translate-y-0');
+                 }, 3000);
+             }, 1500);
+         }
+         
+         window.addEventListener('DOMContentLoaded', () => {
+             const drawer = document.getElementById('task-drawer');
+             drawer.classList.add('hidden-drawer');
+             document.getElementById('main-content').style.paddingRight = '32px'; 
+         });
+      </script>
+   </body>
+</html>
