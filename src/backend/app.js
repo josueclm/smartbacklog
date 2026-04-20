@@ -4,8 +4,11 @@ require('./config/db');
 const path = require('path');
 
 const taskRoutes = require('./routes/taskRoutes');
+const mockAuth = require('./controllers/mokeUser');
 
 const app = express();
+
+app.use(mockAuth); // aplica a todas as rotas
 
 app.use(cors());
 app.use(express.json());
