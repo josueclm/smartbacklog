@@ -188,7 +188,7 @@ class TaskService {
 
     const transaction = db.transaction((tasks) => {
       tasks.forEach((task, index) => {
-        update.run(index, task.id);
+        update.run(index * 10, task.id); // melhor prática
       });
     });
 
@@ -216,6 +216,16 @@ class TaskService {
       ORDER BY created_at DESC
     `).all(projectId);
   }
+
+
+  getProject(id) {
+    return db.prepare(`
+      SELECT * FROM projects
+      WHERE id = ?
+      ORDER BY created_at DESC
+    `).all(id);
+  }
+
 
   getProjects() {
     return db.prepare(`

@@ -179,11 +179,21 @@ exports.getTasksByPriority = (req, res) => {
   }
 };
 
-
 exports.getTasksByProject = (req, res) => {
   try {
     const projectId = parseInt(req.params.projectId);
     const tasks = taskService.getByProject(projectId);
+    res.json(tasks);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+exports.getProject = (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const tasks = taskService.getProject(id);
     res.json(tasks);
   } catch (err) {
     res.status(500).json({ error: err.message });

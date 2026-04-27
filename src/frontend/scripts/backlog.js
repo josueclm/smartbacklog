@@ -4,9 +4,14 @@ import {
   deleteTask,
   updateTask,
   updateStatus,
-  updatePriority
+  updatePriority,
+  reorder
 } from "../services/taskService.js";
 
+import {
+  getProject,
+  getProjects,
+} from "../services/projectService.js";
 
 const API = "http://localhost:3000/api/tasks";
 
@@ -17,8 +22,8 @@ const API = "http://localhost:3000/api/tasks";
 let currentProjectId = 1;
 let currentTask = null;
 let currentTaskId = null; // null = create | id = edit
-
-
+let allTasks = [];
+let draggedTaskId = null;
 // =========================
 // GET FORM DATA
 // =========================
@@ -28,13 +33,15 @@ function getFormData() {
   const user_story = document.getElementById("user_story_task").value;
   const sprintId = document.getElementById("sprint_task_id").value;
 
-  const status = mapStatus(document.getElementById("estado_task").value);
-  const priority = mapPriority(document.getElementById("prioridade_task").value);
+  const status = (document.getElementById("estado_task").value);
+  const priority = (document.getElementById("prioridade_task").value);
+  const story_points = document.getElementById("story_points_task").value;
 
   const acceptance_criteria = getAcceptanceCriteria();
 
   return {
     title: title || "Sem título",
+    story_points: story_points,
     description,
     user_story,
     acceptance_criteria: JSON.stringify(acceptance_criteria),
@@ -81,7 +88,9 @@ function getAcceptanceCriteria() {
 async function saveTask() {
 
   if(!document.getElementById("title_task").value)
-    return alert("Titúlo obrigatótio")
+    return showNotification("Titúlo obrigatótio", "error")
+
+  startSubmit();
 
   const data = getFormData();
 
@@ -97,7 +106,7 @@ async function saveTask() {
      }
 
     console.log("Task salva:", res);
-
+    finishSubmit(true);
     // reset
     currentTaskId = null;
 
@@ -106,6 +115,7 @@ async function saveTask() {
     closeDrawer();
 
   } catch (err) {
+    finishSubmit(false);
     console.error("Erro ao salvar task:", err);
   }
 }
@@ -134,6 +144,7 @@ async function loadTaskToForm(task) {
 
   console.log(currentTask)
 
+  document.getElementById("story_points_task").value = task.story_points || "";
   document.getElementById("title_task").value = task.title || "";
   console.log(task.title);
   document.getElementById("description_task").value = task.description || "";
@@ -142,10 +153,10 @@ async function loadTaskToForm(task) {
   document.getElementById("sprint_task_id").value = task.sprint_id || "";
 
   // prioridade
-  setSelectValue("prioridade_task", reversePriority(task.priority));
+  setSelectValue("prioridade_task", (task.priority));
 
   // estado
-  setSelectValue("estado_task", reverseStatus(task.status));
+  setSelectValue("estado_task", (task.status));
 
   // critérios
   renderAcceptanceCriteria(task.acceptance_criteria);
@@ -193,9 +204,11 @@ function reverseStatus(s) {
 function setSelectValue(id, value) {
   const select = document.getElementById(id);
 
-  Array.from(select.options).forEach(opt => {
-    if (opt.text.includes(value)) opt.selected = true;
-  });
+  select.value = value;
+
+  // Array.from(select.options).forEach(opt => {
+  //   if (opt.text.includes(value)) opt.selected = true;
+  // });
 }
 
 
@@ -207,10 +220,10 @@ function setSelectValue(id, value) {
 // =========================
 async function loadSelects() {
   await Promise.all([
-    loadSprints(),
+    // loadSprints(),
     loadProjects(),
-    loadPriorities(),
-    loadStatus()
+    // loadPriorities(),
+    // loadStatus()
   ]);
 }
 
@@ -239,14 +252,23 @@ async function loadSprints() {
 // =========================
 async function loadProjects() {
   try {
-    const res = await fetch("http://localhost:3000/api/tasks/projects");
-    const projects = await res.json();
-
     const select = document.getElementById("projeto_id");
+    if(currentProjectId){
+      const projects = await getProject(currentProjectId);
+      console.log(projects)
+      document.getElementById("text_nome_projecto").innerText = projects.name;
+      document.getElementById("projeto_atual_id").innerText = projects.name;
+      select.innerHTML = `
+        <option value="${projects.id}">${projects.name}</option>
+      `
+    }else{
+      const projects = await getProjects();
+      select.innerHTML = projects.map(p => `
+        <option value="${p.id}">${p.name}</option>
+      `).join("");
+    }
 
-    select.innerHTML = projects.map(p => `
-      <option value="${p.id}">${p.name}</option>
-    `).join("");
+
 
   } catch (err) {
     console.error("Erro ao carregar projetos:", err);
@@ -292,105 +314,231 @@ function formatLabel(value) {
     .replace(/\b\w/g, l => l.toUpperCase());
 }
 
+
 // =========================
 // LOAD TASKS
 // =========================
-async function loadTasks() {
-  const tasks = await getBacklogTasks(currentProjectId);
 
+function applyFilters() {
   const container = document.querySelector(".space-y-3");
 
-  const total = tasks.length;
-  const open = tasks.filter(t => t.status !== "DONE").length;
-  const completed = tasks.filter(t => t.status === "DONE").length;
+  const prioridade = document.getElementById("prioridade_id").value;
+  const estado = document.getElementById("estado_id").value;
 
-  // atualizar HTML
+  let filtered = [...allTasks];
+
+  const search = document.getElementById("search_input")?.value?.toLowerCase();
+
+  if (search) {
+    filtered = filtered.filter(t =>
+      t.title.toLowerCase().includes(search)
+    );
+  }
+
+  // filtro prioridade
+  if (prioridade !== "ALL") {
+    filtered = filtered.filter(t => t.priority === prioridade);
+  }
+
+  // filtro estado
+  if (estado !== "ALL") {
+    filtered = filtered.filter(t => t.status === estado);
+  }
+
+  // métricas
+  const total = filtered.length;
+  const open = filtered.filter(t => t.status !== "DONE").length;
+  const completed = filtered.filter(t => t.status === "DONE").length;
+
   document.getElementById("total_task").innerText = total;
   document.getElementById("total_task1").innerText = total;
   document.getElementById("open_task").innerText = open;
   document.getElementById("completed_task").innerText = completed;
 
-  container.innerHTML = tasks.map(task => TaskCard(task)).join("");
+  // render
+  container.innerHTML = filtered.map(task => TaskCard(task)).join("");
 }
 
+
+async function loadTasks() {
+  const tasks = await getBacklogTasks(currentProjectId);
+
+  allTasks = tasks;
+
+  applyFilters();
+}
+
+// async function loadTasks() {
+//   const tasks = await getBacklogTasks(currentProjectId);
+
+//   const container = document.querySelector(".space-y-3");
+
+//   const total = tasks.length;
+//   const open = tasks.filter(t => t.status !== "DONE").length;
+//   const completed = tasks.filter(t => t.status === "DONE").length;
+
+//   // atualizar HTML
+//   document.getElementById("total_task").innerText = total;
+//   document.getElementById("total_task1").innerText = total;
+//   document.getElementById("open_task").innerText = open;
+//   document.getElementById("completed_task").innerText = completed;
+
+//   container.innerHTML = tasks.map(task => TaskCard(task)).join("");
+// }
+
+
+function getPriorityUI(priority) {
+  const map = {
+    HIGH: {
+      color: "text-red-600",
+      icon: "priority_high"
+    },
+    MEDIUM: {
+      color: "text-amber-500",
+      icon: "report_problem"
+    },
+    LOW: {
+      color: "text-green-600",
+      icon: "low_priority"
+    }
+  };
+
+  return map[priority] || {
+    color: "text-slate-400",
+    icon: "remove"
+  };
+}
 
 // =========================
 // TASK CARD TEMPLATE
 // =========================
+
+
+function dragStart(event, id) {
+  draggedTaskId = id;
+}
+
+function dragOver(event) {
+  event.preventDefault(); // permite drop
+}
+
+async function dropTask(event, targetId) {
+  event.preventDefault();
+
+  if (draggedTaskId === targetId) return;
+
+  const container = document.querySelector(".space-y-3");
+  const cards = [...container.children];
+
+  // obter ordem atual
+  const orderedIds = cards.map(card =>
+    parseInt(card.getAttribute("data-id"))
+  );
+
+  // remover item arrastado
+  const fromIndex = orderedIds.indexOf(draggedTaskId);
+  orderedIds.splice(fromIndex, 1);
+
+  // inserir na nova posição
+  const toIndex = orderedIds.indexOf(targetId);
+  orderedIds.splice(toIndex, 0, draggedTaskId);
+
+  // montar payload
+  const payload = orderedIds.map(id => ({ id }));
+
+  // atualizar backend
+  await reorder(payload)
+
+  // reload UI
+  loadTasks();
+}
+
+
+function handleCardClick(event, id) {
+  openTask(id);
+}
+
 function TaskCard(task) {
 
-  return`
-  <div class="bg-white border border-slate-200 rounded-lg p-3 lg:p-4 flex items-center gap-3 lg:gap-4 cursor-pointer transition-all hover:translate-x-1 hover:bg-slate-50 hover:shadow-md">
-                        <span class="material-symbols-outlined text-slate-300 hidden sm:block">drag_indicator</span>
-                        <div class="flex-shrink-0 text-[10px] lg:text-xs font-bold text-slate-500 w-12 lg:w-16">${task.id}</div>
-                        <div class="flex-shrink-0">
-                           <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[9px] lg:text-[10px] font-bold rounded uppercase">${task.status}</span>
-                        </div>
-                        <div class="flex-1 min-w-0" onclick="openTask(${task.id})">
-                           <p class="font-bold text-slate-900 text-xs lg:text-sm truncate">${task.title}</p>
-                        </div>
-                        <div class="flex items-center gap-2 lg:gap-4">
-                          <div class="flex items-center gap-1 text-red-600">
-                              <span class="material-symbols-outlined text-base lg:text-lg">priority_high</span>
-                           </div>
-                            <div class="flex items-center gap-1 text-amber-600">
-                              <span onclick="deleteTaskUI(${task.id})" class="material-symbols-outlined text-base lg:text-lg">delete</span>
-                           </div>
-                           <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center border border-dashed border-slate-300">
-                              <span class="material-symbols-outlined text-[10px] lg:text-[12px] text-slate-400">person_add</span>
-                           </div>
-                        </div>
-                     </div>
-  `
-
-  return`
-  <div class="bg-white border border-slate-200 rounded-lg p-3 lg:p-4 flex items-center gap-3 lg:gap-4 cursor-pointer transition-all hover:translate-x-1 hover:shadow-md task-card-active"  onclick="openTask(${task.id})">
-                        <span class="material-symbols-outlined text-slate-300 hidden sm:block">drag_indicator</span>
-                        <div class="flex-shrink-0 text-[10px] lg:text-xs font-bold text-slate-500 w-12 lg:w-16">LIN-422</div>
-                        <div class="flex-shrink-0">
-                           <span class="px-2 py-0.5 bg-red-100 text-red-700 text-[9px] lg:text-[10px] font-bold rounded uppercase">BUG</span>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                           <p class="font-bold text-slate-900 text-xs lg:text-sm truncate">Refatoração do módulo de autenticação OAuth2</p>
-                        </div>
-                             <div class="flex items-center gap-1 text-amber-600">
-                              <span class="material-symbols-outlined text-base lg:text-lg">low_priority</span>
-                           </div>
-                        <div class="flex items-center gap-2 lg:gap-4">
-                           <div class="flex items-center gap-1 text-red-600">
-                              <span class="material-symbols-outlined text-base lg:text-lg">priority_high</span>
-                           </div>
-                           <img alt="assignee" class="w-6 h-6 rounded-full object-cover border border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFrNiPLIHkM9yazvLvgEBUb-zb236KxA_cyYe5YRSOaIR_USPAI2GPtAPtTQExGYbHpitAuIOeOHWFYAm0giTV1FeeiAvt3QZiD1BnkXMaNObjPmkdtnEp62BsumGJPGNpA2c0tQv2ECVYNP_FlmUad4pupfoRutmvF2QAb_kJVwLT4g1bfIHuMZ1IT85qpzxawtzkDnWdv4qP5SbyaPGbuEUvfA9rzBT5hG_Xgd0XhjF94mtlSJqbrXK7bgNM6LCC3Juag_KdYzI"/>
-                        </div>
-                     </div>`
-
+  const prio = getPriorityUI(task.priority);
 
   return `
-    <div 
-      class="bg-white border border-slate-200 rounded-lg p-4 flex items-center gap-4 cursor-pointer hover:bg-slate-50 hover:shadow-md"
-      onclick="openTask(${task.id})"
-    >
-      <span class="material-symbols-outlined text-slate-300 hidden sm:block">drag_indicator</span>
+  <div 
+    onclick="handleCardClick(event, ${task.id})"
+    data-id="${task.id}"
+    draggable="true"
+    ondragstart="dragStart(event, ${task.id})"
+    ondragover="dragOver(event)"
+    ondrop="dropTask(event, ${task.id})"
+    class="task-card bg-white border border-slate-200 rounded-lg p-3 lg:p-4 flex items-center gap-3 lg:gap-4 cursor-pointer transition-all hover:translate-x-1 hover:bg-slate-50 hover:shadow-md">
 
-      <div class="w-16 text-xs font-bold text-slate-500">#${task.id}</div>
+    <span class="material-symbols-outlined text-slate-300 hidden sm:block">
+      drag_indicator
+    </span>
 
-      <div class="flex-1">
-        <p class="font-bold text-slate-900 text-sm">${task.title}</p>
-      </div>
-
-      <div class="flex items-center gap-3">
-        <span class="text-xs font-bold ${priorityColor(task.priority)}">
-          ${task.priority}
-        </span>
-
-        <button onclick="event.stopPropagation(); deleteTaskUI(${task.id})">
-          <span class="material-symbols-outlined text-red-500">delete</span>
-        </button>
-      </div>
+    <div title="Story points" class="flex-shrink-0 text-[10px] lg:text-xs font-bold text-slate-500 w-12 lg:w-16">
+      ${task.story_points}
     </div>
+
+    <div class="flex-shrink-0">
+      <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[9px] lg:text-[10px] font-bold rounded uppercase">
+        ${task.status}
+      </span>
+    </div>
+
+    <div class="flex-1 min-w-0">
+      <p class="font-bold text-slate-900 text-xs lg:text-sm truncate">
+        ${task.title}
+      </p>
+    </div>
+
+    <div class="flex items-center gap-2 lg:gap-4">
+
+      <div class="flex items-center gap-1 ${prio.color}">
+        <span class="material-symbols-outlined text-base lg:text-lg">
+          ${prio.icon}
+        </span>
+      </div>
+
+      <!-- DELETE (IMPORTANTE: stopPropagation) -->
+      <div class="flex items-center gap-1 text-amber-600">
+        <span onclick="deleteTaskUI(event, ${task.id})"
+          class="material-symbols-outlined text-base lg:text-lg">
+          delete
+        </span>
+      </div>
+
+    </div>
+  </div>
   `;
 }
 
+// function TaskCard1(task) {
+
+//   return`
+//   <div class="bg-white border border-slate-200 rounded-lg p-3 lg:p-4 flex items-center gap-3 lg:gap-4 cursor-pointer transition-all hover:translate-x-1 hover:bg-slate-50 hover:shadow-md">
+//                         <span class="material-symbols-outlined text-slate-300 hidden sm:block">drag_indicator</span>
+//                         <div class="flex-shrink-0 text-[10px] lg:text-xs font-bold text-slate-500 w-12 lg:w-16">${task.id}</div>
+//                         <div class="flex-shrink-0">
+//                            <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[9px] lg:text-[10px] font-bold rounded uppercase">${task.status}</span>
+//                         </div>
+//                         <div class="flex-1 min-w-0" onclick="openTask(${task.id})">
+//                            <p class="font-bold text-slate-900 text-xs lg:text-sm truncate">${task.title}</p>
+//                         </div>
+//                         <div class="flex items-center gap-2 lg:gap-4">
+//                           <div class="flex items-center gap-1 text-red-600">
+//                               <span class="material-symbols-outlined text-base lg:text-lg">priority_high</span>
+//                            </div>
+//                             <div class="flex items-center gap-1 text-amber-600">
+//                               <span onclick="deleteTaskUI(${task.id})" class="material-symbols-outlined text-base lg:text-lg">delete</span>
+//                            </div>
+//                            <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center border border-dashed border-slate-300">
+//                               <span class="material-symbols-outlined text-[10px] lg:text-[12px] text-slate-400">person_add</span>
+//                            </div>
+//                         </div>
+//                      </div>
+//   `
+// }
 
 // =========================
 // PRIORITY COLOR
@@ -442,10 +590,19 @@ async function addTask() {
 // =========================
 // DELETE
 // =========================
-async function deleteTaskUI(id) {
-  if (!confirm("Eliminar tarefa?")) return;
+async function deleteTaskUI(event, id) {
 
-  await deleteTask(id);
+    event.stopPropagation(); // 🔥 evita abrir o card
+
+    const confirmed = await showConfirm({
+        title: "Eliminar tarefa",
+        message: "Esta ação não pode ser desfeita."
+    });
+
+    if (!confirmed) return;
+    // continua a lógica
+    await deleteTask(id);
+    console.log("Apagado!");
   loadTasks();
 }
 
@@ -474,6 +631,7 @@ async function changePriority(priority) {
 
 document.getElementById("bt_add_new_task")
   .addEventListener("click", function () {
+    document.querySelector("#task-drawer h4").innerText = "";
     currentTask = null;
     currentTaskId = null; // null = create | id = edit
 
@@ -486,13 +644,9 @@ document.getElementById("bt_add_new_task")
     openDrawer();
 });
 
-document.getElementById("bt_add_criterio_aceitacao")
-  .addEventListener("click", function () {
 
-    const text = prompt("Novo critério de aceitação:");
-
-    if (!text) return;
-
+function addAccCrit(text){
+  
     const container = document.getElementById("lista_criterio_aceitacao");
 
     const item = `
@@ -503,7 +657,23 @@ document.getElementById("bt_add_criterio_aceitacao")
     `;
 
     container.insertAdjacentHTML("afterbegin", item);
+}
+
+document.getElementById("bt_add_criterio_aceitacao")
+  .addEventListener("click", function () {
+
+    showAcceptanceCriteriaPanel()
+
 });
+
+document.getElementById("prioridade_id")
+  .addEventListener("change", applyFilters);
+
+document.getElementById("estado_id")
+  .addEventListener("change", applyFilters);
+
+ document.getElementById("search_input")
+  .addEventListener("keyup", applyFilters); 
 
 // =========================
 // INIT
@@ -514,6 +684,11 @@ window.openTask = openTask;
 window.saveTask = saveTask;
 window.changeStatus = changeStatus;
 window.changePriority = changePriority;
+window.addAccCrit = addAccCrit;
+window.handleCardClick = handleCardClick;
+window.dragOver  = dragOver;
+window.dragStart  = dragStart;
+window.dropTask  = dropTask;
 
 loadTasks();
 loadSelects();

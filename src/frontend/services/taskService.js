@@ -1,72 +1,47 @@
 import { request } from "./api.js";
 
-export function getTasks1() {
-  return request("/tasks");
+// TASKS
+
+export function getBacklogTasks(projectId) {
+  return request(`/tasks/backlog?projectId=${projectId}`);
 }
 
-export function createTask1(data) {
+export function createTask(data) {
   return request("/tasks", {
     method: "POST",
     body: JSON.stringify(data)
   });
 }
 
-export function deleteTask1(id) {
+export function reorder(payload) {
+  return request("/tasks/reorder", {
+    method: "PATCH",
+    body: JSON.stringify({ tasks: payload })
+  });
+}
+export function deleteTask(id) {
   return request(`/tasks/${id}`, {
     method: "DELETE"
   });
 }
 
-
-
-
-const API = "http://localhost:3000/api/tasks";
-
-export async function getBacklogTasks(projectId) {
-  const res = await fetch(`${API}/backlog?projectId=${projectId}`);
-  return res.json();
-}
-
-export async function createTask(data) {
-  const res = await fetch(API, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  });
-
-  return res.json();
-}
-
-export async function deleteTask(id) {
-  await fetch(`${API}/${id}`, { method: "DELETE" });
-}
-
-export async function updateTask(id, data) {
-  const res = await fetch(`${API}/${id}`, {
+export function updateTask(id, data) {
+  return request(`/tasks/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
   });
-
-  return res.json();
 }
 
-export async function updateStatus(id, status) {
-  const res = await fetch(`${API}/${id}/status`, {
+export function updateStatus(id, status) {
+  return request(`/tasks/${id}/status`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ status })
   });
-
-  return res.json();
 }
 
-export async function updatePriority(id, priority) {
-  const res = await fetch(`${API}/${id}/priority`, {
+export function updatePriority(id, priority) {
+  return request(`/tasks/${id}/priority`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ priority })
   });
-
-  return res.json();
 }
