@@ -31,7 +31,7 @@ class TaskService {
       task.story_points || 0,
       task.position || Date.now(), // fallback para ordenação
       task.projectId || null,
-      task.sprintId || null,
+      task.sprint_id || null,
       task.assignedTo || null
     );
 
@@ -99,6 +99,7 @@ class TaskService {
         status = ?,
         story_points = ?,
         assigned_to = ?,
+        sprint_id = ?,
         updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
     `).run(
@@ -110,6 +111,7 @@ class TaskService {
       data.status,
       data.story_points,
       data.assignedTo,
+      data.sprint_id,
       id
     );
 

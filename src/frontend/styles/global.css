@@ -1,0 +1,340 @@
+/* =========================
+   GLOBAL
+========================= */
+
+body {
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+  background: #f8fafc;
+}
+
+h1, h2, h3, .font-headline {
+  font-family: 'Manrope', sans-serif;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+}
+
+.material-symbols-outlined.filled {
+  font-variation-settings: 'FILL' 1;
+}
+
+[x-cloak] {
+   display: none !important;
+}
+/* =========================
+   COLORS
+========================= */
+
+.bg-primary-vibrant {
+  background-color: #0052cc;
+}
+
+.text-primary-vibrant {
+  color: #0052cc;
+}
+
+
+/* =========================
+   GLASS
+========================= */
+
+.glass-panel {
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(20px);
+}
+
+
+/* =========================
+   SCROLLBAR
+========================= */
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+
+/* =========================
+   SIDEBAR
+========================= */
+
+#sidebar {
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
+}
+
+#sidebar.mobile-hidden {
+  transform: translateX(-100%);
+}
+
+@media (min-width: 1024px) {
+  #sidebar.mobile-hidden {
+    transform: translateX(0);
+  }
+}
+
+
+/* =========================
+   SIDEBAR ITEMS
+========================= */
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 10px 16px;
+
+  border-radius: 9999px;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  color: #475569;
+
+  transition: all 0.2s ease;
+}
+
+.sidebar-item:hover {
+  background: #f1f5f9;
+}
+
+.sidebar-item.active {
+  background: #f1f3ff;
+  color: #0052cc;
+}
+
+.sidebar-item.active .material-symbols-outlined {
+  font-variation-settings: 'FILL' 1;
+}
+
+
+/* =========================
+   DRAWER
+========================= */
+
+#task-drawer {
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
+}
+
+#task-drawer.hidden-drawer {
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 1024px) {
+
+  #task-drawer {
+    width: 100% !important;
+    top: 0 !important;
+    z-index: 60;
+  }
+
+}
+
+
+/* =========================
+   TASK CARD
+========================= */
+
+.task-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+
+  border-radius: 12px;
+
+  transition: all 0.2s ease;
+
+  cursor: pointer;
+}
+
+.task-card:hover {
+  transform: translateX(4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+.task-card-active {
+  background: #f1f3ff !important;
+
+  border-left: 6px solid #0052cc !important;
+
+  box-shadow:
+    0 4px 12px rgba(0,82,204,0.08);
+
+  transform: translateX(4px);
+}
+
+
+/* =========================
+   CHECKBOX
+========================= */
+
+.checkbox-custom {
+  transition: transform 0.2s ease;
+}
+
+.checkbox-custom:active {
+  transform: scale(1.2);
+}
+
+.checkbox-custom:checked + span {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
+
+/* =========================
+   BUTTONS
+========================= */
+
+.btn-primary {
+
+  background: #0052cc;
+  color: white;
+
+  border-radius: 12px;
+
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #0047b3;
+}
+
+.btn-primary:active {
+  transform: scale(0.97);
+}
+
+
+.btn-secondary {
+
+  background: #f1f5f9;
+
+  color: #475569;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 12px;
+
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: #e2e8f0;
+}
+
+
+/* =========================
+   INPUTS
+========================= */
+
+.input-modern {
+
+  width: 100%;
+
+  background: rgba(248,250,252,0.8);
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 14px;
+
+  padding: 14px 18px;
+
+  font-size: 14px;
+
+  transition: all 0.2s ease;
+}
+
+.input-modern:focus {
+
+  outline: none;
+
+  border-color: #0052cc;
+
+  box-shadow:
+    0 0 0 4px rgba(0,82,204,0.1);
+}
+
+
+/* =========================
+   TOAST
+========================= */
+
+.toast {
+
+  position: fixed;
+
+  bottom: 24px;
+  right: 24px;
+
+  z-index: 999;
+
+  padding: 14px 20px;
+
+  border-radius: 14px;
+
+  color: white;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  box-shadow:
+    0 10px 25px rgba(0,0,0,0.12);
+
+  transition: all 0.3s ease;
+}
+
+.toast-success {
+  background: #16a34a;
+}
+
+.toast-error {
+  background: #dc2626;
+}
+
+.toast-warning {
+  background: #f59e0b;
+}
+
+#global-toast {
+  z-index: 999999999!important;
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+
+.transition-all {
+  transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+
+  .mobile-hidden {
+    display: none;
+  }
+
+}

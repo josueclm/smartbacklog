@@ -1,0 +1,66 @@
+.material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d8e2ff; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #b2c5ff; }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(16px);
+        }
+        
+        .kanban-container {
+            mask-image: linear-gradient(to right, transparent, black 60px, black calc(100% - 60px), transparent);
+        }
+        
+        .task-card {
+            transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+            cursor: grab;
+            user-select: none;
+        }
+        
+        .task-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 24px -6px rgba(0, 0, 0, 0.08), 0 6px 10px -4px rgba(0, 0, 0, 0.04);
+            z-index: 10;
+        }
+        
+        .task-card.dragging {
+            cursor: grabbing;
+            transform: scale(1.03) rotate(0.5deg);
+            opacity: 0.8;
+            box-shadow: 0 30px 60px -12px rgba(0, 82, 204, 0.25);
+            z-index: 100;
+        }
+        
+        .drop-zone {
+            transition: all 0.2s ease;
+        }
+        
+        .drop-zone.drag-over {
+            background-color: rgba(0, 82, 204, 0.03);
+            border-color: rgba(0, 82, 204, 0.2) !important;
+        }
+
+        @keyframes snap-in {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .task-snap {
+            animation: snap-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes toast-slide-in {
+            from { transform: translateY(100%) translateX(-50%); opacity: 0; }
+            to { transform: translateY(0) translateX(-50%); opacity: 1; }
+        }
+        .toast-active {
+            animation: toast-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        #detail-drawer.hidden {
+            transform: translateX(100%);
+        }

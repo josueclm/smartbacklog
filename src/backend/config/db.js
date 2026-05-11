@@ -159,6 +159,33 @@ db.prepare(`
 `).run();
 
 
+try {
+
+   db.prepare(`
+      ALTER TABLE tasks
+      ADD COLUMN due_date DATE
+   `).run();
+
+} catch (err) {
+
+  //console.log("Coluna 'due_date' já existe na tabela 'tasks'");
+   // coluna já existe
+
+}
+
+try {
+
+   db.prepare(`
+      ALTER TABLE sprints
+      ADD COLUMN goal TEXT
+   `).run();
+
+} catch (err) {
+
+   // coluna já existe
+  //console.log("Coluna 'goal' já existe na tabela 'sprints'");
+}
+
 console.log("Base de dados pronta 🚀");
 
 module.exports = db;

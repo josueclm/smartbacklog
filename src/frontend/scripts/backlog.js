@@ -8,6 +8,8 @@ import {
   reorder
 } from "../services/taskService.js";
 
+import {getSprints} from "../services/sprintService.js";
+
 import {
   getProject,
   getProjects,
@@ -31,7 +33,7 @@ function getFormData() {
   const title = document.getElementById("title_task").value;
   const description = document.getElementById("description_task").value;
   const user_story = document.getElementById("user_story_task").value;
-  const sprintId = document.getElementById("sprint_task_id").value;
+  const sprint_id = document.getElementById("sprint_task_id").value;
 
   const status = (document.getElementById("estado_task").value);
   const priority = (document.getElementById("prioridade_task").value);
@@ -47,7 +49,7 @@ function getFormData() {
     acceptance_criteria: JSON.stringify(acceptance_criteria),
     status,
     priority,
-    sprintId: sprintId || null,
+    sprint_id: sprint_id || null,
     projectId: 1
   };
 }
@@ -220,30 +222,11 @@ function setSelectValue(id, value) {
 // =========================
 async function loadSelects() {
   await Promise.all([
-    // loadSprints(),
+    loadSprints(),
     loadProjects(),
     // loadPriorities(),
     // loadStatus()
   ]);
-}
-
-// =========================
-// SPRINT
-// =========================
-async function loadSprints() {
-  try {
-    const res = await fetch("http://localhost:3000/api/tasks/sprints");
-    const projects = await res.json();
-
-    const select = document.getElementById("sprint_task_id");
-
-    select.innerHTML = projects.map(p => `
-      <option value="${p.id}">${p.name}</option>
-    `).join("");
-
-  } catch (err) {
-    console.error("Erro ao carregar projetos:", err);
-  }
 }
 
 
@@ -272,6 +255,35 @@ async function loadProjects() {
 
   } catch (err) {
     console.error("Erro ao carregar projetos:", err);
+  }
+}
+
+// =========================
+// SPRINT
+// =========================
+
+async function loadSprints() {
+  try {
+    const select = document.getElementById("sprint_task_id");
+    if(currentProjectId){
+      const sprints = await getSprints(currentProjectId);
+      select.innerHTML = `
+        <option value="">Selecione um sprint</option>
+        ${sprints.map(s => `
+          <option value="${s.id}">${s.name}</option>
+        `).join("")}
+      `
+    }else{
+      const sprints = await getSprints();
+      select.innerHTML = `
+        <option value="">Selecione um sprint</option>
+        ${sprints.map(s => `
+          <option value="${s.id}">${s.name}</option>
+        `).join("")}
+      `
+    }
+  } catch (err) {
+    console.error("Erro ao carregar sprints:", err);
   }
 }
 
@@ -645,6 +657,30 @@ document.getElementById("bt_add_new_task")
 });
 
 
+function openDrawer() {
+    const drawer = document.getElementById('task-drawer');
+    const content = document.getElementById('main-content');
+    drawer.classList.remove('hidden-drawer');
+             
+    if (window.innerWidth >= 1024) {
+      content.style.paddingRight = '420px';
+    } else {
+      document.body.classList.add('overflow-hidden');
+    }
+}
+
+function closeDrawer() {
+  const drawer = document.getElementById('task-drawer');
+  const content = document.getElementById('main-content');
+  drawer.classList.add('hidden-drawer');
+        
+  if (window.innerWidth >= 1024) {
+    content.style.paddingRight = '32px'; 
+  } else {
+    document.body.classList.remove('overflow-hidden');
+  }
+}
+
 function addAccCrit(text){
   
     const container = document.getElementById("lista_criterio_aceitacao");
@@ -658,6 +694,105 @@ function addAccCrit(text){
 
     container.insertAdjacentHTML("afterbegin", item);
 }
+
+
+
+         function showAcceptanceCriteriaPanel({
+            title = "Adicionar Critérios de Aceitação",
+            placeholder = "Ex: Dado que..., Quando..., Então..."
+         } = {}) {
+
+            return new Promise((resolve) => {
+
+               // overlay
+               const overlay = document.createElement('div');
+               overlay.className = `
+                     fixed inset-0 z-50 flex items-center justify-center
+                     bg-black/50 backdrop-blur-sm
+               `;
+
+               // modal
+               const modal = document.createElement('div');
+               modal.className = `
+                     bg-white rounded-xl shadow-lg w-full max-w-lg p-6
+                     transform transition-all duration-300 scale-95 opacity-0
+               `;
+
+               modal.innerHTML = `
+                     <h2 class="text-lg font-semibold mb-3">${title}</h2>
+
+                     <textarea id="criteria-input"
+                        class="w-full border rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        rows="5"
+                        placeholder="${placeholder}"></textarea>
+
+                     <div class="flex justify-end gap-3 mt-5">
+                        <button id="criteria-cancel"
+                           class="px-4 py-2 rounded-lg border text-gray-600 hover:bg-gray-100">
+                           Cancelar
+                        </button>
+
+                        <button id="criteria-save"
+                           class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">
+                           Guardar
+                        </button>
+                     </div>
+               `;
+
+               overlay.appendChild(modal);
+               document.body.appendChild(overlay);
+
+               const textarea = modal.querySelector('#criteria-input');
+
+               // animação entrada
+               setTimeout(() => {
+                     modal.classList.remove('scale-95', 'opacity-0');
+                     modal.classList.add('scale-100', 'opacity-100');
+                     textarea.focus();
+               }, 10);
+
+               // handlers
+               modal.querySelector('#criteria-save').onclick = () => {
+                     const value = textarea.value.trim();
+
+                     if (!value) {
+                        textarea.classList.add('border-red-500');
+                        textarea.placeholder = "Campo obrigatório...";
+                        return;
+                     }else{
+                        addAccCrit(value);
+                     }
+
+                     close(value);
+               };
+
+               modal.querySelector('#criteria-cancel').onclick = () => {
+                     close(null);
+               };
+
+               overlay.onclick = (e) => {
+                     if (e.target === overlay) close(null);
+               };
+
+               function close(result) {
+                     modal.classList.add('scale-95', 'opacity-0');
+
+                     setTimeout(() => {
+                        overlay.remove();
+                        resolve(result);
+                     }, 200);
+               }
+            });
+         }
+         
+ window.addEventListener('DOMContentLoaded', () => {
+    const drawer = document.getElementById('task-drawer');
+    drawer.classList.add('hidden-drawer');
+    document.getElementById('main-content').style.paddingRight = '32px'; 
+});
+
+
+
 
 document.getElementById("bt_add_criterio_aceitacao")
   .addEventListener("click", function () {
@@ -689,6 +824,9 @@ window.handleCardClick = handleCardClick;
 window.dragOver  = dragOver;
 window.dragStart  = dragStart;
 window.dropTask  = dropTask;
+window.closeDrawer  = closeDrawer;
+window.openDrawer  = openDrawer;
+
 
 loadTasks();
 loadSelects();

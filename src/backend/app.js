@@ -5,6 +5,8 @@ const path = require('path');
 
 const taskRoutes = require('./routes/taskRoutes');
 const projectRoutes = require('./routes/projectRoutes');
+const sprintRoutes = require('./routes/sprintRputes');
+
 const mockAuth = require('./controllers/mokeUser');
 
 const app = express();
@@ -17,11 +19,15 @@ app.use(express.json());
 // API
 app.use('/api/tasks', taskRoutes);
 app.use('/api/projects', projectRoutes);
-
+app.use('/api/sprints', sprintRoutes);
 // Servir frontend
 app.use(express.static(path.join(__dirname, '../frontend')));
 
 app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/pages/backlog.html'));
+});
+
+app.get('/backlog', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/pages/backlog.html'));
 });
 
