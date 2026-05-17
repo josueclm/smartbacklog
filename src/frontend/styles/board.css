@@ -64,3 +64,17 @@
         #detail-drawer.hidden {
             transform: translateX(100%);
         }
+
+
+.task-list::-webkit-scrollbar {
+   width: 6px;
+}
+
+.task-list::-webkit-scrollbar-thumb {
+   background: #cbd5e1;
+   border-radius: 999px;
+}
+
+.task-list::-webkit-scrollbar-track {
+   background: transparent;
+}

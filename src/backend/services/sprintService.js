@@ -52,18 +52,37 @@ class SprintService {
   // =========================
   // GET BY ID
   // =========================
-  getById(id) {
+getById(id) {
 
-    return db.prepare(`
+   return db.prepare(`
       SELECT
-        sprints.*,
-        projects.name as project_name
+         sprints.*,
+
+         projects.name as project_name,
+
+         COUNT(tasks.id) as total_tasks,
+
+         COUNT(
+            CASE
+               WHEN tasks.status = 'DONE'
+               THEN 1
+            END
+         ) as completed_tasks
+
       FROM sprints
+
       LEFT JOIN projects
-        ON projects.id = sprints.project_id
+         ON projects.id = sprints.project_id
+
+      LEFT JOIN tasks
+         ON tasks.sprint_id = sprints.id
+
       WHERE sprints.id = ?
-    `).get(id);
-  }
+
+      GROUP BY sprints.id
+   `).get(id);
+
+}
 
 
   // =========================

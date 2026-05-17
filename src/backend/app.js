@@ -6,6 +6,8 @@ const path = require('path');
 const taskRoutes = require('./routes/taskRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const sprintRoutes = require('./routes/sprintRputes');
+const boardRoutes = require('./routes/boardRoutes');
+
 
 const mockAuth = require('./controllers/mokeUser');
 
@@ -20,6 +22,8 @@ app.use(express.json());
 app.use('/api/tasks', taskRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/sprints', sprintRoutes);
+app.use('/api/boards', boardRoutes);
+
 // Servir frontend
 app.use(express.static(path.join(__dirname, '../frontend')));
 

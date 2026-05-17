@@ -11,6 +11,14 @@
         //  }
         
 
+         function formatDate(date) {
+
+            if (!date) return "-";
+
+            return new Date(date).toLocaleDateString("pt-PT");
+
+         }
+
 
          function showNotification(message, type = "success", duration = 3000) {
             let toast = document.getElementById('global-toast');
@@ -194,3 +202,4 @@ window.finishSubmit = finishSubmit;
 window.simulateSave = simulateSave;
 window.showConfirm = showConfirm;
 window.showNotification = showNotification;
+window.formatDate = formatDate;

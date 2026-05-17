@@ -1,1779 +1,857 @@
-// sprint.js
+import {
+  getBacklogTasks,
+  getById,
+  createTask,
+  deleteTask,
+  updateTask,
+  updateStatus,
+  updatePriority,
+  reorder
+} from "../services/taskService.js";
+
+import {getSprints} from "../services/sprintService.js";
 
 import {
-   getSprints,
-   getSprintById,
-   createSprint,
-   updateSprint,
-   deleteSprint,
-   startSprint,
-   completeSprint,
-   getActiveSprint,
-   getSprintMetrics
-} from "../services/sprintService.js";
-import { getProjects } from "../services/projectService.js";
+  getProject,
+  getProjects,
+} from "../services/projectService.js";
 
-/*
-|--------------------------------------------------------------------------
-| STATE
-|--------------------------------------------------------------------------
-*/
+const API = "http://localhost:3000/api/tasks";
 
+
+// =========================
+// STATE
+// =========================
 let currentProjectId = 1;
-let sprintToArchive = null;
-let editingSprintId = null;
-let currentStatusFilter = "ALL";
+let currentTask = null;
+let currentTaskId = null; // null = create | id = edit
+let allTasks = [];
+let draggedTaskId = null;
+// =========================
+// GET FORM DATA
+// =========================
+function getFormData() {
+  const title = document.getElementById("title_task").value;
+  const description = document.getElementById("description_task").value;
+  const user_story = document.getElementById("user_story_task").value;
+  const sprint_id = document.getElementById("sprint_task_id").value;
 
+  const status = (document.getElementById("estado_task").value);
+  const priority = (document.getElementById("prioridade_task").value);
+  const story_points = document.getElementById("story_points_task").value;
 
-/*
-|--------------------------------------------------------------------------
-| ELEMENTS
-|--------------------------------------------------------------------------
-*/
+  const acceptance_criteria = getAcceptanceCriteria();
 
-const sprintListContainer = document.getElementById("sprint_list_container");
-
-const activeSprintContainer = document.getElementById(
-   "active_sprint_container"
-);
-
-const plannedSprintsContainer = document.getElementById(
-   "planned_sprints_container"
-);
-
-const completedSprintsContainer = document.getElementById(
-   "completed_sprints_container"
-);
-
-const recentActivityContainer = document.getElementById(
-   "recent_activity_container"
-);
-
-const filterProjectSelect = document.getElementById(
-   "filter_project_id"
-);
-
-const createSprintProjectSelect = document.getElementById(
-   "create_sprint_project_id"
-);
-
-/*
-|--------------------------------------------------------------------------
-| MODALS
-|--------------------------------------------------------------------------
-*/
-
-const createSprintModal = document.getElementById(
-   "create_sprint_modal"
-);
-
-const archiveSprintModal = document.getElementById(
-   "archive_sprint_modal"
-);
-
-/*
-|--------------------------------------------------------------------------
-| CREATE FORM
-|--------------------------------------------------------------------------
-*/
-
-const createSprintProjectId = document.getElementById(
-   "create_sprint_project_id"
-);
-
-const createSprintName = document.getElementById(
-   "create_sprint_name"
-);
-
-const createSprintStartDate = document.getElementById(
-   "create_sprint_start_date"
-);
-
-const createSprintEndDate = document.getElementById(
-   "create_sprint_end_date"
-);
-
-const createSprintGoal = document.getElementById(
-   "create_sprint_goal"
-);
-
-const copyTasks = document.getElementById("copy_tasks");
-const copyMembers = document.getElementById("copy_members");
-const copyEstimatives = document.getElementById("copy_estimatives");
-
-/*
-|--------------------------------------------------------------------------
-| BUTTONS
-|--------------------------------------------------------------------------
-*/
-
-const btnOpenCreateSprintModal = document.getElementById(
-   "btn_open_create_sprint_modal"
-);
-
-const btnOpenCreateSprintModalBottom = document.getElementById(
-   "btn_open_create_sprint_modal_bottom"
-);
-
-const btnCloseCreateSprintModal = document.getElementById(
-   "btn_close_create_sprint_modal"
-);
-
-const btnCancelCreateSprint = document.getElementById(
-   "btn_cancel_create_sprint"
-);
-
-const btnCreateSprint = document.getElementById(
-   "btn_create_sprint"
-);
-
-const btnCancelArchive = document.getElementById(
-   "btn_cancel_archive"
-);
-
-const btnConfirmArchive = document.getElementById(
-   "btn_confirm_archive"
-);
-
-
-
-
-
-
-/*
-|--------------------------------------------------------------------------
-| FILTER ELEMENTS
-|--------------------------------------------------------------------------
-*/
-
-function initElements() {
-
-   return {
-
-      searchInput:
-         document.getElementById( "search_input"),
-
-      filterProjectId:
-         document.getElementById("filter_project_id"),
-
-      filterTeamId:
-         document.getElementById("filter_team_id"),
-
-      filterOrderBy:
-         document.getElementById("filter_order_by"),
-
-      filterButtons:
-         document.querySelectorAll(".sprint-filter-btn")
-
-   };
-
+  return {
+    title: title || "Sem título",
+    story_points: story_points,
+    description,
+    user_story,
+    acceptance_criteria: JSON.stringify(acceptance_criteria),
+    status,
+    priority,
+    sprint_id: sprint_id || null,
+    projectId: 1
+  };
 }
 
-/*
-|--------------------------------------------------------------------------
-| INIT FILTERS
-|--------------------------------------------------------------------------
-*/
 
-function initSprintFilters() {
-  const elements = initElements();
-
-  
-   /*
-   |--------------------------------------------------------------------------
-   | STATUS BUTTONS
-   |--------------------------------------------------------------------------
-   */
-
-   elements.filterButtons.forEach(button => {
-
-      button.addEventListener("click", () => {
-
-         currentStatusFilter =
-            button.dataset.status;
-
-         updateFilterButtons();
-
-         applySprintFilters();
-
-      });
-
-   });
-
-   /*
-   |--------------------------------------------------------------------------
-   | SEARCH
-   |--------------------------------------------------------------------------
-   */
-
-   elements.searchInput.addEventListener(
-      "input",
-      debounce(applySprintFilters, 300)
-   );
-
-   /*
-   |--------------------------------------------------------------------------
-   | PROJECT
-   |--------------------------------------------------------------------------
-   */
-
-   function changeProject(id) {
-      currentProjectId = id;
-      getSprints(currentProjectId);
-      applySprintFilters();
-   }
-
-   elements.filterProjectId.addEventListener(
-      "change",
-      (e) => changeProject(e.target.value)  
-   );
-
-   /*
-   |--------------------------------------------------------------------------
-   | TEAM
-   |--------------------------------------------------------------------------
-   */
-
-   elements.filterTeamId.addEventListener(
-      "change",
-      applySprintFilters
-   );
-
-   /*
-   |--------------------------------------------------------------------------
-   | ORDER
-   |--------------------------------------------------------------------------
-   */
-
-   elements.filterOrderBy.addEventListener(
-      "change",
-      applySprintFilters
-   );
-
+// =========================
+// MAP VALUES UI → DB
+// =========================
+function mapStatus(label) {
+  if (label.includes("Progresso")) return "IN_PROGRESS";
+  if (label.includes("Concluído")) return "DONE";
+  return "TODO";
 }
 
-/*
-|--------------------------------------------------------------------------
-| UPDATE ACTIVE FILTER BUTTON
-|--------------------------------------------------------------------------
-*/
-
-function updateFilterButtons() {
-
-   const elements = initElements();
-
-   elements.filterButtons.forEach(button => {
-
-      button.classList.remove(
-         "bg-surface-container-lowest",
-         "text-primary",
-         "shadow-sm",
-         "font-semibold"
-      );
-
-      button.classList.add(
-         "text-on-surface-variant",
-         "font-medium"
-      );
-
-      if (
-         button.dataset.status ===
-         currentStatusFilter
-      ) {
-
-         button.classList.add(
-            "bg-surface-container-lowest",
-            "text-primary",
-            "shadow-sm",
-            "font-semibold"
-         );
-
-         button.classList.remove(
-            "text-on-surface-variant",
-            "font-medium"
-         );
-
-      }
-
-   });
-
+function mapPriority(label) {
+  if (label.includes("Alta")) return "HIGH";
+  if (label.includes("Média")) return "MEDIUM";
+  return "LOW";
 }
 
-/*
-|--------------------------------------------------------------------------
-| APPLY FILTERS
-|--------------------------------------------------------------------------
-*/
 
-async function applySprintFilters() {
-   const elements = initElements();
-   try {
-      /*
-      |--------------------------------------------------------------------------
-      | GET VALUES
-      |--------------------------------------------------------------------------
-      */
+// =========================
+// GET ACCEPTANCE CRITERIA
+// =========================
+function getAcceptanceCriteria() {
+  const items = document.querySelectorAll("#lista_criterio_aceitacao label span");
 
-      let search = "";
-      if ( elements.searchInput.value) {
-        search = elements.searchInput.value.trim().toLowerCase();
-      }
-      const projectId =
-         elements.filterProjectId.value;
-
-      const teamId =
-         elements.filterTeamId.value;
-
-      const orderBy =
-         elements.filterOrderBy.value;
-
-      /*
-      |--------------------------------------------------------------------------
-      | LOAD ALL
-      |--------------------------------------------------------------------------
-      */
-
-      let response = await getSprints(currentProjectId);
-
-      let sprints =
-         response.data || response || [];
-
-      /*
-      |--------------------------------------------------------------------------
-      | STATUS FILTER
-      |--------------------------------------------------------------------------
-      */
-
-      if (currentStatusFilter !== "ALL") {
-
-         sprints = sprints.filter(sprint =>
-            sprint.status === currentStatusFilter
-         );
-
-      }
-
-      /*
-      |--------------------------------------------------------------------------
-      | PROJECT FILTER
-      |--------------------------------------------------------------------------
-      */
-
-      if (projectId) {
-
-         sprints = sprints.filter(sprint =>
-            String(sprint.project_id) ===
-            String(projectId)
-         );
-
-      }
-
-      /*
-      |--------------------------------------------------------------------------
-      | TEAM FILTER
-      |--------------------------------------------------------------------------
-      */
-
-      if (teamId) {
-
-         sprints = sprints.filter(sprint =>
-            String(sprint.team_id) ===
-            String(teamId)
-         );
-
-      }
-
-      /*
-      |--------------------------------------------------------------------------
-      | SEARCH FILTER
-      |--------------------------------------------------------------------------
-      */
-
-      if (search) {
-
-         sprints = sprints.filter(sprint => {
-
-            return (
-               sprint.name?.toLowerCase()
-                  .includes(search)
-
-               ||
-
-               sprint.goal?.toLowerCase()
-                  .includes(search)
-
-               ||
-
-               sprint.project_name?.toLowerCase()
-                  .includes(search)
-            );
-
-         });
-
-      }
-
-      /*
-      |--------------------------------------------------------------------------
-      | ORDERING
-      |--------------------------------------------------------------------------
-      */
-
-      switch (orderBy) {
-
-         case "ACTIVE_FIRST":
-
-            sprints.sort((a, b) => {
-
-               if (
-                  a.status === "ACTIVE" &&
-                  b.status !== "ACTIVE"
-               ) return -1;
-
-               if (
-                  a.status !== "ACTIVE" &&
-                  b.status === "ACTIVE"
-               ) return 1;
-
-               return 0;
-
-            });
-
-         break;
-
-         case "DATE_DESC":
-
-            sprints.sort((a, b) =>
-               new Date(b.created_at) -
-               new Date(a.created_at)
-            );
-
-         break;
-
-         case "DATE_ASC":
-
-            sprints.sort((a, b) =>
-               new Date(a.created_at) -
-               new Date(b.created_at)
-            );
-
-         break;
-
-         case "NAME_ASC":
-
-            sprints.sort((a, b) =>
-               a.name.localeCompare(b.name)
-            );
-
-         break;
-
-      }
-
-      /*
-      |--------------------------------------------------------------------------
-      | RENDER
-      |--------------------------------------------------------------------------
-      */
-
-      renderSprintList(sprints);
-
-   } catch (error) {
-
-      console.error(
-         "Erro ao aplicar filtros:",
-         error
-      );
-
-   }
-
+  return Array.from(items).map(el => ({
+    text: el.innerText.trim(),
+    done: el.previousElementSibling.checked
+  }));
 }
 
-/*
-|--------------------------------------------------------------------------
-| DEBOUNCE
-|--------------------------------------------------------------------------
-*/
 
-function debounce(callback, delay = 300) {
+// =========================
+// SAVE TASK
+// =========================
+async function saveTask() {
 
-   let timeout;
+  if(!document.getElementById("title_task").value)
+    return showNotification("Titúlo obrigatótio", "error")
 
-   return (...args) => {
+  startSubmit();
 
-      clearTimeout(timeout);
+  const data = getFormData();
 
-      timeout = setTimeout(() => {
+  try {
+    let res;
 
-         callback(...args);
+     if (currentTaskId) {
+       // UPDATE
+       res = updateTask(currentTaskId, data);
+     } else {
+       // CREATE
+       res = createTask(data);
+     }
 
-      }, delay);
+    console.log("Task salva:", res);
+    finishSubmit(true);
+    // reset
+    currentTaskId = null;
 
-   };
+    // reload UI
+    loadTasks();
+    closeDrawer();
+    await loadBoard();
 
+  } catch (err) {
+    finishSubmit(false);
+    console.error("Erro ao salvar task:", err);
+  }
+}
+
+
+// {
+//     "id": 2,
+//     "title": "qfwefe",
+//     "description": "",
+//     "priority": "MEDIUM",
+//     "status": "TODO",
+//     "user_story": "",
+//     "acceptance_criteria": "",
+//     "story_points": 0,
+//     "position": 1776626310999,
+//     "is_blocked": 0,
+//     "project_id": 1,
+//     "sprint_id": null,
+//     "assigned_to": null,
+//     "created_at": "2026-04-19 19:18:30",
+//     "updated_at": "2026-04-19 19:18:46"
+// }
+
+async function loadTaskToForm(task) {
+  currentTaskId = task.id;
+
+  console.log(currentTask)
+
+  document.getElementById("story_points_task").value = task.story_points || "";
+  document.getElementById("title_task").value = task.title || "";
+  console.log(task.title);
+  document.getElementById("description_task").value = task.description || "";
+  document.getElementById("user_story_task").value = task.user_story || "";
+
+  document.getElementById("sprint_task_id").value = task.sprint_id || "";
+
+  // prioridade
+  setSelectValue("prioridade_task", (task.priority));
+
+  // estado
+  setSelectValue("estado_task", (task.status));
+
+  // critérios
+  renderAcceptanceCriteria(task.acceptance_criteria);
+
+  openDrawer();
+}
+
+
+// =========================
+// RENDER CRITERIA
+// =========================
+function renderAcceptanceCriteria(json) {
+  const container = document.getElementById("lista_criterio_aceitacao");
+
+  container.innerHTML = "";
+
+  let items = [];
+
+  try {
+    items = JSON.parse(json || "[]");
+  } catch {}
+
+  items.forEach(item => {
+    container.innerHTML += `
+      <label class="flex items-start gap-3 p-4 bg-white border border-slate-200 rounded-xl">
+        <input type="checkbox" ${item.done ? "checked" : ""}>
+        <span>${item.text}</span>
+      </label>
+    `;
+  });
+}
+
+function reversePriority(p) {
+  if (p === "HIGH") return "Alta";
+  if (p === "MEDIUM") return "Média";
+  return "Baixa";
+}
+
+function reverseStatus(s) {
+  if (s === "IN_PROGRESS") return "Em Progresso";
+  if (s === "DONE") return "Concluído";
+  return "A Fazer";
+}
+
+function setSelectValue(id, value) {
+  const select = document.getElementById(id);
+
+  select.value = value;
+
+  // Array.from(select.options).forEach(opt => {
+  //   if (opt.text.includes(value)) opt.selected = true;
+  // });
 }
 
 
 
-/*
-|--------------------------------------------------------------------------
-| LOAD
-|--------------------------------------------------------------------------
-*/
 
 
-/*
-|--------------------------------------------------------------------------
-| LOAD TEAMS FILTER
-|--------------------------------------------------------------------------
-*/
-
-async function loadTeamsFilter() {
-
-   try {
-
-      /*
-      |--------------------------------------------------------------------------
-      | GET SELECT
-      |--------------------------------------------------------------------------
-      */
-
-      const select =
-         document.getElementById(
-            "filter_team_id"
-         );
-
-      if (!select) return;
-
-      /*
-      |--------------------------------------------------------------------------
-      | RESET
-      |--------------------------------------------------------------------------
-      */
-
-      select.innerHTML = `
-         <option value="">
-            Equipa: Todas
-         </option>
-      `;
-
-      /*
-      |--------------------------------------------------------------------------
-      | REQUEST
-      |--------------------------------------------------------------------------
-      */
-
-      const response = await getTeams();
-
-      const teams =
-         response.data || response || [];
-
-      /*
-      |--------------------------------------------------------------------------
-      | APPEND OPTIONS
-      |--------------------------------------------------------------------------
-      */
-
-      teams.forEach(team => {
-
-         const option =
-            document.createElement("option");
-
-         option.value = team.id;
-
-         option.textContent =
-            team.name;
-
-         select.appendChild(option);
-
-      });
-
-   } catch (error) {
-
-      console.error(
-         "Erro ao carregar equipas:",
-         error
-      );
-
-   }
-
+// =========================
+// LOAD SELECTS
+// =========================
+async function loadSelects() {
+  await Promise.all([
+    loadSprints(),
+    loadProjects(),
+    // loadPriorities(),
+    // loadStatus()
+  ]);
 }
 
-/*
-|--------------------------------------------------------------------------
-| LOAD PROJECTS
-|--------------------------------------------------------------------------
-*/
 
-export async function loadProjectsSelects() {
+// =========================
+// PROJECTS
+// =========================
+async function loadProjects() {
+  try {
+    if(currentProjectId){
+      const projects = await getProject(currentProjectId);
+      console.log(projects)
+      document.getElementById("text_nome_projecto").innerText = projects.name;
+      // document.getElementById("projeto_atual_id").innerText = projects.name;
+      // const select = document.getElementById("projeto_id");
+      // select.innerHTML = `
+      //   <option value="${projects.id}">${projects.name}</option>
+      // `
+    }else{
+      const projects = await getProjects();
+      // const select = document.getElementById("projeto_id");
+      // select.innerHTML = projects.map(p => `
+      //   <option value="${p.id}">${p.name}</option>
+      // `).join("");
+    }
 
-   try {
 
-      /*
-      |--------------------------------------------------------------------------
-      | REQUEST
-      |--------------------------------------------------------------------------
-      */
 
-      const response = await getProjects();
-
-      console.log("PROJECTS RESPONSE:", response);
-
-      /*
-      |--------------------------------------------------------------------------
-      | NORMALIZE
-      |--------------------------------------------------------------------------
-      */
-
-      let projects = [];
-
-      if (Array.isArray(response)) {
-
-         projects = response;
-
-      } else if (Array.isArray(response.data)) {
-
-         projects = response.data;
-
-      }
-
-      /*
-      |--------------------------------------------------------------------------
-      | RESET
-      |--------------------------------------------------------------------------
-      */
-
-      // filterProjectSelect.innerHTML = `
-      //    <option value="">
-      //       Projeto: Todos
-      //    </option>
-      // `;
-
-      createSprintProjectSelect.innerHTML = `
-         <option value="">
-            Selecione o projeto
-         </option>
-      `;
-
-      /*
-      |--------------------------------------------------------------------------
-      | APPEND OPTIONS
-      |--------------------------------------------------------------------------
-      */
-
-      projects.forEach(project => {
-
-         /*
-         |--------------------------------------------------------------------------
-         | FILTER SELECT
-         |--------------------------------------------------------------------------
-         */
-
-         const optionFilter =
-            document.createElement("option");
-
-         optionFilter.value = project.id;
-
-         optionFilter.textContent = project.name;
-
-         filterProjectSelect.appendChild(optionFilter);
-
-         /*
-         |--------------------------------------------------------------------------
-         | CREATE SPRINT SELECT
-         |--------------------------------------------------------------------------
-         */
-
-         const optionCreate =
-            document.createElement("option");
-
-         optionCreate.value = project.id;
-
-         optionCreate.textContent = project.name;
-
-         createSprintProjectSelect.appendChild(optionCreate);
-
-      });
-
-   } catch (error) {
-
-      console.error(
-         "ERROR LOAD PROJECT SELECTS:",
-         error
-      );
-
-   }
-
+  } catch (err) {
+    console.error("Erro ao carregar projetos:", err);
+  }
 }
+
+// =========================
+// SPRINT
+// =========================
 
 async function loadSprints() {
-
-   try {
-
-      const response = await getSprints(currentProjectId);
-
-      const sprints = response?.data || response || [];
-
-      renderSprintList(sprints);
-
-      renderActiveSprint(sprints);
-
-      renderPlannedSprints(sprints);
-
-      renderCompletedSprints(sprints);
-
-   } catch (error) {
-
-      console.error(error);
-
-      alert("Erro ao carregar sprints");
-
-   }
-
+  try {
+    const select = document.getElementById("sprint_task_id");
+    if(currentProjectId){
+      const sprints = await getSprints(currentProjectId);
+      select.innerHTML = `
+        <option value="">Selecione um sprint</option>
+        ${sprints.map(s => `
+          <option value="${s.id}">${s.name}</option>
+        `).join("")}
+      `
+    }else{
+      const sprints = await getSprints();
+      select.innerHTML = `
+        <option value="">Selecione um sprint</option>
+        ${sprints.map(s => `
+          <option value="${s.id}">${s.name}</option>
+        `).join("")}
+      `
+    }
+  } catch (err) {
+    console.error("Erro ao carregar sprints:", err);
+  }
 }
 
-/*
-|--------------------------------------------------------------------------
-| RENDER ACTIVE
-|--------------------------------------------------------------------------
-*/
 
-function renderActiveSprint(sprints = []) {
+// =========================
+// PRIORIDADES (FIXO)
+// =========================
+function loadPriorities() {
+  const priorities = ["HIGH", "MEDIUM", "LOW"];
 
-   const sprint = sprints.find(
-      item => item.status === "ACTIVE"
-   );
+  const select = document.getElementById("prioridade_id");
 
-   /*
-   |--------------------------------------------------------------------------
-   | EMPTY
-   |--------------------------------------------------------------------------
-   */
-
-   if (!sprint) {
-
-      activeSprintContainer.innerHTML = `
-         <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 p-10 text-center">
-
-            <span class="material-symbols-outlined text-5xl text-slate-300 mb-4">
-               sprint
-            </span>
-
-            <h3 class="text-lg font-bold text-slate-700 mb-2">
-               Nenhuma sprint ativa
-            </h3>
-
-            <p class="text-sm text-slate-400">
-               Crie ou inicie uma sprint para acompanhar o progresso.
-            </p>
-
-         </div>
-      `;
-
-      return;
-
-   }
-
-   /*
-   |--------------------------------------------------------------------------
-   | METRICS
-   |--------------------------------------------------------------------------
-   */
-
-   const totalTasks =
-      sprint.total_tasks || 0;
-
-   const completedTasks =
-      sprint.completed_tasks || 0;
-
-   const inProgressTasks =
-      sprint.in_progress_tasks || 0;
-
-   const delayedTasks =
-      sprint.delayed_tasks || 0;
-
-   const storyPoints =
-      sprint.story_points || 0;
-
-   const capacity =
-      sprint.capacity || 0;
-
-   const progress =
-      totalTasks > 0
-         ? Math.round(
-            (completedTasks / totalTasks) * 100
-         )
-         : 0;
-
-   /*
-   |--------------------------------------------------------------------------
-   | RENDER
-   |--------------------------------------------------------------------------
-   */
-
-   activeSprintContainer.innerHTML = `
-
-      <section class="bg-surface-container-lowest rounded-xl border-2 border-primary/20 ambient-shadow relative overflow-hidden group">
-
-         <div class="absolute top-0 left-0 w-1.5 h-full bg-primary"></div>
-
-         <div class="p-8">
-
-            <!-- HEADER -->
-            <div class="flex justify-between items-start mb-8">
-
-               <div>
-
-                  <div class="flex items-center gap-3 mb-2">
-
-                     <h3 class="text-2xl font-headline font-extrabold text-on-surface">
-                        ${sprint.name}
-                     </h3>
-
-                     <span class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-extrabold tracking-widest rounded-full border border-primary/20">
-                        ACTIVE
-                     </span>
-
-                  </div>
-
-                  <div class="flex items-center gap-2 text-on-surface-variant text-sm font-medium">
-
-                     <span class="material-symbols-outlined text-sm">
-                        calendar_month
-                     </span>
-
-                     <span>
-                        ${formatDate(sprint.start_date)}
-                        -
-                        ${formatDate(sprint.end_date)}
-                     </span>
-
-                  </div>
-
-               </div>
-
-
-            </div>
-
-            <!-- PROGRESS -->
-            <div class="bg-surface-container-low/50 rounded-xl p-6 border border-outline-variant/10 mb-8">
-
-               <div class="flex justify-between items-end mb-4">
-
-                  <div>
-
-                     <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">
-                        Status do Progresso
-                     </p>
-
-                     <span class="text-sm font-semibold text-on-surface">
-                        ${completedTasks} / ${totalTasks} tarefas concluídas
-                     </span>
-
-                  </div>
-
-                  <div class="text-right">
-
-                     <span class="text-2xl font-headline font-extrabold text-primary">
-                        ${progress}%
-                     </span>
-
-                  </div>
-
-               </div>
-
-               <div class="h-3 w-full bg-surface-container rounded-full overflow-hidden">
-
-                  <div
-                     class="h-full bg-primary rounded-full transition-all duration-500"
-                     style="width: ${progress}%"
-                  ></div>
-
-               </div>
-
-            </div>
-
-            <!-- METRICS -->
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-
-               <div class="flex flex-col p-2">
-
-                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
-                     Em progresso
-                  </span>
-
-                  <span class="text-lg font-headline font-bold text-on-surface">
-                     ${inProgressTasks}
-                  </span>
-
-               </div>
-
-               <div class="flex flex-col p-2">
-
-                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
-                     Concluídas
-                  </span>
-
-                  <span class="text-lg font-headline font-bold text-success">
-                     ${completedTasks}
-                  </span>
-
-               </div>
-
-               <div class="flex flex-col p-2">
-
-                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
-                     Atrasadas
-                  </span>
-
-                  <span class="text-lg font-headline font-bold text-error">
-                     ${delayedTasks}
-                  </span>
-
-               </div>
-
-               <div class="flex flex-col p-2">
-
-                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
-                     Story Points
-                  </span>
-
-                  <span class="text-lg font-headline font-bold text-on-surface">
-                     ${storyPoints}
-                  </span>
-
-               </div>
-
-               <div class="flex flex-col p-2">
-
-                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
-                     Capacidade
-                  </span>
-
-                  <span class="text-lg font-headline font-bold text-primary">
-                     ${capacity}
-                  </span>
-
-               </div>
-
-            </div>
-
-
-            
-               <!-- ACTIONS -->
-               <div class="flex items-center gap-3">
-
-                  <button
-                     class="btn-open-board bg-primary text-on-primary px-5 py-2.5 rounded-lg font-headline font-bold text-sm shadow-lg shadow-primary/10 hover:shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-2"
-                     data-id="${sprint.id}"
-                  >
-                     <span class="material-symbols-outlined text-lg">
-                        grid_view
-                     </span>
-
-                     <span>
-                        Abrir Board
-                     </span>
-                  </button>
-
-                  <button
-                     class="btn-edit-sprint border border-outline-variant text-on-surface hover:bg-slate-50 px-5 py-2.5 rounded-lg font-headline font-bold text-sm transition-all flex items-center gap-2"
-                     data-id="${sprint.id}"
-                  >
-                     <span class="material-symbols-outlined text-lg">
-                        edit
-                     </span>
-
-                     <span>
-                        Editar
-                     </span>
-                  </button>
-
-                  <button
-                     class="btn-complete-sprint px-5 py-2.5 rounded-lg font-headline font-bold text-sm transition-all flex items-center gap-2 bg-surface-container text-on-surface-variant hover:bg-slate-200"
-                     data-id="${sprint.id}"
-                  >
-                     <span class="material-symbols-outlined text-lg">
-                        check_circle
-                     </span>
-
-                     <span>
-                        Concluir
-                     </span>
-                  </button>
-
-               </div>
-
-         </div>
-
-      </section>
-   `;
-
-   /*
-   |--------------------------------------------------------------------------
-   | EVENTS
-   |--------------------------------------------------------------------------
-   */
-
-   bindSprintActions();
-
+  select.innerHTML = priorities.map(p => `
+    <option value="${p}">${formatLabel(p)}</option>
+  `).join("");
 }
 
-/*
-|--------------------------------------------------------------------------
-| RENDER LIST
-|--------------------------------------------------------------------------
-*/
 
-function renderSprintList(sprints = []) {
+// =========================
+// STATUS (FIXO)
+// =========================
+function loadStatus() {
+  const status = ["TODO", "IN_PROGRESS", "DONE"];
 
-   const html = sprints.map(sprint => {
+  const select = document.getElementById("estado_id");
 
-      return `
-         <div
-            class="grid grid-cols-12 items-center px-6 py-4 border-b border-outline-variant/5 hover:bg-slate-50 transition-colors"
-         >
+  select.innerHTML = status.map(s => `
+    <option value="${s}">${formatLabel(s)}</option>
+  `).join("");
+}
 
-            <div class="col-span-1">
 
-               <span class="material-symbols-outlined text-slate-300 text-lg">
-                  drag_indicator
-               </span>
+// =========================
+// FORMAT LABEL
+// =========================
+function formatLabel(value) {
+  return value
+    .replace("_", " ")
+    .toLowerCase()
+    .replace(/\b\w/g, l => l.toUpperCase());
+}
 
-            </div>
 
-            <div class="col-span-4">
+// =========================
+// LOAD TASKS
+// =========================
 
-               <span class="font-bold text-sm text-on-surface">
-                  ${sprint.name}
-               </span>
+// function applyFilters() {
+//   const container = document.querySelector(".space-y-3");
 
-            </div>
+//   const prioridade = document.getElementById("prioridade_id").value;
+//   const estado = document.getElementById("estado_id").value;
 
-            <div class="col-span-3">
+//   let filtered = [...allTasks];
 
-               <span class="
-                  px-2 py-1 rounded-full text-[10px] font-bold
-                  ${getStatusClass(sprint.status)}
-               ">
-                  ${sprint.status}
-               </span>
+//   const search = document.getElementById("search_input")?.value?.toLowerCase();
 
-            </div>
+//   if (search) {
+//     filtered = filtered.filter(t =>
+//       t.title.toLowerCase().includes(search)
+//     );
+//   }
 
-            <div class="col-span-2 text-xs text-on-surface-variant font-medium">
+//   // filtro prioridade
+//   if (prioridade !== "ALL") {
+//     filtered = filtered.filter(t => t.priority === prioridade);
+//   }
 
-               ${formatDate(sprint.start_date)}
+//   // filtro estado
+//   if (estado !== "ALL") {
+//     filtered = filtered.filter(t => t.status === estado);
+//   }
 
-            </div>
+//   // métricas
+//   const total = filtered.length;
+//   const open = filtered.filter(t => t.status !== "DONE").length;
+//   const completed = filtered.filter(t => t.status === "DONE").length;
 
-            <div class="col-span-2 flex justify-end gap-2">
+//   document.getElementById("total_task").innerText = total;
+//   document.getElementById("total_task1").innerText = total;
+//   document.getElementById("open_task").innerText = open;
+//   document.getElementById("completed_task").innerText = completed;
 
-               <button
-                  class="btn-edit-sprint p-2 hover:bg-slate-100 rounded-lg"
-                  data-id="${sprint.id}"
-               >
-                  <span class="material-symbols-outlined text-lg">
-                     edit
-                  </span>
-               </button>
+//   // render
+//   container.innerHTML = filtered.map(task => TaskCard(task)).join("");
+// }
 
-               <button
-                  class="btn-delete-sprint p-2 hover:bg-red-50 rounded-lg text-red-500"
-                  data-id="${sprint.id}"
-               >
-                  <span class="material-symbols-outlined text-lg">
-                     delete
-                  </span>
-               </button>
 
-            </div>
+async function loadTasks() {
+  const tasks = await getBacklogTasks(currentProjectId);
 
-         </div>
-      `;
+  allTasks = tasks;
 
-   }).join("");
+  // applyFilters();
+}
 
-   sprintListContainer.innerHTML = `
-      <div class="grid grid-cols-12 items-center px-6 py-3 bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-200/50">
+// async function loadTasks() {
+//   const tasks = await getBacklogTasks(currentProjectId);
 
-         <div class="col-span-1"></div>
+//   const container = document.querySelector(".space-y-3");
 
-         <div class="col-span-4">
-            Sprint
-         </div>
+//   const total = tasks.length;
+//   const open = tasks.filter(t => t.status !== "DONE").length;
+//   const completed = tasks.filter(t => t.status === "DONE").length;
 
-         <div class="col-span-3">
-            Status
-         </div>
+//   // atualizar HTML
+//   document.getElementById("total_task").innerText = total;
+//   document.getElementById("total_task1").innerText = total;
+//   document.getElementById("open_task").innerText = open;
+//   document.getElementById("completed_task").innerText = completed;
 
-         <div class="col-span-2">
-            Período
-         </div>
+//   container.innerHTML = tasks.map(task => TaskCard(task)).join("");
+// }
 
-         <div class="col-span-2 text-right">
-            Ações
-         </div>
 
+function getPriorityUI(priority) {
+  const map = {
+    HIGH: {
+      color: "text-red-600",
+      icon: "priority_high"
+    },
+    MEDIUM: {
+      color: "text-amber-500",
+      icon: "report_problem"
+    },
+    LOW: {
+      color: "text-green-600",
+      icon: "low_priority"
+    }
+  };
+
+  return map[priority] || {
+    color: "text-slate-400",
+    icon: "remove"
+  };
+}
+
+// =========================
+// TASK CARD TEMPLATE
+// =========================
+
+
+function dragStart(event, id) {
+  draggedTaskId = id;
+}
+
+function dragOver(event) {
+  event.preventDefault(); // permite drop
+}
+
+async function dropTask(event, targetId) {
+  event.preventDefault();
+
+  if (draggedTaskId === targetId) return;
+
+  const container = document.querySelector(".space-y-3");
+  const cards = [...container.children];
+
+  // obter ordem atual
+  const orderedIds = cards.map(card =>
+    parseInt(card.getAttribute("data-id"))
+  );
+
+  // remover item arrastado
+  const fromIndex = orderedIds.indexOf(draggedTaskId);
+  orderedIds.splice(fromIndex, 1);
+
+  // inserir na nova posição
+  const toIndex = orderedIds.indexOf(targetId);
+  orderedIds.splice(toIndex, 0, draggedTaskId);
+
+  // montar payload
+  const payload = orderedIds.map(id => ({ id }));
+
+  // atualizar backend
+  await reorder(payload)
+
+  // reload UI
+  loadTasks();
+}
+
+
+function handleCardClick(event, id) {
+  openTask(id);
+}
+
+function TaskCard(task) {
+
+  const prio = getPriorityUI(task.priority);
+
+  return `
+  <div 
+    onclick="handleCardClick(event, ${task.id})"
+    data-id="${task.id}"
+    draggable="true"
+    ondragstart="dragStart(event, ${task.id})"
+    ondragover="dragOver(event)"
+    ondrop="dropTask(event, ${task.id})"
+    class="task-card bg-white border border-slate-200 rounded-lg p-3 lg:p-4 flex items-center gap-3 lg:gap-4 cursor-pointer transition-all hover:translate-x-1 hover:bg-slate-50 hover:shadow-md">
+
+    <span class="material-symbols-outlined text-slate-300 hidden sm:block">
+      drag_indicator
+    </span>
+
+    <div title="Story points" class="flex-shrink-0 text-[10px] lg:text-xs font-bold text-slate-500 w-12 lg:w-16">
+      ${task.story_points}
+    </div>
+
+    <div class="flex-shrink-0">
+      <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[9px] lg:text-[10px] font-bold rounded uppercase">
+        ${task.status}
+      </span>
+    </div>
+
+    <div class="flex-1 min-w-0">
+      <p class="font-bold text-slate-900 text-xs lg:text-sm truncate">
+        ${task.title}
+      </p>
+    </div>
+
+    <div class="flex items-center gap-2 lg:gap-4">
+
+      <div class="flex items-center gap-1 ${prio.color}">
+        <span class="material-symbols-outlined text-base lg:text-lg">
+          ${prio.icon}
+        </span>
       </div>
 
-      ${html}
-   `;
+      <!-- DELETE (IMPORTANTE: stopPropagation) -->
+      <div class="flex items-center gap-1 text-amber-600">
+        <span onclick="deleteTaskUI(event, ${task.id})"
+          class="material-symbols-outlined text-base lg:text-lg">
+          delete
+        </span>
+      </div>
 
-   bindSprintActions();
-
+    </div>
+  </div>
+  `;
 }
 
-/*
-|--------------------------------------------------------------------------
-| PLANNED
-|--------------------------------------------------------------------------
-*/
+// function TaskCard1(task) {
 
-function renderPlannedSprints(sprints = []) {
+//   return`
+//   <div class="bg-white border border-slate-200 rounded-lg p-3 lg:p-4 flex items-center gap-3 lg:gap-4 cursor-pointer transition-all hover:translate-x-1 hover:bg-slate-50 hover:shadow-md">
+//                         <span class="material-symbols-outlined text-slate-300 hidden sm:block">drag_indicator</span>
+//                         <div class="flex-shrink-0 text-[10px] lg:text-xs font-bold text-slate-500 w-12 lg:w-16">${task.id}</div>
+//                         <div class="flex-shrink-0">
+//                            <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[9px] lg:text-[10px] font-bold rounded uppercase">${task.status}</span>
+//                         </div>
+//                         <div class="flex-1 min-w-0" onclick="openTask(${task.id})">
+//                            <p class="font-bold text-slate-900 text-xs lg:text-sm truncate">${task.title}</p>
+//                         </div>
+//                         <div class="flex items-center gap-2 lg:gap-4">
+//                           <div class="flex items-center gap-1 text-red-600">
+//                               <span class="material-symbols-outlined text-base lg:text-lg">priority_high</span>
+//                            </div>
+//                             <div class="flex items-center gap-1 text-amber-600">
+//                               <span onclick="deleteTaskUI(${task.id})" class="material-symbols-outlined text-base lg:text-lg">delete</span>
+//                            </div>
+//                            <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center border border-dashed border-slate-300">
+//                               <span class="material-symbols-outlined text-[10px] lg:text-[12px] text-slate-400">person_add</span>
+//                            </div>
+//                         </div>
+//                      </div>
+//   `
+// }
 
-   const planned = sprints.filter(
-      item => item.status === "PLANNED"
-   );
-
-   plannedSprintsContainer.innerHTML = planned.map(sprint => {
-
-      return `
-         <article class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 ambient-shadow p-6">
-
-            <div class="flex justify-between items-start mb-4">
-
-               <span class="px-2 py-0.5 bg-slate-100 text-slate-500 text-[9px] font-extrabold tracking-widest rounded-full uppercase">
-                  Planned
-               </span>
-
-            </div>
-
-            <h4 class="text-lg font-headline font-bold text-on-surface mb-1">
-               ${sprint.name}
-            </h4>
-
-            <div class="flex items-center gap-2 text-slate-500 text-xs font-medium mb-6">
-
-               <span class="material-symbols-outlined text-sm">
-                  event
-               </span>
-
-               <span>
-                  ${formatDate(sprint.start_date)}
-               </span>
-
-            </div>
-
-            <button
-               class="btn-start-sprint w-full border-2 border-primary/20 text-primary hover:bg-primary hover:text-white px-4 py-2.5 rounded-lg font-headline font-bold text-xs transition-all duration-200"
-               data-id="${sprint.id}"
-            >
-               Iniciar Sprint
-            </button>
-
-         </article>
-      `;
-
-   }).join("");
-
-   bindSprintActions();
-
-}
-
-/*
-|--------------------------------------------------------------------------
-| COMPLETED
-|--------------------------------------------------------------------------
-*/
-
-function renderCompletedSprints(sprints = []) {
-
-   const completed = sprints.filter(
-      item => item.status === "COMPLETED"
-   );
-
-   completedSprintsContainer.innerHTML = completed.map(sprint => {
-
-      return `
-         <article class="bg-white rounded-xl border border-emerald-100 ambient-shadow p-6">
-
-            <div class="flex justify-between items-start mb-4">
-
-               <span class="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[9px] font-extrabold tracking-widest rounded-full uppercase">
-                  Completed
-               </span>
-
-            </div>
-
-            <h4 class="text-lg font-headline font-bold text-on-surface mb-1">
-               ${sprint.name}
-            </h4>
-
-            <div class="flex items-center gap-2 text-slate-500 text-xs font-medium">
-
-               <span class="material-symbols-outlined text-sm">
-                  history
-               </span>
-
-               <span>
-                  ${formatDate(sprint.end_date)}
-               </span>
-
-            </div>
-
-         </article>
-      `;
-
-   }).join("");
-
+// =========================
+// PRIORITY COLOR
+// =========================
+function priorityColor(priority) {
+  if (priority === "HIGH") return "text-red-600";
+  if (priority === "MEDIUM") return "text-amber-600";
+  return "text-slate-500";
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| CREATE OR UPDATE
-|--------------------------------------------------------------------------
-*/
+// =========================
+// OPEN TASK (DRAWER)
+// =========================
+async function openTask(id) {
+  const tasks = await getById(id);
+  // currentTask = tasks.find(t => t.id === id);
 
-async function handleCreateSprint() {
+  if (!tasks) {
+    console.error("Tarefa não encontrada:", id);
+    return;}
 
-    if(!createSprintName.value)
-      return showNotification("Nome obrigatótio", "error")
-    if(!createSprintProjectId.value)
-      return showNotification("Projecto obrigatório", "error")
-    
-   try {
+  document.querySelector("#task-drawer h4").innerText = tasks.title;
 
-      /*
-      |--------------------------------------------------------------------------
-      | PAYLOAD
-      |--------------------------------------------------------------------------
-      */
+  document.querySelector("textarea").value = tasks.description || "";
 
-      const payload = {
+  loadTaskToForm(tasks)
 
-         name: createSprintName.value,
-
-         project_id: createSprintProjectId.value,
-
-         start_date: createSprintStartDate.value,
-
-         end_date: createSprintEndDate.value,
-
-         goal: createSprintGoal.value,
-
-         copyTasks: copyTasks.checked,
-
-         copyMembers: copyMembers.checked,
-
-         copyEstimatives: copyEstimatives.checked
-
-      };
-
-      console.log("PAYLOAD:", payload);
-
-      /*
-      |--------------------------------------------------------------------------
-      | UPDATE
-      |--------------------------------------------------------------------------
-      */
-
-      if (editingSprintId) {
-
-         await updateSprint(
-            editingSprintId,
-            payload
-         );
-
-      }
-
-      /*
-      |--------------------------------------------------------------------------
-      | CREATE
-      |--------------------------------------------------------------------------
-      */
-
-      else {
-
-         await createSprint(payload);
-
-      }
-
-      /*
-      |--------------------------------------------------------------------------
-      | RESET
-      |--------------------------------------------------------------------------
-      */
-
-      resetSprintForm();
-
-      /*
-      |--------------------------------------------------------------------------
-      | CLOSE
-      |--------------------------------------------------------------------------
-      */
-
-      closeCreateModal();
-
-      /*
-      |--------------------------------------------------------------------------
-      | RELOAD
-      |--------------------------------------------------------------------------
-      */
-
-      await loadSprints();
-
-   } catch (error) {
-
-      console.error(error);
-
-      alert("Erro ao salvar sprint");
-
-   }
-
+  openDrawer();
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| DELETE
-|--------------------------------------------------------------------------
-*/
+// =========================
+// CREATE TASK
+// =========================
+async function addTask() {
+  const title = prompt("Título da tarefa:");
 
-async function confirmArchiveSprint() {
+  if (!title) return;
 
-   if (!sprintToArchive) return;
+  await createTask({
+    title,
+    priority: "MEDIUM",
+    projectId: currentProjectId
+  });
 
-   try {
-
-      await deleteSprint(sprintToArchive);
-
-      closeArchiveModal();
-
-      await loadSprints();
-
-   } catch (error) {
-
-      console.error(error);
-
-      alert("Erro ao arquivar sprint");
-
-   }
-
+  loadTasks();
 }
 
-/*
-|--------------------------------------------------------------------------
-| ACTIONS
-|--------------------------------------------------------------------------
-*/
 
-function bindSprintActions() {
+// =========================
+// DELETE
+// =========================
+async function deleteTaskUI(event, id) {
 
+    event.stopPropagation(); // 🔥 evita abrir o card
 
-     /*
-   |--------------------------------------------------------------------------
-   | EDIT
-   |--------------------------------------------------------------------------
-   */
+    const confirmed = await showConfirm({
+        title: "Eliminar tarefa",
+        message: "Esta ação não pode ser desfeita."
+    });
 
-   document.querySelectorAll(".btn-edit-sprint")
-      .forEach(button => {
-
-         button.onclick = async () => {
-
-            try {
-
-               const sprintId = button.dataset.id;
-
-               await openEditSprint(sprintId);
-
-            } catch (error) {
-
-               console.error(error);
-
-               alert("Erro ao carregar sprint");
-
-            }
-
-         };
-
-      });
-
-
-   /*
-   |--------------------------------------------------------------------------
-   | DELETE
-   |--------------------------------------------------------------------------
-   */
-
-   document.querySelectorAll(".btn-delete-sprint")
-      .forEach(button => {
-
-         button.onclick = () => {
-
-            sprintToArchive = button.dataset.id;
-
-            openArchiveModal();
-
-         };
-
-      });
-
-   /*
-   |--------------------------------------------------------------------------
-   | START
-   |--------------------------------------------------------------------------
-   */
-
-   document.querySelectorAll(".btn-start-sprint")
-      .forEach(button => {
-
-         button.onclick = async () => {
-
-            try {
-
-               await startSprint(button.dataset.id);
-
-               await loadSprints();
-
-            } catch (error) {
-
-               console.error(error);
-
-            }
-
-         };
-
-      });
-
-   /*
-   |--------------------------------------------------------------------------
-   | COMPLETE
-   |--------------------------------------------------------------------------
-   */
-
-   document.querySelectorAll(".btn-complete-sprint")
-      .forEach(button => {
-
-         button.onclick = async () => {
-
-            try {
-
-               await completeSprint(button.dataset.id);
-
-               await loadSprints();
-
-            } catch (error) {
-
-               console.error(error);
-
-            }
-
-         };
-
-      });
-
+    if (!confirmed) return;
+    // continua a lógica
+    await deleteTask(id);
+    console.log("Apagado!");
+  loadTasks();
 }
 
 
 
-async function openEditSprint(id) {
+// =========================
+// UPDATE STATUS
+// =========================
+async function changeStatus(status) {
+  if (!currentTask) return;
 
-   try {
-
-      /*
-      |--------------------------------------------------------------------------
-      | GET SPRINT
-      |--------------------------------------------------------------------------
-      */
-
-      const response = await getSprintById(id);
-
-      console.log("SPRINT:", response);
-
-      const sprint = response.data || response;
-
-      /*
-      |--------------------------------------------------------------------------
-      | SAVE EDIT ID
-      |--------------------------------------------------------------------------
-      */
-
-      editingSprintId = sprint.id;
-
-      /*
-      |--------------------------------------------------------------------------
-      | CHANGE TITLE
-      |--------------------------------------------------------------------------
-      */
-
-      document.querySelector(
-         "#create_sprint_modal h3"
-      ).innerText = "Editar Sprint";
-
-      /*
-      |--------------------------------------------------------------------------
-      | FILL FORM
-      |--------------------------------------------------------------------------
-      */
-
-      createSprintProjectId.value =
-         sprint.project_id || "";
-
-      createSprintName.value =
-         sprint.name || "";
-
-      createSprintStartDate.value =
-         sprint.start_date || "";
-
-      createSprintEndDate.value =
-         sprint.end_date || "";
-
-      createSprintGoal.value =
-         sprint.goal || "";
-
-      /*
-      |--------------------------------------------------------------------------
-      | BUTTON TEXT
-      |--------------------------------------------------------------------------
-      */
-
-      btnCreateSprint.innerText = "Salvar Alterações";
-
-      /*
-      |--------------------------------------------------------------------------
-      | OPEN MODAL
-      |--------------------------------------------------------------------------
-      */
-
-      openCreateModal();
-
-   } catch (error) {
-
-      console.error(error);
-
-   }
-
+  await updateStatus(currentTask.id, status);
+  loadTasks();
 }
 
 
+// =========================
+// UPDATE PRIORITY
+// =========================
+async function changePriority(priority) {
+  if (!currentTask) return;
 
-/*
-|--------------------------------------------------------------------------
-| MODALS
-|--------------------------------------------------------------------------
-*/
-
-function openCreateModal() {
-
-   createSprintModal.classList.remove("hidden");
-
-   createSprintModal.classList.add("flex");
-
+  await updatePriority(currentTask.id, priority);
+  loadTasks();
 }
 
-function closeCreateModal() {
+function prepareFormForCreate() {
 
-   createSprintModal.classList.remove("flex");
+     document.querySelector("#task-drawer h4").innerText = "";
+     currentTask = null;
+     currentTaskId = null; // null = create | id = edit
 
-   createSprintModal.classList.add("hidden");
-
-   resetSprintForm();
-
+     document.getElementById("title_task").value = "";
+     document.getElementById("description_task").value =  "";
+     document.getElementById("user_story_task").value = "";
+     document.getElementById("sprint_task_id").value = "";
+     const container = document.getElementById("lista_criterio_aceitacao");
+     container.innerHTML = "";
+     openDrawer();
 }
 
-function openArchiveModal() {
+ document.getElementById("bt_add_new_task")
+   .addEventListener("click", function () {
+    prepareFormForCreate();
+ });
 
-   archiveSprintModal.classList.remove("hidden");
-
-   archiveSprintModal.classList.add("flex");
-
-}
-
-function closeArchiveModal() {
-
-   archiveSprintModal.classList.remove("flex");
-
-   archiveSprintModal.classList.add("hidden");
-
-}
-
-/*
-|--------------------------------------------------------------------------
-| HELPERS
-|--------------------------------------------------------------------------
-*/
-
-function resetCreateForm() {
-
-   createSprintProjectId.value = "";
-
-   createSprintName.value = "";
-
-   createSprintStartDate.value = "";
-
-   createSprintEndDate.value = "";
-
-   createSprintGoal.value = "";
-
-   copyTasks.checked = true;
-
-   copyMembers.checked = false;
-
-   copyEstimatives.checked = false;
-
-}
-
-function resetSprintForm() {
-
-   editingSprintId = null;
-
-   /*
-   |--------------------------------------------------------------------------
-   | RESET TITLE
-   |--------------------------------------------------------------------------
-   */
-
-   document.querySelector(
-      "#create_sprint_modal h3"
-   ).innerText = "Nova Sprint";
-
-   /*
-   |--------------------------------------------------------------------------
-   | RESET BUTTON
-   |--------------------------------------------------------------------------
-   */
-
-   btnCreateSprint.innerText = "Criar Sprint";
-
-   /*
-   |--------------------------------------------------------------------------
-   | RESET FIELDS
-   |--------------------------------------------------------------------------
-   */
-
-   createSprintProjectId.value = "";
-
-   createSprintName.value = "";
-
-   createSprintStartDate.value = "";
-
-   createSprintEndDate.value = "";
-
-   createSprintGoal.value = "";
-
-   copyTasks.checked = true;
-
-   copyMembers.checked = false;
-
-   copyEstimatives.checked = false;
-
-}
-
-function formatDate(date) {
-
-   if (!date) return "-";
-
-   return new Date(date).toLocaleDateString("pt-PT");
-
-}
-
-function getStatusClass(status) {
-
-   switch (status) {
-
-      case "ACTIVE":
-         return "bg-blue-100 text-blue-700";
-
-      case "PLANNED":
-         return "bg-amber-100 text-amber-700";
-
-      case "COMPLETED":
-         return "bg-emerald-100 text-emerald-700";
-
-      default:
-         return "bg-slate-100 text-slate-700";
-
-   }
-
-}
-
-/*
-|--------------------------------------------------------------------------
-| EVENTS
-|--------------------------------------------------------------------------
-*/
-
-function bindEvents() {
-
-   /*
-   |--------------------------------------------------------------------------
-   | CREATE MODAL
-   |--------------------------------------------------------------------------
-   */
-
-   btnOpenCreateSprintModal?.addEventListener("click", openCreateModal);
-
-   btnOpenCreateSprintModalBottom?.addEventListener(
-      "click",
-      openCreateModal
-   );
-
-   btnCloseCreateSprintModal?.addEventListener(
-      "click",
-      closeCreateModal
-   );
-
-   btnCancelCreateSprint?.addEventListener(
-      "click",
-      closeCreateModal
-   );
-
-   btnCreateSprint?.addEventListener(
-      "click",
-      handleCreateSprint
-   );
  
-   /*
-   |--------------------------------------------------------------------------
-   | ARCHIVE MODAL
-   |--------------------------------------------------------------------------
-   */
+ document
+   .querySelectorAll(".bt_add_new_task")
+   .forEach(button => {
 
-   btnCancelArchive?.addEventListener(
-      "click",
-      closeArchiveModal
-   );
+      button.addEventListener(
+         "click",
+         function () {
 
-   btnConfirmArchive?.addEventListener(
-      "click",
-      confirmArchiveSprint
-   );
+            prepareFormForCreate();
 
+         }
+      );
+
+   });
+
+function openDrawer() {
+    const drawer = document.getElementById('task-drawer');
+    const content = document.getElementById('main-content');
+    drawer.classList.remove('hidden-drawer');
+             
+    if (window.innerWidth >= 1024) {
+      content.style.paddingRight = '420px';
+    } else {
+      document.body.classList.add('overflow-hidden');
+    }
 }
 
-   /*
-|--------------------------------------------------------------------------
-| INIT
-|--------------------------------------------------------------------------
-*/
+function closeDrawer() {
+  const drawer = document.getElementById('task-drawer');
+  const content = document.getElementById('main-content');
+  drawer.classList.add('hidden-drawer');
+        
+  if (window.innerWidth >= 1024) {
+    content.style.paddingRight = '32px'; 
+  } else {
+    document.body.classList.remove('overflow-hidden');
+  }
+}
 
 
-// document.addEventListener("DOMContentLoaded", async () => {
+function addAccCrit(text){
+  
+    const container = document.getElementById("lista_criterio_aceitacao");
 
-//    bindEvents();
-//    await loadSprints();
-//    await loadProjectsSelects();
-//    initSprintFilters();
-// });
+    const item = `
+      <label class="flex items-start gap-3 p-4 bg-white border border-slate-200 rounded-xl">
+        <input type="checkbox" class="mt-0.5">
+        <span>${text}</span>
+      </label>
+    `;
+
+    container.insertAdjacentHTML("afterbegin", item);
+}
 
 
-window.addEventListener(
-   "layout-loaded",
-   async () => {
-      bindEvents();
-      await loadSprints();
-      await loadProjectsSelects();
-      //await loadTeamsFilter();
-      initSprintFilters();
-   }
-);
+
+         function showAcceptanceCriteriaPanel({
+            title = "Adicionar Critérios de Aceitação",
+            placeholder = "Ex: Dado que..., Quando..., Então..."
+         } = {}) {
+
+            return new Promise((resolve) => {
+
+               // overlay
+               const overlay = document.createElement('div');
+               overlay.className = `
+                     fixed inset-0 z-50 flex items-center justify-center
+                     bg-black/50 backdrop-blur-sm
+               `;
+
+               // modal
+               const modal = document.createElement('div');
+               modal.className = `
+                     bg-white rounded-xl shadow-lg w-full max-w-lg p-6
+                     transform transition-all duration-300 scale-95 opacity-0
+               `;
+
+               modal.innerHTML = `
+                     <h2 class="text-lg font-semibold mb-3">${title}</h2>
+
+                     <textarea id="criteria-input"
+                        class="w-full border rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        rows="5"
+                        placeholder="${placeholder}"></textarea>
+
+                     <div class="flex justify-end gap-3 mt-5">
+                        <button id="criteria-cancel"
+                           class="px-4 py-2 rounded-lg border text-gray-600 hover:bg-gray-100">
+                           Cancelar
+                        </button>
+
+                        <button id="criteria-save"
+                           class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">
+                           Guardar
+                        </button>
+                     </div>
+               `;
+
+               overlay.appendChild(modal);
+               document.body.appendChild(overlay);
+
+               const textarea = modal.querySelector('#criteria-input');
+
+               // animação entrada
+               setTimeout(() => {
+                     modal.classList.remove('scale-95', 'opacity-0');
+                     modal.classList.add('scale-100', 'opacity-100');
+                     textarea.focus();
+               }, 10);
+
+               // handlers
+               modal.querySelector('#criteria-save').onclick = () => {
+                     const value = textarea.value.trim();
+
+                     if (!value) {
+                        textarea.classList.add('border-red-500');
+                        textarea.placeholder = "Campo obrigatório...";
+                        return;
+                     }else{
+                        addAccCrit(value);
+                     }
+
+                     close(value);
+               };
+
+               modal.querySelector('#criteria-cancel').onclick = () => {
+                     close(null);
+               };
+
+               overlay.onclick = (e) => {
+                     if (e.target === overlay) close(null);
+               };
+
+               function close(result) {
+                     modal.classList.add('scale-95', 'opacity-0');
+
+                     setTimeout(() => {
+                        overlay.remove();
+                        resolve(result);
+                     }, 200);
+               }
+            });
+         }
+
+         
+ window.addEventListener('DOMContentLoaded', () => {
+    const drawer = document.getElementById('task-drawer');
+    drawer.classList.add('hidden-drawer');
+   //  document.getElementById('main-content').style.paddingRight = '32px'; 
+});
+
+
+
+
+ document.getElementById("bt_add_criterio_aceitacao")
+   .addEventListener("click", function () {
+    showAcceptanceCriteriaPanel()
+ });
+
+// document.getElementById("prioridade_id")
+//   .addEventListener("change", applyFilters);
+
+// document.getElementById("estado_id")
+//   .addEventListener("change", applyFilters);
+
+//  document.getElementById("search_input")
+//   .addEventListener("keyup", applyFilters); 
+
+// =========================
+// INIT
+// =========================
+window.addTask = addTask;
+window.deleteTaskUI = deleteTaskUI;
+window.openTask = openTask;
+window.saveTask = saveTask;
+window.changeStatus = changeStatus;
+window.changePriority = changePriority;
+window.addAccCrit = addAccCrit;
+window.handleCardClick = handleCardClick;
+window.dragOver  = dragOver;
+window.dragStart  = dragStart;
+window.dropTask  = dropTask;
+window.closeDrawer  = closeDrawer;
+window.openDrawer  = openDrawer;
+
+
+//loadTasks();
+loadSelects();

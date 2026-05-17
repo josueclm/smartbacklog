@@ -1,5 +1,6 @@
 import {
   getBacklogTasks,
+  getById,
   createTask,
   deleteTask,
   updateTask,
@@ -566,16 +567,19 @@ function priorityColor(priority) {
 // OPEN TASK (DRAWER)
 // =========================
 async function openTask(id) {
-  const tasks = await getBacklogTasks(currentProjectId);
-  currentTask = tasks.find(t => t.id === id);
+  const tasks = await getById(id);
+  // currentTask = tasks.find(t => t.id === id);
 
-  if (!currentTask) return;
+  if (!tasks) {
+    console.error("Tarefa não encontrada:", id);
+    return;
+  }
 
-  document.querySelector("#task-drawer h4").innerText = currentTask.title;
+  document.querySelector("#task-drawer h4").innerText = tasks.title;
 
-  document.querySelector("textarea").value = currentTask.description || "";
+  document.querySelector("textarea").value = tasks.description || "";
 
-  loadTaskToForm(currentTask)
+  loadTaskToForm(tasks)
 
   openDrawer();
 }

@@ -961,6 +961,7 @@ function renderActiveSprint(sprints = []) {
                <div class="flex items-center gap-3">
 
                   <button
+                     onclick="window.location.href = 'board?sprintId=${sprint.id}'"
                      class="btn-open-board bg-primary text-on-primary px-5 py-2.5 rounded-lg font-headline font-bold text-sm shadow-lg shadow-primary/10 hover:shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-2"
                      data-id="${sprint.id}"
                   >
@@ -1669,14 +1670,6 @@ function resetSprintForm() {
 
 }
 
-function formatDate(date) {
-
-   if (!date) return "-";
-
-   return new Date(date).toLocaleDateString("pt-PT");
-
-}
-
 function getStatusClass(status) {
 
    switch (status) {
@@ -1751,6 +1744,26 @@ function bindEvents() {
 
 }
 
+function bindOpenBoardButtons() {
+   return true;
+
+   document.querySelectorAll(".btn-open-board")
+      .forEach(btn => {
+
+         btn.addEventListener("click", () => {
+
+            const sprintId =
+               btn.dataset.id;
+
+            window.location.href =
+               `board?sprintId=${sprintId}`;
+
+         });
+
+      });
+
+}
+
    /*
 |--------------------------------------------------------------------------
 | INIT
@@ -1773,6 +1786,7 @@ window.addEventListener(
       bindEvents();
       await loadSprints();
       await loadProjectsSelects();
+      bindOpenBoardButtons();
       //await loadTeamsFilter();
       initSprintFilters();
    }
