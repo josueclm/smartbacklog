@@ -186,6 +186,21 @@ try {
   //console.log("Coluna 'goal' já existe na tabela 'sprints'");
 }
 
+
+try {
+
+   db.prepare(`
+      ALTER TABLE projects
+      ADD COLUMN status INTEGER DEFAULT 1
+   `).run();
+
+} catch (err) {
+
+   // coluna já existe
+  //console.log("Coluna 'status' já existe na tabela 'projects'");
+}
+
+
 console.log("Base de dados pronta 🚀");
 
 module.exports = db;

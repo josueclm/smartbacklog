@@ -91,8 +91,8 @@
             </div>
             <!-- Quick Filters -->
             <div class="flex flex-wrap items-center gap-2 lg:gap-4 mb-8">
-               <select id="projeto_id" class="bg-white border-slate-200 rounded-lg text-xs lg:text-sm px-3 lg:px-4 py-2 pr-8 lg:pr-10 focus:ring-blue-500 focus:border-blue-500 text-slate-700">
-                  <option>Projeto:</option>
+               <select id="filter_project_id" class="bg-white border-slate-200 rounded-lg text-xs lg:text-sm px-3 lg:px-4 py-2 pr-8 lg:pr-10 focus:ring-blue-500 focus:border-blue-500 text-slate-700">
+                  <!-- <option>Projeto:</option> -->
                </select>
                <select id="prioridade_id" class="bg-white border-slate-200 rounded-lg text-xs lg:text-sm px-3 lg:px-4 py-2 pr-8 lg:pr-10 focus:ring-blue-500 focus:border-blue-500 text-slate-700">
                   <option value="ALL">Prioridade: Todas</option>
@@ -176,7 +176,10 @@
                   <div class="grid grid-cols-2 gap-3 lg:gap-4">
                      <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm transition-all hover:shadow-md">
                         <span class="text-[9px] lg:text-[10px] uppercase font-bold text-slate-400 block mb-1">Projeto</span>
-                        <p class="text-[11px] lg:text-xs font-semibold text-slate-900" id="text_nome_projecto">Nome do projecto</p>
+                        <!-- <p class="text-[11px] lg:text-xs font-semibold text-slate-900" id="text_nome_projecto">Nome do projecto</p> -->
+                        <select id="create_task_project_id" class="appearance-none w-full bg-transparent border-none p-0 text-[11px] lg:text-xs font-semibold text-slate-900 focus:ring-0 cursor-pointer pr-4">
+                              <option value="" selected="">Selecione o Projecto</option>
+                        </select>
                      </div>
                      <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm transition-all hover:shadow-md relative">
                         <span class="text-[9px] lg:text-[10px] uppercase font-bold text-slate-400 block mb-1" style="">Sprint</span>

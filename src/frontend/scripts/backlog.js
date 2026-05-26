@@ -22,11 +22,26 @@ const API = "http://localhost:3000/api/tasks";
 // =========================
 // STATE
 // =========================
-let currentProjectId = 1;
+// let currentProjectId = 1;
+let currentProjectId =
+   new URLSearchParams(window.location.search)
+      .get("projectId");
+      
 let currentTask = null;
 let currentTaskId = null; // null = create | id = edit
 let allTasks = [];
 let draggedTaskId = null;
+
+
+const filterProjectSelect = document.getElementById(
+   "filter_project_id"
+);
+
+const createTaskProjectSelect = document.getElementById(
+   "create_task_project_id"
+);
+
+
 // =========================
 // GET FORM DATA
 // =========================
@@ -39,6 +54,9 @@ function getFormData() {
   const status = (document.getElementById("estado_task").value);
   const priority = (document.getElementById("prioridade_task").value);
   const story_points = document.getElementById("story_points_task").value;
+  
+  const projecto_id = createTaskProjectSelect.value || currentProjectId;
+
 
   const acceptance_criteria = getAcceptanceCriteria();
 
@@ -51,7 +69,7 @@ function getFormData() {
     status,
     priority,
     sprint_id: sprint_id || null,
-    projectId: 1
+    projectId: projecto_id || currentProjectId
   };
 }
 
@@ -155,6 +173,9 @@ async function loadTaskToForm(task) {
 
   document.getElementById("sprint_task_id").value = task.sprint_id || "";
 
+  // projeto
+  setSelectValue("create_task_project_id", (task.project_id));
+
   // prioridade
   setSelectValue("prioridade_task", (task.priority));
 
@@ -234,29 +255,146 @@ async function loadSelects() {
 // =========================
 // PROJECTS
 // =========================
-async function loadProjects() {
-  try {
-    const select = document.getElementById("projeto_id");
-    if(currentProjectId){
-      const projects = await getProject(currentProjectId);
-      console.log(projects)
-      document.getElementById("text_nome_projecto").innerText = projects.name;
-      document.getElementById("projeto_atual_id").innerText = projects.name;
-      select.innerHTML = `
-        <option value="${projects.id}">${projects.name}</option>
-      `
-    }else{
-      const projects = await getProjects();
-      select.innerHTML = projects.map(p => `
-        <option value="${p.id}">${p.name}</option>
-      `).join("");
-    }
+// async function loadProjects() {
+//   try {
+//     const select = document.getElementById("projeto_id");
+//     if(currentProjectId){
+//       const projects = await getProject(currentProjectId);
+//       console.log(projects)
+//       document.getElementById("text_nome_projecto").innerText = projects.name;
+//       document.getElementById("projeto_atual_id").innerText = projects.name;
+//       select.innerHTML = `
+//         <option value="${projects.id}">${projects.name}</option>
+//       `
+//     }else{
+//       const projects = await getProjects();
+//       select.innerHTML = projects.map(p => `
+//         <option value="${p.id}">${p.name}</option>
+//       `).join("");
+//     }
 
 
 
-  } catch (err) {
-    console.error("Erro ao carregar projetos:", err);
-  }
+//   } catch (err) {
+//     console.error("Erro ao carregar projetos:", err);
+//   }
+// }
+
+
+/*
+|--------------------------------------------------------------------------
+| LOAD PROJECTS
+|--------------------------------------------------------------------------
+*/
+
+export async function loadProjects() {
+
+   try {
+
+      /*
+      |--------------------------------------------------------------------------
+      | REQUEST
+      |--------------------------------------------------------------------------
+      */
+
+      const response = await getProjects();
+
+      console.log("PROJECTS RESPONSE:", response);
+
+      /*
+      |--------------------------------------------------------------------------
+      | NORMALIZE
+      |--------------------------------------------------------------------------
+      */
+
+      let projects = [];
+
+      if (Array.isArray(response)) {
+
+         projects = response;
+
+      } else if (Array.isArray(response.data)) {
+
+         projects = response.data;
+
+      }
+
+      /*
+      |--------------------------------------------------------------------------
+      | RESET
+      |--------------------------------------------------------------------------
+      */
+
+      // filterProjectSelect.innerHTML = `
+      //    <option value="">
+      //       Projeto: Todos
+      //    </option>
+      // `;
+
+      createTaskProjectSelect.innerHTML = `
+        
+      `;
+
+      /*
+      |--------------------------------------------------------------------------
+      | APPEND OPTIONS
+      |--------------------------------------------------------------------------
+      */
+     
+      if(projects.length > 0 && !currentProjectId) {
+         currentProjectId = projects[0].id;
+         await loadTasks();
+      }
+
+      projects.forEach(project => {
+
+         /*
+         |--------------------------------------------------------------------------
+         | FILTER SELECT
+         |--------------------------------------------------------------------------
+         */
+
+         const optionFilter =
+            document.createElement("option");
+
+         optionFilter.value = project.id;
+
+         optionFilter.textContent = project.name;
+
+         filterProjectSelect.appendChild(optionFilter);
+
+         /*
+         |--------------------------------------------------------------------------
+         | CREATE TASK PROJECT SELECT
+         |--------------------------------------------------------------------------
+         */
+
+         const optionCreate =
+            document.createElement("option");
+
+         optionCreate.value = project.id;
+
+         optionCreate.textContent = project.name;
+
+         createTaskProjectSelect.appendChild(optionCreate);
+
+      });
+
+      if (currentProjectId) {
+         filterProjectSelect.value = currentProjectId;
+         // alert("Projetos carregados com sucesso!" + currentProjectId);
+      }
+
+
+   } catch (error) {
+
+      console.error(
+         "ERROR LOAD PROJECT SELECTS:",
+         error
+      );
+
+   }
+
 }
 
 // =========================
@@ -340,6 +478,9 @@ function applyFilters() {
 
   let filtered = [...allTasks];
 
+  console.log("APPLY FILTERS:", { prioridade, estado, search: document.getElementById("search_input").value });
+  console.log(filtered)
+
   const search = document.getElementById("search_input")?.value?.toLowerCase();
 
   if (search) {
@@ -347,6 +488,8 @@ function applyFilters() {
       t.title.toLowerCase().includes(search)
     );
   }
+  
+
 
   // filtro prioridade
   if (prioridade !== "ALL") {
@@ -793,26 +936,40 @@ function addAccCrit(text){
     const drawer = document.getElementById('task-drawer');
     drawer.classList.add('hidden-drawer');
     document.getElementById('main-content').style.paddingRight = '32px'; 
+
+    loadTasks();
+    loadSelects();
+    blindEventListeners();
 });
 
 
-
-
-document.getElementById("bt_add_criterio_aceitacao")
+function blindEventListeners() {
+  document.getElementById("bt_add_criterio_aceitacao")
   .addEventListener("click", function () {
 
     showAcceptanceCriteriaPanel()
 
-});
+  });
 
-document.getElementById("prioridade_id")
-  .addEventListener("change", applyFilters);
+  document.getElementById("prioridade_id")
+    .addEventListener("change", applyFilters);
 
-document.getElementById("estado_id")
-  .addEventListener("change", applyFilters);
+  document.getElementById("estado_id")
+    .addEventListener("change", applyFilters);
 
- document.getElementById("search_input")
-  .addEventListener("keyup", applyFilters); 
+  document.getElementById("search_input")
+    .addEventListener("keyup", applyFilters); 
+
+
+  filterProjectSelect.addEventListener("change", async () => {
+    currentProjectId = filterProjectSelect.value;
+    console.log("Filtrando por projeto: " + currentProjectId);
+    await loadTasks();
+    applyFilters();
+  });
+}
+
+  
 
 // =========================
 // INIT
@@ -832,5 +989,3 @@ window.closeDrawer  = closeDrawer;
 window.openDrawer  = openDrawer;
 
 
-loadTasks();
-loadSelects();

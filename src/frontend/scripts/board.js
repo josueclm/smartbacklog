@@ -9,7 +9,10 @@ import {
   reorder
 } from "../services/taskService.js";
 
-import {getSprints} from "../services/sprintService.js";
+import {
+  getSprints,
+  getSprintById
+} from "../services/sprintService.js";
 
 import {
   getProject,
@@ -22,11 +25,20 @@ const API = "http://localhost:3000/api/tasks";
 // =========================
 // STATE
 // =========================
-let currentProjectId = 1;
+let currentProjectId = null;
 let currentTask = null;
 let currentTaskId = null; // null = create | id = edit
 let allTasks = [];
 let draggedTaskId = null;
+
+let sprintId = new URLSearchParams(window.location.search)
+      .get("sprintId");
+
+const createTaskProjectSelect = document.getElementById(
+   "create_task_project_id"
+);
+
+
 // =========================
 // GET FORM DATA
 // =========================
@@ -40,6 +52,8 @@ function getFormData() {
   const priority = (document.getElementById("prioridade_task").value);
   const story_points = document.getElementById("story_points_task").value;
 
+  const projecto_id = createTaskProjectSelect.value;
+
   const acceptance_criteria = getAcceptanceCriteria();
 
   return {
@@ -51,7 +65,7 @@ function getFormData() {
     status,
     priority,
     sprint_id: sprint_id || null,
-    projectId: 1
+    projectId: projecto_id
   };
 }
 
@@ -146,7 +160,7 @@ async function saveTask() {
 async function loadTaskToForm(task) {
   currentTaskId = task.id;
 
-  console.log(currentTask)
+  console.log(task)
 
   document.getElementById("story_points_task").value = task.story_points || "";
   document.getElementById("title_task").value = task.title || "";
@@ -154,7 +168,12 @@ async function loadTaskToForm(task) {
   document.getElementById("description_task").value = task.description || "";
   document.getElementById("user_story_task").value = task.user_story || "";
 
-  document.getElementById("sprint_task_id").value = task.sprint_id || "";
+  // sprint
+  setSelectValue("sprint_task_id", (task.sprint_id));
+  console.log(task.sprint_id);
+
+  // projeto
+  setSelectValue("create_task_project_id", (task.project_id));
 
   // prioridade
   setSelectValue("prioridade_task", (task.priority));
@@ -235,30 +254,100 @@ async function loadSelects() {
 // =========================
 // PROJECTS
 // =========================
-async function loadProjects() {
-  try {
-    if(currentProjectId){
-      const projects = await getProject(currentProjectId);
-      console.log(projects)
-      document.getElementById("text_nome_projecto").innerText = projects.name;
-      // document.getElementById("projeto_atual_id").innerText = projects.name;
-      // const select = document.getElementById("projeto_id");
-      // select.innerHTML = `
-      //   <option value="${projects.id}">${projects.name}</option>
-      // `
-    }else{
-      const projects = await getProjects();
-      // const select = document.getElementById("projeto_id");
-      // select.innerHTML = projects.map(p => `
-      //   <option value="${p.id}">${p.name}</option>
-      // `).join("");
-    }
+/*
+|--------------------------------------------------------------------------
+| LOAD PROJECTS
+|--------------------------------------------------------------------------
+*/
+
+export async function loadProjects() {
+
+   try {
+
+      /*
+      |--------------------------------------------------------------------------
+      | REQUEST
+      |--------------------------------------------------------------------------
+      */
+
+      const response = await getProjects();
+
+      console.log("PROJECTS RESPONSE:", response);
+
+      /*
+      |--------------------------------------------------------------------------
+      | NORMALIZE
+      |--------------------------------------------------------------------------
+      */
+
+      let projects = [];
+
+      if (Array.isArray(response)) {
+
+         projects = response;
+
+      } else if (Array.isArray(response.data)) {
+
+         projects = response.data;
+
+      }
+
+      /*
+      |--------------------------------------------------------------------------
+      | RESET
+      |--------------------------------------------------------------------------
+      */
+
+      // filterProjectSelect.innerHTML = `
+      //    <option value="">
+      //       Projeto: Todos
+      //    </option>
+      // `;
+
+      createTaskProjectSelect.innerHTML = `
+        
+      `;
+
+      /*
+      |--------------------------------------------------------------------------
+      | APPEND OPTIONS
+      |--------------------------------------------------------------------------
+      */
+     
+      if(projects.length > 0 && !currentProjectId) {
+         currentProjectId = projects[0].id;
+         await loadTasks();
+      }
+
+      projects.forEach(project => {
+
+         /*
+         |--------------------------------------------------------------------------
+         | CREATE TASK PROJECT SELECT
+         |--------------------------------------------------------------------------
+         */
+
+         const optionCreate =
+            document.createElement("option");
+
+         optionCreate.value = project.id;
+
+         optionCreate.textContent = project.name;
+
+         createTaskProjectSelect.appendChild(optionCreate);
+
+      });
 
 
+   } catch (error) {
 
-  } catch (err) {
-    console.error("Erro ao carregar projetos:", err);
-  }
+      console.error(
+         "ERROR LOAD PROJECT SELECTS:",
+         error
+      );
+
+   }
+
 }
 
 // =========================
@@ -374,9 +463,12 @@ function formatLabel(value) {
 //   container.innerHTML = filtered.map(task => TaskCard(task)).join("");
 // }
 
-
 async function loadTasks() {
+
+  const sprint = await getSprintById(sprintId);
+  currentProjectId = sprint.project_id;
   const tasks = await getBacklogTasks(currentProjectId);
+
 
   allTasks = tasks;
 
@@ -815,16 +907,27 @@ function addAccCrit(text){
  window.addEventListener('DOMContentLoaded', () => {
     const drawer = document.getElementById('task-drawer');
     drawer.classList.add('hidden-drawer');
+
+    blindEventListeners();
+    loadSelects();
    //  document.getElementById('main-content').style.paddingRight = '32px'; 
 });
 
 
 
 
- document.getElementById("bt_add_criterio_aceitacao")
-   .addEventListener("click", function () {
-    showAcceptanceCriteriaPanel()
- });
+
+
+
+ function blindEventListeners() {
+  document.getElementById("bt_add_criterio_aceitacao")
+    .addEventListener("click", function () {
+      showAcceptanceCriteriaPanel()
+  });
+
+}
+
+
 
 // document.getElementById("prioridade_id")
 //   .addEventListener("change", applyFilters);
@@ -854,4 +957,3 @@ window.openDrawer  = openDrawer;
 
 
 //loadTasks();
-loadSelects();

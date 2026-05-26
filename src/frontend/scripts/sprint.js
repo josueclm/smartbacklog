@@ -18,8 +18,12 @@ import { getProjects } from "../services/projectService.js";
 | STATE
 |--------------------------------------------------------------------------
 */
+// let currentProjectId = 1;
 
-let currentProjectId = 1;
+let currentProjectId =
+   new URLSearchParams(window.location.search)
+      .get("projectId");
+
 let sprintToArchive = null;
 let editingSprintId = null;
 let currentStatusFilter = "ALL";
@@ -472,8 +476,10 @@ async function applySprintFilters() {
       | RENDER
       |--------------------------------------------------------------------------
       */
+      await loadSprints();
 
       renderSprintList(sprints);
+
 
    } catch (error) {
 
@@ -657,6 +663,10 @@ export async function loadProjectsSelects() {
       | APPEND OPTIONS
       |--------------------------------------------------------------------------
       */
+     
+      if(projects.length > 0 && !currentProjectId) {
+         currentProjectId = projects[0].id;
+      }
 
       projects.forEach(project => {
 
@@ -691,6 +701,12 @@ export async function loadProjectsSelects() {
          createSprintProjectSelect.appendChild(optionCreate);
 
       });
+
+      if (currentProjectId) {
+         filterProjectSelect.value = currentProjectId;
+         // alert("Projetos carregados com sucesso!" + currentProjectId);
+      }
+
 
    } catch (error) {
 
@@ -961,7 +977,7 @@ function renderActiveSprint(sprints = []) {
                <div class="flex items-center gap-3">
 
                   <button
-                     onclick="window.location.href = 'board?sprintId=${sprint.id}'"
+                     onclick="window.location.href = '../board?sprintId=${sprint.id}'"
                      class="btn-open-board bg-primary text-on-primary px-5 py-2.5 rounded-lg font-headline font-bold text-sm shadow-lg shadow-primary/10 hover:shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-2"
                      data-id="${sprint.id}"
                   >
@@ -1756,7 +1772,7 @@ function bindOpenBoardButtons() {
                btn.dataset.id;
 
             window.location.href =
-               `board?sprintId=${sprintId}`;
+               `../board?sprintId=${sprintId}`;
 
          });
 
@@ -1784,8 +1800,8 @@ window.addEventListener(
    "layout-loaded",
    async () => {
       bindEvents();
-      await loadSprints();
       await loadProjectsSelects();
+      await loadSprints();
       bindOpenBoardButtons();
       //await loadTeamsFilter();
       initSprintFilters();

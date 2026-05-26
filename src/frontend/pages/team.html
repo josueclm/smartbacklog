@@ -122,25 +122,80 @@
                   <h2 class="text-3xl font-extrabold text-on-surface tracking-tight mb-1">Team</h2>
                   <p class="text-on-surface-variant text-sm font-medium">Gestão de membros e colaboração da equipa</p>
                </div>
-               <button class="inline-flex items-center justify-center px-5 py-2.5 bg-gradient-to-br from-primary to-primary-container text-white rounded-lg font-bold shadow-lg hover:shadow-primary/20 transition-all active:scale-95" onclick="document.getElementById('member-drawer').classList.remove('drawer-closed'); document.getElementById('member-drawer').classList.add('drawer-open')">
-               <span class="material-symbols-outlined mr-2" data-icon="person_add">person_add</span>
+               <button
+                  id="btn_add_user"
+                  class="inline-flex items-center justify-center px-5 py-2.5 bg-gradient-to-br from-primary to-primary-container text-white rounded-lg font-bold shadow-lg hover:shadow-primary/20 transition-all active:scale-95"
+               > <span class="material-symbols-outlined mr-2" data-icon="person_add">person_add</span>
                + Add Member
                </button>
             </div>
             <!-- Filters Bar -->
             <div class="flex flex-wrap items-center gap-3 mb-8 bg-surface-container-low p-3 rounded-xl">
-               <div class="relative group">
+               <!-- <div class="relative group">
                   <button class="flex items-center space-x-2 bg-surface-container-lowest px-4 py-2 rounded-lg text-sm font-semibold border border-outline-variant/30 hover:border-primary/50 transition-colors">
                   <span>Team: All Teams</span>
                   <span class="material-symbols-outlined text-[18px]" data-icon="expand_more">expand_more</span>
                   </button>
-               </div>
-               <div class="relative group">
-                  <button class="flex items-center space-x-2 bg-surface-container-lowest px-4 py-2 rounded-lg text-sm font-semibold border border-outline-variant/30 hover:border-primary/50 transition-colors">
-                  <span>Role: All Roles</span>
-                  <span class="material-symbols-outlined text-[18px]" data-icon="expand_more">expand_more</span>
-                  </button>
-               </div>
+               </div> -->
+              <!-- ROLE FILTER -->
+            <div class="relative">
+
+               <select
+                  id="filter_role"
+                  class="
+                     bg-surface-container-lowest
+                     px-4
+                     py-2
+                     rounded-lg
+                     text-sm
+                     font-semibold
+                     border
+                     border-outline-variant/30
+                     hover:border-primary/50
+                     transition-colors
+                     appearance-none
+                     pr-10
+                  "
+               >
+
+                  <option value="">
+                     Role: All Roles
+                  </option>
+
+                  <option value="Admin">
+                     Admin
+                  </option>
+
+                  <option value="Scrum Master">
+                     Scrum Master
+                  </option>
+
+                  <option value="Developer">
+                     Developer
+                  </option>
+
+                  <option value="Product Owner">
+                     Product Owner
+                  </option>
+
+               </select>
+
+               <span
+                  class="
+                     material-symbols-outlined
+                     text-[18px]
+                     absolute
+                     right-3
+                     top-1/2
+                     -translate-y-1/2
+                     pointer-events-none
+                     text-slate-400
+                  "
+               >
+                  expand_more
+               </span>
+
+            </div>
                <div class="ml-auto flex items-center bg-surface-container-lowest border border-outline-variant/30 rounded-lg p-1">
                   <button class="p-1.5 text-on-surface-variant hover:bg-surface-container-low rounded-md transition-colors">
                   <span class="material-symbols-outlined text-[20px]" data-icon="grid_view">grid_view</span>
@@ -163,160 +218,12 @@
                            <th class="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant text-right">Actions</th>
                         </tr>
                      </thead>
-                     <tbody class="divide-y divide-outline-variant/10">
-                        <!-- Member Row 1 -->
-                        <tr class="hover:bg-surface-container-low/30 transition-colors group">
-                           <td class="px-6 py-4">
-                              <div class="flex items-center space-x-4">
-                                 <div class="relative flex-shrink-0">
-                                    <img alt="Beatriz Silva" class="w-10 h-10 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrJGxDQqlq2lG562LnNPqAMgEwM-eQmtegBXEUhlhfRmGio7Bmy4bkr1Ir-jWCO_UAMJUS5yHTuDh5RRGqd4A2IgJk4hTeVKp7BNJLIUoJ5aYKlNO92KJgR_aVUgGK5blHVptRjlISYOUtJ-VZAmvB3Tc52Zwm8lEjFJLauqydiptZ9_1xHdXswuDpCbIEsmHmSxvLXAm0B4SOE46b55JQhOM78slJ8t8y7hPKBV9tSA9G3Pubm4frOxxOHUty_6PmbK4sG2JXI4o">
-                                    <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></span>
-                                 </div>
-                                 <div>
-                                    <p class="font-bold text-on-surface text-sm">Beatriz Silva</p>
-                                    <p class="text-xs text-on-surface-variant">beatriz@agileflow.com</p>
-                                 </div>
-                              </div>
-                           </td>
-                           <td class="px-6 py-4">
-                              <span class="text-xs font-semibold px-2.5 py-1 bg-primary-fixed text-primary rounded-full">Frontend Dev</span>
-                           </td>
-                           <td class="px-6 py-4 text-sm font-medium text-on-surface-variant">Core App</td>
-                           <td class="px-6 py-4">
-                              <div class="w-32">
-                                 <div class="flex justify-between items-center mb-1">
-                                    <span class="text-[10px] font-bold text-primary">75%</span>
-                                 </div>
-                                 <div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
-                                    <div class="bg-primary h-full w-3/4"></div>
-                                 </div>
-                              </div>
-                           </td>
-                           <td class="px-6 py-4 text-right">
-                              <div class="flex items-center justify-end space-x-2">
-                                 <button class="text-xs font-bold text-primary hover:underline px-3 py-1.5 rounded-md hover:bg-primary-container/10" onclick="document.getElementById('member-drawer').classList.remove('drawer-closed'); document.getElementById('member-drawer').classList.add('drawer-open')">Ver detalhes</button>
-                                 <div class="relative group/menu">
-                                    <button class="p-1.5 text-outline hover:text-on-surface hover:bg-surface-container-low rounded-full transition-colors">
-                                    <span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span>
-                                    </button>
-                                    <div class="absolute right-0 top-full mt-1 w-40 bg-white border border-outline-variant/20 rounded-lg shadow-xl py-1 z-20 invisible group-focus-within/menu:visible opacity-0 group-focus-within/menu:opacity-100 transition-all">
-                                       <button class="w-full text-left px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low flex items-center">
-                                       <span class="material-symbols-outlined text-[18px] mr-2" data-icon="edit">edit</span> Editar
-                                       </button>
-                                       <button class="w-full text-left px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low flex items-center">
-                                       <span class="material-symbols-outlined text-[18px] mr-2" data-icon="swap_horiz">swap_horiz</span> Mudar de team
-                                       </button>
-                                       <div class="h-[1px] bg-outline-variant/10 my-1"></div>
-                                       <button class="w-full text-left px-4 py-2 text-sm text-error hover:bg-error-container/20 flex items-center">
-                                       <span class="material-symbols-outlined text-[18px] mr-2" data-icon="delete">delete</span> Remover
-                                       </button>
-                                    </div>
-                                 </div>
-                              </div>
-                           </td>
-                        </tr>
-                        <!-- Member Row 2 -->
-                        <tr class="hover:bg-surface-container-low/30 transition-colors group">
-                           <td class="px-6 py-4">
-                              <div class="flex items-center space-x-4">
-                                 <div class="relative flex-shrink-0">
-                                    <img alt="Ricardo Gomes" class="w-10 h-10 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSAvM_ZMYNaoq7S52jF3SuNYUKQLsqoqsvz4J2vdo7pXxsCQEGN2SKWqIj8FiQSArAcK3qVzf3Bcnol7pNUqpMbrYzG4lGBosCMCNnSjamWIm2UZllSk3tjPXHIR0YC4iHcw6SUe3lrb9mR1fZ0AexOtC8XPLnbuKAECFT8c8hx4Sknoa5-RXCbj-UzmOvCubiyR1EaLCI-tGUqme2TFEw0rWYYzTlyapAsltsiCkgNkvTrzBss4Y-R-dmQauB4PI6COMzBHGGtwQ">
-                                    <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></span>
-                                 </div>
-                                 <div>
-                                    <p class="font-bold text-on-surface text-sm">Ricardo Gomes</p>
-                                    <p class="text-xs text-on-surface-variant">ricardo@agileflow.com</p>
-                                 </div>
-                              </div>
-                           </td>
-                           <td class="px-6 py-4">
-                              <span class="text-xs font-semibold px-2.5 py-1 bg-secondary-fixed text-on-secondary-fixed rounded-full">UI/UX Designer</span>
-                           </td>
-                           <td class="px-6 py-4 text-sm font-medium text-on-surface-variant">Design Ops</td>
-                           <td class="px-6 py-4">
-                              <div class="w-32">
-                                 <div class="flex justify-between items-center mb-1">
-                                    <span class="text-[10px] font-bold text-primary">82%</span>
-                                 </div>
-                                 <div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
-                                    <div class="bg-primary h-full w-[82%]"></div>
-                                 </div>
-                              </div>
-                           </td>
-                           <td class="px-6 py-4 text-right">
-                              <div class="flex items-center justify-end space-x-2">
-                                 <button class="text-xs font-bold text-primary hover:underline px-3 py-1.5 rounded-md hover:bg-primary-container/10" onclick="document.getElementById('member-drawer').classList.remove('drawer-closed'); document.getElementById('member-drawer').classList.add('drawer-open')">Ver detalhes</button>
-                                 <div class="relative group/menu">
-                                    <button class="p-1.5 text-outline hover:text-on-surface hover:bg-surface-container-low rounded-full transition-colors">
-                                    <span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span>
-                                    </button>
-                                    <div class="absolute right-0 top-full mt-1 w-40 bg-white border border-outline-variant/20 rounded-lg shadow-xl py-1 z-20 invisible group-focus-within/menu:visible opacity-0 group-focus-within/menu:opacity-100 transition-all">
-                                       <button class="w-full text-left px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low flex items-center">
-                                       <span class="material-symbols-outlined text-[18px] mr-2" data-icon="edit">edit</span> Editar
-                                       </button>
-                                       <button class="w-full text-left px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low flex items-center">
-                                       <span class="material-symbols-outlined text-[18px] mr-2" data-icon="swap_horiz">swap_horiz</span> Mudar de team
-                                       </button>
-                                       <div class="h-[1px] bg-outline-variant/10 my-1"></div>
-                                       <button class="w-full text-left px-4 py-2 text-sm text-error hover:bg-error-container/20 flex items-center">
-                                       <span class="material-symbols-outlined text-[18px] mr-2" data-icon="delete">delete</span> Remover
-                                       </button>
-                                    </div>
-                                 </div>
-                              </div>
-                           </td>
-                        </tr>
-                        <!-- Member Row 3 -->
-                        <tr class="hover:bg-surface-container-low/30 transition-colors group">
-                           <td class="px-6 py-4">
-                              <div class="flex items-center space-x-4">
-                                 <div class="relative flex-shrink-0">
-                                    <img alt="Marta Santos" class="w-10 h-10 rounded-full object-cover grayscale opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_dKFjtvN63aeJzjwOBgrDuykSwwb1IHSidYEpseY-tboTcye_mXffxEyc1Ac0S-e855CzAo6iOeGz0tw3TmbTnXnF7MD1AbS_em-cplXqt1biWTFshSEVzB57b5I76kbDaAeJVDgQ6hsalKm-GDV638--hyY4N0R8CzJYfNj8uSCMzzHJpaj0wDRbas4TFbVsAXVpSyO8A1h-NDLpi1IYbcmnSA325avgXZc6rooTKhOEyulQtNTbUSidL-vdDsSBxHN7ybZe0IU">
-                                    <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-slate-400 border-2 border-white rounded-full"></span>
-                                 </div>
-                                 <div>
-                                    <p class="font-bold text-on-surface text-sm">Marta Santos</p>
-                                    <p class="text-xs text-on-surface-variant">marta@agileflow.com</p>
-                                 </div>
-                              </div>
-                           </td>
-                           <td class="px-6 py-4">
-                              <span class="text-xs font-semibold px-2.5 py-1 bg-tertiary-fixed text-on-tertiary-fixed rounded-full">Product Manager</span>
-                           </td>
-                           <td class="px-6 py-4 text-sm font-medium text-on-surface-variant">Core App</td>
-                           <td class="px-6 py-4">
-                              <div class="w-32">
-                                 <div class="flex justify-between items-center mb-1">
-                                    <span class="text-[10px] font-bold text-primary">37%</span>
-                                 </div>
-                                 <div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
-                                    <div class="bg-primary h-full w-[37%]"></div>
-                                 </div>
-                              </div>
-                           </td>
-                           <td class="px-6 py-4 text-right">
-                              <div class="flex items-center justify-end space-x-2">
-                                 <button class="text-xs font-bold text-primary hover:underline px-3 py-1.5 rounded-md hover:bg-primary-container/10" onclick="document.getElementById('member-drawer').classList.remove('drawer-closed'); document.getElementById('member-drawer').classList.add('drawer-open')">Ver detalhes</button>
-                                 <div class="relative group/menu">
-                                    <button class="p-1.5 text-outline hover:text-on-surface hover:bg-surface-container-low rounded-full transition-colors">
-                                    <span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span>
-                                    </button>
-                                    <div class="absolute right-0 top-full mt-1 w-40 bg-white border border-outline-variant/20 rounded-lg shadow-xl py-1 z-20 invisible group-focus-within/menu:visible opacity-0 group-focus-within/menu:opacity-100 transition-all">
-                                       <button class="w-full text-left px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low flex items-center">
-                                       <span class="material-symbols-outlined text-[18px] mr-2" data-icon="edit">edit</span> Editar
-                                       </button>
-                                       <button class="w-full text-left px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low flex items-center">
-                                       <span class="material-symbols-outlined text-[18px] mr-2" data-icon="swap_horiz">swap_horiz</span> Mudar de team
-                                       </button>
-                                       <div class="h-[1px] bg-outline-variant/10 my-1"></div>
-                                       <button class="w-full text-left px-4 py-2 text-sm text-error hover:bg-error-container/20 flex items-center">
-                                       <span class="material-symbols-outlined text-[18px] mr-2" data-icon="delete">delete</span> Remover
-                                       </button>
-                                    </div>
-                                 </div>
-                              </div>
-                           </td>
-                        </tr>
+                     <tbody
+                        id="users_table_body"
+                        class="divide-y divide-outline-variant/10"
+                     >
+                     </tbody>
+
                      </tbody>
                   </table>
                </div>
@@ -347,8 +254,16 @@
                      <img alt="Profile" class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrJGxDQqlq2lG562LnNPqAMgEwM-eQmtegBXEUhlhfRmGio7Bmy4bkr1Ir-jWCO_UAMJUS5yHTuDh5RRGqd4A2IgJk4hTeVKp7BNJLIUoJ5aYKlNO92KJgR_aVUgGK5blHVptRjlISYOUtJ-VZAmvB3Tc52Zwm8lEjFJLauqydiptZ9_1xHdXswuDpCbIEsmHmSxvLXAm0B4SOE46b55JQhOM78slJ8t8y7hPKBV9tSA9G3Pubm4frOxxOHUty_6PmbK4sG2JXI4o"/>
                      <span class="absolute bottom-1 right-1 w-6 h-6 bg-green-500 border-4 border-white rounded-full"></span>
                   </div>
-                  <h2 class="text-2xl font-bold text-on-surface">Beatriz Silva</h2>
-                  <p class="text-primary font-bold text-sm tracking-wide uppercase mt-1">Frontend Developer</p>
+                  <h2
+                     id="drawer_user_name"
+                     class="text-2xl font-bold text-on-surface"
+                  >
+                  </h2>
+                  <p
+                     id="drawer_user_role"
+                     class="text-primary font-bold text-sm tracking-wide uppercase mt-1"
+                  >
+                  </p>
                   <div class="flex items-center space-x-2 mt-4">
                      <span class="px-3 py-1 bg-surface-container-high rounded-full text-xs font-bold text-on-surface-variant">Core App Team</span>
                   </div>
@@ -381,7 +296,7 @@
                      <div class="space-y-3">
                         <div class="flex items-center space-x-3 text-sm text-on-surface">
                            <span class="material-symbols-outlined text-outline" data-icon="mail">mail</span>
-                           <span>beatriz@agileflow.com</span>
+                           <span id="drawer_user_email"></span>
                         </div>
                         <div class="flex items-center space-x-3 text-sm text-on-surface">
                            <span class="material-symbols-outlined text-outline" data-icon="call">call</span>
@@ -398,8 +313,117 @@
          </div>
       </div>
 
+
+      <!-- USER MODAL -->
+<div
+   id="user_modal"
+   class="fixed inset-0 z-[120] hidden items-center justify-center bg-black/40 backdrop-blur-sm"
+>
+
+   <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6">
+
+      <div class="flex items-center justify-between mb-6">
+
+         <h3
+            id="modal_title"
+            class="text-xl font-bold"
+         >
+            Novo Utilizador
+         </h3>
+
+         <button
+            id="btn_close_modal"
+            class="text-slate-400 hover:text-slate-700"
+         >
+            ✕
+         </button>
+
+      </div>
+
+      <form id="user_form" class="space-y-4">
+
+         <input
+            type="hidden"
+            id="user_id"
+         >
+
+         <div>
+
+            <label class="text-xs font-bold text-slate-500 uppercase">
+               Nome
+            </label>
+
+            <input
+               id="user_name"
+               type="text"
+               class="w-full mt-1 px-4 py-3 rounded-xl border border-slate-200"
+               required
+            >
+
+         </div>
+
+         <div>
+
+            <label class="text-xs font-bold text-slate-500 uppercase">
+               Email
+            </label>
+
+            <input
+               id="user_email"
+               type="email"
+               class="w-full mt-1 px-4 py-3 rounded-xl border border-slate-200"
+               required
+            >
+
+         </div>
+
+         <div>
+
+            <label class="text-xs font-bold text-slate-500 uppercase">
+               Password
+            </label>
+
+            <input
+               id="user_password"
+               type="password"
+               class="w-full mt-1 px-4 py-3 rounded-xl border border-slate-200"
+            >
+
+         </div>
+
+         <div>
+
+            <label class="text-xs font-bold text-slate-500 uppercase">
+               Role
+            </label>
+
+            <select
+               id="user_role"
+               class="w-full mt-1 px-4 py-3 rounded-xl border border-slate-200"
+            >
+               <option value="Admin">Admin</option>
+               <option value="Scrum Master">Scrum Master</option>
+               <option value="Developer">Developer</option>
+               <option value="Product Owner">Product Owner</option>
+            </select>
+
+         </div>
+
+         <button
+            type="submit"
+            class="w-full bg-primary text-white py-3 rounded-xl font-bold"
+         >
+            Guardar
+         </button>
+
+      </form>
+
+   </div>
+
+</div>
+
    <script type="module" src="../scripts/layout.js"></script>
-   <!-- <script type="module" src="../scripts/utils.js"></script>
-   <script type="module" src="../scripts/backlog.js"></script> -->
+   <script type="module" src="../scripts/utils.js"></script>
+   <script type="module" src="../scripts/user.js"></script>
 
 </body>

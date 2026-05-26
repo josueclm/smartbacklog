@@ -7,6 +7,7 @@ const taskRoutes = require('./routes/taskRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const sprintRoutes = require('./routes/sprintRputes');
 const boardRoutes = require('./routes/boardRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 
 const mockAuth = require('./controllers/mokeUser');
@@ -23,9 +24,14 @@ app.use('/api/tasks', taskRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/sprints', sprintRoutes);
 app.use('/api/boards', boardRoutes);
+app.use('/api/users', userRoutes);
 
 // Servir frontend
 app.use(express.static(path.join(__dirname, '../frontend')));
+
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/login/index.html'));
+});
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/pages/backlog.html'));
@@ -35,8 +41,8 @@ app.get('/backlog', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/pages/backlog.html'));
 });
 
-app.get('/home', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/pages/home.html'));
+app.get('/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/pages/dashboard.html'));
 });
 
 app.get('/board', (req, res) => {

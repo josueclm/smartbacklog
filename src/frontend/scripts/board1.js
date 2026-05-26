@@ -18,8 +18,7 @@ import {
 // =========================
 // CONFIG
 // =========================
-const sprintId =
-   new URLSearchParams(window.location.search)
+let sprintId = new URLSearchParams(window.location.search)
       .get("sprintId");
 
 let selectedBacklogTasks = [];

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html class="light" lang="pt-PT">
+   <head>
+      <meta charset="utf-8"/>
+      <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+      <title>Login - Linearis Pro</title>
+      <link href="https://fonts.googleapis.com" rel="preconnect"/>
+      <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+      <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+      <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+      <script id="tailwind-config">
+         tailwind.config = {
+             darkMode: "class",
+             theme: {
+                 extend: {
+                     "colors": {
+                         "primary-container": "#0052cc",
+                         "primary-fixed-dim": "#b2c5ff",
+                         "outline-variant": "#c3c6d6",
+                         "error-container": "#ffdad6",
+                         "error": "#ba1a1a",
+                         "surface-container-high": "#e1e8ff",
+                         "surface": "#faf9ff",
+                         "secondary-fixed": "#d6e3ff",
+                         "on-secondary-fixed-variant": "#374763",
+                         "on-secondary-container": "#51617e",
+                         "on-secondary-fixed": "#091c35",
+                         "on-error-container": "#93000a",
+                         "inverse-surface": "#1d3054",
+                         "tertiary-fixed-dim": "#ffb59b",
+                         "surface-variant": "#d8e2ff",
+                         "surface-container-lowest": "#ffffff",
+                         "primary": "#003d9b",
+                         "primary-dark": "#002a6b",
+                         "secondary-fixed-dim": "#b7c7e8",
+                         "surface-container-highest": "#d8e2ff",
+                         "inverse-primary": "#b2c5ff",
+                         "surface-bright": "#faf9ff",
+                         "surface-dim": "#ccdaff",
+                         "background": "#faf9ff",
+                         "secondary": "#4f5f7b",
+                         "on-error": "#ffffff",
+                         "outline": "#737685",
+                         "on-surface": "#051a3e",
+                         "on-tertiary": "#ffffff",
+                         "on-background": "#051a3e",
+                         "on-tertiary-container": "#ffc6b2",
+                         "primary-fixed": "#dae2ff",
+                         "on-primary-container": "#c4d2ff",
+                         "surface-container": "#e9edff",
+                         "on-primary-fixed": "#001848",
+                         "surface-container-low": "#f1f3ff",
+                         "on-primary": "#ffffff",
+                         "secondary-container": "#cdddff",
+                         "on-tertiary-fixed": "#380d00",
+                         "inverse-on-surface": "#edf0ff",
+                         "tertiary": "#7b2600",
+                         "on-secondary": "#ffffff",
+                         "tertiary-container": "#a33500",
+                         "on-surface-variant": "#434654",
+                         "tertiary-fixed": "#ffdbcf",
+                         "on-tertiary-fixed-variant": "#812800",
+                         "surface-tint": "#0c56d0",
+                         "on-primary-fixed-variant": "#0040a2"
+                     },
+                     "borderRadius": {
+                         "DEFAULT": "0.5rem",
+                         "lg": "1rem",
+                         "xl": "0.75rem",
+                         "full": "9999px"
+                     },
+                     "fontFamily": {
+                         "headline": ["Manrope"],
+                         "body": ["Inter"],
+                         "label": ["Inter"]
+                     },
+                     "animation": {
+                         "fade-in-up": "fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+                         "fade-in": "fade-in 0.4s ease-out forwards",
+                         "fade-out": "fade-out 0.3s ease-in forwards",
+                         "spin-slow": "spin 3s linear infinite"
+                     },
+                     "keyframes": {
+                         "fade-in-up": {
+                             "0%": { opacity: "0", transform: "translateY(20px)" },
+                             "100%": { opacity: "1", transform: "translateY(0)" }
+                         },
+                         "fade-in": {
+                             "0%": { opacity: "0" },
+                             "100%": { opacity: "1" }
+                         },
+                         "fade-out": {
+                             "0%": { opacity: "1" },
+                             "100%": { opacity: "0" }
+                         }
+                     }
+                 },
+             },
+         }
+      </script>
+      <style>
+         .material-symbols-outlined {
+         font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+         }
+         .bg-mesh-soft {
+         background: radial-gradient(circle at 0% 0%, rgba(238, 242, 255, 0.4) 0%, transparent 50%),
+         radial-gradient(circle at 100% 100%, rgba(219, 234, 254, 0.3) 0%, transparent 50%),
+         #fcfdfe;
+         }
+         .transition-standard {
+         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+         }
+         input:focus {
+         box-shadow: 0 0 0 4px rgba(0, 82, 204, 0.08);
+         }
+         .error-field {
+         border-color: #ef4444 !important;
+         background-color: #fef2f2;
+         }
+         .hover-underline::after {
+         content: '';
+         display: block;
+         width: 0;
+         height: 1px;
+         background: currentColor;
+         transition: width 0.2s ease;
+         }
+         .hover-underline:hover::after {
+         width: 100%;
+         }
+      </style>
+   </head>
+   <body class="bg-surface font-body text-on-surface min-h-screen flex flex-col opacity-0 animate-fade-in-up">
+      <main class="flex-grow flex flex-col md:flex-row">
+         <!-- Left Side: Branding Area (Hidden on Mobile) -->
+         <section class="hidden md:flex md:w-5/12 lg:w-1/2 bg-mesh-soft relative overflow-hidden flex-col justify-center px-10 lg:px-20 border-r border-surface-container/30">
+            <div class="absolute -top-20 -left-20 w-96 h-96 bg-primary-container/2 rounded-full blur-[100px]"></div>
+            <div class="absolute bottom-[-10%] right-[-5%] w-[500px] h-[500px] bg-primary-fixed-dim/5 rounded-full blur-[120px]"></div>
+            <div class="relative z-10 space-y-12">
+               <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-gradient-to-br from-primary/80 to-primary-container/80 rounded-lg flex items-center justify-center shadow-sm">
+                     <span class="material-symbols-outlined text-white text-xl" data-icon="account_tree" style="">account_tree</span>
+                  </div>
+                  <h1 class="font-headline font-extrabold text-lg tracking-tight text-on-surface/80" style="">Smartbacklog</h1>
+               </div>
+               <div class="space-y-6 max-w-lg">
+                  <h2 class="font-headline font-bold text-2xl lg:text-[2.35rem] leading-[1.4] text-on-surface" style="">
+                     Gestão ágil de projetos com inteligência integrada
+                  </h2>
+                  <p class="text-[#6B7280] text-lg leading-relaxed max-w-md" style="">
+                     A plataforma definitiva para equipas de alta performance que procuram clareza e velocidade na execução de produtos.
+                  </p>
+               </div>
+               <div class="pt-6 opacity-80">
+                  <div class="flex -space-x-2 mb-4">
+                     <img alt="User avatar" class="w-8 h-8 rounded-full border-2 border-white object-cover shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiDGBXsgr-21VnCQT7StInR6m8ftjL8WDshPPAa6Amta2T_iW0iY8V6k8wd7prIIo_rFR06aVkFuuZskQQWpd2IL9iCfJ28Sqdie4GNiazWRY3Y1RviNyH1JwN8CtM4G6VZHWMiU_FEl1MMcCZQNh3eiIIiXGifUqM-q_Qu738548amV5E0Md4FrE2yFlAfKVrXq_VXZvvDPrVYVGoItIZcSVDUfkZU3aZJaWa1ElTGFmN0JyiR4zs4ylvhhxmwIlL27sWey4EfVE" style=""/>
+                     <img alt="User avatar" class="w-8 h-8 rounded-full border-2 border-white object-cover shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsK0m7sclF0k28hvbGcRt5oXWkpr3LTNHWllB-APexECWWKzc1x8mIMIaq-xvZXfWGwGS6bo8xtZxB9Y6BbEspTTu5Iyu4LOadtt6myZ3etzrYLTviZn2UCUoVlBnrewCIiNJUzY7uN901r6Qhrb2vChfA6EbJB9joOmpg5pUM9NNYiIu8kMNz5dg8rgqKBMpymteJj6-vXU6IHKSgh_lPm4507zbDk889LsE4-JujLxqded_UXGUBIx5YJYD-5JsoFK9qTLfMhBQ" style=""/>
+                     <img alt="User avatar" class="w-8 h-8 rounded-full border-2 border-white object-cover shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYZ9u3Bb80nVqiB3IhEQRYda_nIUQAvZmMqKAAY8DanPZrnhg1UY__jCh3gn258YwTfCSxiHF6g77QG_7QP4U1KI-8gR1uUPAvdtJmqoIs5HoWtvvE2CBgLypotyZsao_sVbzN5YPSF8JxWs7Dn5Mcpny5UzWYe5AOAXqUI0n7qjG30-1r5C2N44ImHjzrt97bv_Ut1ObvQS7SWvIjbAkyMc3e6ll3LKeOrJM_Db_QITVHowNq6ht3tncdiFXDfCdsWDcno-g52rA" style=""/>
+                     <div class="w-8 h-8 rounded-full bg-primary-container/60 border-2 border-white flex items-center justify-center text-white text-[9px] font-bold shadow-sm" style="">+12k</div>
+                  </div>
+                  <div class="space-y-1">
+                     <p class="text-[11px] font-bold text-on-surface/70 tracking-wider uppercase" style="">+12.000 equipas utilizam a plataforma</p>
+                     <p class="text-[11px] text-[#6B7280]/80 font-medium" style="">Equipas de produto, design e engenharia</p>
+                  </div>
+               </div>
+            </div>
+         </section>
+         <!-- Right Side: Login Form -->
+         <section class="flex-grow flex items-center justify-center p-6 md:p-12 lg:p-24 bg-white">
+            <div class="w-full max-w-[420px] space-y-8">
+               <!-- Mobile Logo -->
+               <div class="md:hidden flex flex-col items-center gap-4 mb-10 justify-center">
+                  <div class="w-12 h-12 bg-gradient-to-br from-primary to-primary-container rounded-xl flex items-center justify-center shadow-lg">
+                     <span class="material-symbols-outlined text-white text-3xl" data-icon="account_tree" style="">account_tree</span>
+                  </div>
+                  <span class="font-headline font-extrabold text-2xl text-on-surface" style="">Linearis Pro</span>
+               </div>
+               <div class="text-center">
+                  <h3 class="font-headline font-bold text-3xl text-on-surface tracking-tight" style="">Bem-vindo de volta</h3>
+                  <p class="text-[#6B7280] mt-3 text-sm" style="">Introduza os seus dados para aceder à plataforma.</p>
+               </div>
+               <!-- Error Alert -->
+               <div class="animate-fade-in bg-red-50/50 border border-red-200/50 px-4 py-3 rounded-lg flex items-center justify-between gap-3 shadow-sm transition-all duration-300" id="error-alert">
+                  <div class="flex items-center gap-3">
+                     <span class="material-symbols-outlined text-red-400 text-xl" data-icon="info">info</span>
+                     <p class="text-sm font-normal text-red-600">Credenciais inválidas. Verifique o email e password.</p>
+                  </div>
+                  <button class="text-red-300 hover:text-red-500 transition-standard p-1" onclick="this.closest('#error-alert').classList.add('animate-fade-out'); setTimeout(() =&gt; this.closest('#error-alert').remove(), 300)" style="" type="button">
+                  <span class="material-symbols-outlined text-lg" data-icon="close" style="">close</span>
+                  </button>
+               </div>
+               <form class="space-y-6" id="login-form">
+                  <div class="space-y-2">
+                     <label class="text-[13px] font-semibold text-on-surface-variant block ml-0.5" for="email" style="">Email</label>
+                     <input class="w-full px-5 py-3.5 bg-white border border-[#E5E7EB] rounded-lg focus:ring-4 focus:ring-primary/5 focus:border-primary transition-standard outline-none text-on-surface placeholder:text-outline/40 error-field" id="email" placeholder="seu@email.com" required="" type="email"/>
+                  </div>
+                  <div class="space-y-2">
+                     <label class="text-[13px] font-semibold text-on-surface-variant block ml-0.5" for="password" style="">Password</label>
+                     <div class="relative">
+                        <input class="w-full px-5 py-3.5 bg-white border border-[#E5E7EB] rounded-lg focus:ring-4 focus:ring-primary/5 focus:border-primary transition-standard outline-none text-on-surface placeholder:text-outline/40" id="password" placeholder="••••••••" required="" type="password"/>
+                        <button class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 hover:text-primary transition-standard" style="" type="button">
+                        <span class="material-symbols-outlined text-xl" data-icon="visibility" style="">visibility</span>
+                        </button>
+                     </div>
+                  </div>
+                  <div class="flex items-center justify-between px-0.5">
+                     <label class="flex items-center gap-3 cursor-pointer group" style="">
+                     <input class="w-4 h-4 rounded border-[#E5E7EB] text-primary focus:ring-primary/10 transition-standard cursor-pointer" type="checkbox"/>
+                     <span class="text-xs font-medium text-on-surface-variant group-hover:text-on-surface transition-standard" style="">Lembrar-me</span>
+                     </label>
+                     <a class="text-xs font-semibold text-primary hover:text-primary-dark transition-standard hover-underline inline-block" href="#" style="">Esqueceu a password?</a>
+                  </div>
+                  <button class="w-full py-4 bg-primary hover:bg-primary-dark text-white font-semibold rounded-lg shadow-sm hover:shadow-md active:scale-[0.98] transition-standard relative flex items-center justify-center overflow-hidden group" id="submit-btn" style="" type="submit">
+                     <span class="group-[.loading]:opacity-0 transition-opacity" id="btn-text" style="">Entrar</span>
+                     <div class="hidden absolute items-center justify-center gap-2 group-[.loading]:flex" id="loading-spinner">
+                        <svg class="animate-spin h-5 w-5 text-white" fill="none" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+                           <path class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor"></path>
+                        </svg>
+                        <span class="text-sm font-medium" style="">A entrar...</span>
+                     </div>
+                  </button>
+               </form>
+               <div class="relative py-4">
+                  <div class="absolute inset-0 flex items-center">
+                     <div class="w-full border-t border-[#F1F5F9] border-2"></div>
+                  </div>
+                  <div class="relative flex justify-center text-[10px] uppercase tracking-[0.15em] font-extrabold text-outline/50 bg-white px-6" style="">
+                     ou continuar com
+                  </div>
+               </div>
+               <div class="grid grid-cols-2 gap-4">
+                  <button class="flex items-center justify-center gap-3 px-5 py-3.5 border border-[#E5E7EB] rounded-lg hover:bg-slate-50 hover:border-[#D1D5DB] active:scale-[0.98] transition-standard group" style="">
+                  <img alt="Google logo" class="w-5 h-5 flex-shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBUqraHwz0Ah3BM5DsKNyX7Zs490pr009Zcwr3-yaEEK6v7mDfjNhZUKEO86arD49NskeXhtHCYV4tYNtzJ_Lzod38qkBCRVyuLcpIqNIufZVPRKiZ8WChZuhEjBb2Fw52I3CpsNu3nA58suDcixcsC20NXILNxw-clc3Mw-iU_mFtusJjdsTaq7rM1bqF7hLi8spEXgtP6roAEsoM6BAlaTwAZDe8xhNozXGvC4-UxbCkoRkuKtTZgllF78cEO9lbJmyWp3HWCGQ" style=""/>
+                  <span class="text-sm font-semibold text-on-surface" style="">Google</span>
+                  </button>
+                  <button class="flex items-center justify-center gap-3 px-5 py-3.5 border border-[#E5E7EB] rounded-lg hover:bg-slate-50 hover:border-[#D1D5DB] active:scale-[0.98] transition-standard group" style="">
+                  <span class="material-symbols-outlined text-blue-600 text-[20px] flex-shrink-0" data-icon="grid_view" style='font-variation-settings: "FILL" 1;'>grid_view</span>
+                  <span class="text-sm font-semibold text-on-surface" style="">Microsoft</span>
+                  </button>
+               </div>
+               <div class="text-center pt-4">
+                  <p class="text-[#6B7280] text-sm font-medium" style="">
+                     Não tem conta? 
+                     <a class="text-primary font-bold hover:underline ml-1.5 transition-standard" href="#" style="">Criar conta</a>
+                  </p>
+               </div>
+            </div>
+         </section>
+      </main>
+      <footer class="bg-surface-container-low/20 w-full py-8 px-8 lg:px-24 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-surface-container/30">
+         <div class="font-headline font-bold text-sm text-on-surface/40" style="">
+            Linearis Pro
+         </div>
+         <div class="flex flex-wrap justify-center gap-8 lg:gap-12">
+            <a class="font-label text-[10px] uppercase tracking-widest text-[#6B7280] hover:text-primary transition-standard hover-underline" href="#" style="">Privacy Policy</a>
+            <a class="font-label text-[10px] uppercase tracking-widest text-[#6B7280] hover:text-primary transition-standard hover-underline" href="#" style="">Terms of Service</a>
+            <a class="font-label text-[10px] uppercase tracking-widest text-[#6B7280] hover:text-primary transition-standard hover-underline" href="#" style="">Security</a>
+            <a class="font-label text-[10px] uppercase tracking-widest text-[#6B7280] hover:text-primary transition-standard hover-underline" href="#" style="">Status</a>
+         </div>
+         <div class="font-label text-[10px] uppercase tracking-widest text-outline/30" style="">
+            © 2024 Linearis Pro. Precision Engineering.
+         </div>
+      </footer>
+      <script>
+         const form = document.getElementById('login-form');
+         const inputs = form.querySelectorAll('input');
+         const errorAlert = document.getElementById('error-alert');
+         const submitBtn = document.getElementById('submit-btn');
+         
+         // Remove error states when typing
+         inputs.forEach(input => {
+             input.addEventListener('input', () => {
+                 input.classList.remove('error-field');
+                 if (errorAlert) {
+                     errorAlert.classList.add('animate-fade-out');
+                     setTimeout(() => errorAlert.style.display = 'none', 300);
+                 }
+             });
+         });
+         
+         form.addEventListener('submit', function(e) {
+             e.preventDefault();
+             submitBtn.classList.add('loading');
+             
+             // Simulating API call
+             setTimeout(() => {
+                 submitBtn.classList.remove('loading');
+             }, 2000);
+         });
+      </script>
+   </body>
+</html>
