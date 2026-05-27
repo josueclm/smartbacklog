@@ -7,7 +7,8 @@
                   </div>
                   <div>
                      <h1 class="text-xl font-bold tracking-tight text-slate-900 leading-tight">Smartbacklog</h1>
-                     <p class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Enterprise Workspace</p>
+                     <!-- <p class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Enterprise Workspace</p> -->
+                     <p class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold" id="sidebar_user_name">User Name</p>
                   </div>
                </div>
                <button class="lg:hidden p-1 text-slate-500" onclick="toggleSidebar()">
@@ -16,7 +17,7 @@
             </div>
             <button class="mb-8 w-full py-3 px-4 bg-primary-vibrant text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 hover:bg-blue-700 active:scale-95 transition-all">
             <span class="material-symbols-outlined text-lg">add</span>
-            Create Project
+            <a href="/projects/" class="text-white no-underline">Create Project</a>
             </button>
             <nav class="space-y-1 flex-1">
 
@@ -30,7 +31,7 @@
                   <span>Projects</span>
                </a>
 
-               <a class="sidebar-item active" href="/backlog">
+               <a class="sidebar-item" href="/backlog">
                   <span class="material-symbols-outlined text-[22px]">assignment</span>
                   <span>Backlog</span>
                </a>

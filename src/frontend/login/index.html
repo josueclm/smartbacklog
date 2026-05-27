@@ -153,16 +153,16 @@
                   </p>
                </div>
                <div class="pt-6 opacity-80">
-                  <div class="flex -space-x-2 mb-4">
+                  <!-- <div class="flex -space-x-2 mb-4">
                      <img alt="User avatar" class="w-8 h-8 rounded-full border-2 border-white object-cover shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiDGBXsgr-21VnCQT7StInR6m8ftjL8WDshPPAa6Amta2T_iW0iY8V6k8wd7prIIo_rFR06aVkFuuZskQQWpd2IL9iCfJ28Sqdie4GNiazWRY3Y1RviNyH1JwN8CtM4G6VZHWMiU_FEl1MMcCZQNh3eiIIiXGifUqM-q_Qu738548amV5E0Md4FrE2yFlAfKVrXq_VXZvvDPrVYVGoItIZcSVDUfkZU3aZJaWa1ElTGFmN0JyiR4zs4ylvhhxmwIlL27sWey4EfVE" style=""/>
                      <img alt="User avatar" class="w-8 h-8 rounded-full border-2 border-white object-cover shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsK0m7sclF0k28hvbGcRt5oXWkpr3LTNHWllB-APexECWWKzc1x8mIMIaq-xvZXfWGwGS6bo8xtZxB9Y6BbEspTTu5Iyu4LOadtt6myZ3etzrYLTviZn2UCUoVlBnrewCIiNJUzY7uN901r6Qhrb2vChfA6EbJB9joOmpg5pUM9NNYiIu8kMNz5dg8rgqKBMpymteJj6-vXU6IHKSgh_lPm4507zbDk889LsE4-JujLxqded_UXGUBIx5YJYD-5JsoFK9qTLfMhBQ" style=""/>
                      <img alt="User avatar" class="w-8 h-8 rounded-full border-2 border-white object-cover shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYZ9u3Bb80nVqiB3IhEQRYda_nIUQAvZmMqKAAY8DanPZrnhg1UY__jCh3gn258YwTfCSxiHF6g77QG_7QP4U1KI-8gR1uUPAvdtJmqoIs5HoWtvvE2CBgLypotyZsao_sVbzN5YPSF8JxWs7Dn5Mcpny5UzWYe5AOAXqUI0n7qjG30-1r5C2N44ImHjzrt97bv_Ut1ObvQS7SWvIjbAkyMc3e6ll3LKeOrJM_Db_QITVHowNq6ht3tncdiFXDfCdsWDcno-g52rA" style=""/>
                      <div class="w-8 h-8 rounded-full bg-primary-container/60 border-2 border-white flex items-center justify-center text-white text-[9px] font-bold shadow-sm" style="">+12k</div>
-                  </div>
-                  <div class="space-y-1">
+                  </div> -->
+                  <!-- <div class="space-y-1">
                      <p class="text-[11px] font-bold text-on-surface/70 tracking-wider uppercase" style="">+12.000 equipas utilizam a plataforma</p>
                      <p class="text-[11px] text-[#6B7280]/80 font-medium" style="">Equipas de produto, design e engenharia</p>
-                  </div>
+                  </div> -->
                </div>
             </div>
          </section>
@@ -181,7 +181,7 @@
                   <p class="text-[#6B7280] mt-3 text-sm" style="">Introduza os seus dados para aceder à plataforma.</p>
                </div>
                <!-- Error Alert -->
-               <div class="animate-fade-in bg-red-50/50 border border-red-200/50 px-4 py-3 rounded-lg flex items-center justify-between gap-3 shadow-sm transition-all duration-300" id="error-alert">
+               <div  style="display:none" class="animate-fade-in bg-red-50/50 border border-red-200/50 px-4 py-3 rounded-lg flex items-center justify-between gap-3 shadow-sm transition-all duration-300" id="error-alert">
                   <div class="flex items-center gap-3">
                      <span class="material-symbols-outlined text-red-400 text-xl" data-icon="info">info</span>
                      <p class="text-sm font-normal text-red-600">Credenciais inválidas. Verifique o email e password.</p>
@@ -249,7 +249,7 @@
             </div>
          </section>
       </main>
-      <footer class="bg-surface-container-low/20 w-full py-8 px-8 lg:px-24 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-surface-container/30">
+      <footer style="display: none;" class="bg-surface-container-low/20 w-full py-8 px-8 lg:px-24 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-surface-container/30">
          <div class="font-headline font-bold text-sm text-on-surface/40" style="">
             Linearis Pro
          </div>
@@ -290,5 +290,7 @@
              }, 2000);
          });
       </script>
+
+      <script type="module" src="../scripts/login.js"></script>
    </body>
 </html>

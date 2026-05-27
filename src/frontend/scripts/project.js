@@ -110,10 +110,7 @@ function renderProjects(projects = []) {
 
    projects.forEach(project => {
 
-      const progress =
-         Math.floor(
-            Math.random() * 100
-         );
+      const progress = 0
 
       projectsContainer.innerHTML += `
          <div

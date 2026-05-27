@@ -90,12 +90,36 @@ function mapPriority(label) {
 // GET ACCEPTANCE CRITERIA
 // =========================
 function getAcceptanceCriteria() {
-  const items = document.querySelectorAll("#lista_criterio_aceitacao label span");
 
-  return Array.from(items).map(el => ({
-    text: el.innerText.trim(),
-    done: el.previousElementSibling.checked
-  }));
+   const items =
+      document.querySelectorAll(
+         "#lista_criterio_aceitacao .criteria-item"
+      );
+
+   return Array.from(items).map(item => {
+
+      const checkbox =
+         item.querySelector(
+            'input[type="checkbox"]'
+         );
+
+      const textElement =
+         item.querySelector(
+            ".criteria-text"
+         );
+
+      return {
+
+         text:
+            textElement.innerText.trim(),
+
+         done:
+            checkbox.checked
+
+      };
+
+   });
+
 }
 
 
@@ -184,6 +208,8 @@ async function loadTaskToForm(task) {
   // critérios
   renderAcceptanceCriteria(task.acceptance_criteria);
 
+  loadComments(task.id);
+
   openDrawer();
 }
 
@@ -192,25 +218,144 @@ async function loadTaskToForm(task) {
 // RENDER CRITERIA
 // =========================
 function renderAcceptanceCriteria(json) {
-  const container = document.getElementById("lista_criterio_aceitacao");
 
-  container.innerHTML = "";
+   const container =
+      document.getElementById(
+         "lista_criterio_aceitacao"
+      );
 
-  let items = [];
+   container.innerHTML = "";
 
-  try {
-    items = JSON.parse(json || "[]");
-  } catch {}
+   let items = [];
 
-  items.forEach(item => {
-    container.innerHTML += `
-      <label class="flex items-start gap-3 p-4 bg-white border border-slate-200 rounded-xl">
-        <input type="checkbox" ${item.done ? "checked" : ""}>
-        <span>${item.text}</span>
-      </label>
-    `;
-  });
+   // =========================
+   // PARSE JSON
+   // =========================
+
+   try {
+
+      items =
+         JSON.parse(
+            json || "[]"
+         );
+
+   } catch {
+
+      items = [];
+
+   }
+
+   // =========================
+   // RENDER
+   // =========================
+
+   items.forEach((item, index) => {
+
+      container.innerHTML += `
+         <div
+            class="
+               criteria-item
+               flex
+               items-start
+               gap-3
+               p-4
+               bg-white
+               border
+               border-slate-200
+               rounded-xl
+            "
+            data-index="${index}"
+         >
+
+            <!-- CHECK -->
+
+            <input
+               type="checkbox"
+               class="mt-1"
+               ${item.done ? "checked" : ""}
+            >
+
+            <!-- TEXT -->
+
+            <div class="flex-1">
+
+               <span
+                  class="
+                     criteria-text
+                     text-sm
+                     text-slate-700
+                  "
+               >
+                  ${item.text}
+               </span>
+
+            </div>
+
+            <!-- ACTIONS -->
+
+            <div class="flex items-center gap-2">
+
+               <!-- EDIT -->
+
+               <button
+                  type="button"
+                  class="
+                     btn-edit-criteria
+                     w-8
+                     h-8
+                     flex
+                     items-center
+                     justify-center
+                     rounded-lg
+                     hover:bg-blue-50
+                     text-slate-400
+                     hover:text-blue-600
+                     transition-all
+                  "
+               >
+
+                  <span class="material-symbols-outlined text-[18px]">
+                     edit
+                  </span>
+
+               </button>
+
+               <!-- REMOVE -->
+
+               <button
+                  type="button"
+                  class="
+                     btn-remove-criteria
+                     w-8
+                     h-8
+                     flex
+                     items-center
+                     justify-center
+                     rounded-lg
+                     hover:bg-red-50
+                     text-slate-400
+                     hover:text-red-600
+                     transition-all
+                  "
+               >
+
+                  <span class="material-symbols-outlined text-[18px]">
+                     delete
+                  </span>
+
+               </button>
+
+            </div>
+
+         </div>
+      `;
+
+   });
+
+   bindCriteriaActions();
+
 }
+
 
 function reversePriority(p) {
   if (p === "HIGH") return "Alta";
@@ -799,18 +944,117 @@ function closeDrawer() {
 }
 
 
-function addAccCrit(text){
-  
-    const container = document.getElementById("lista_criterio_aceitacao");
+function addAccCrit(text = "") {
 
-    const item = `
-      <label class="flex items-start gap-3 p-4 bg-white border border-slate-200 rounded-xl">
-        <input type="checkbox" class="mt-0.5">
-        <span>${text}</span>
-      </label>
-    `;
+   const container =
+      document.getElementById(
+         "lista_criterio_aceitacao"
+      );
 
-    container.insertAdjacentHTML("afterbegin", item);
+   const item = `
+      <div
+         class="
+            criteria-item
+            flex
+            items-start
+            gap-3
+            p-4
+            bg-white
+            border
+            border-slate-200
+            rounded-xl
+         "
+      >
+
+         <!-- CHECK -->
+
+         <input
+            type="checkbox"
+            class="mt-1"
+         >
+
+         <!-- TEXT -->
+
+         <div class="flex-1">
+
+            <span
+               class="
+                  criteria-text
+                  text-sm
+                  text-slate-700
+               "
+            >
+               ${text}
+            </span>
+
+         </div>
+
+         <!-- ACTIONS -->
+
+         <div class="flex items-center gap-2">
+
+            <!-- EDIT -->
+
+            <button
+               type="button"
+               class="
+                  btn-edit-criteria
+                  w-8
+                  h-8
+                  flex
+                  items-center
+                  justify-center
+                  rounded-lg
+                  hover:bg-blue-50
+                  text-slate-400
+                  hover:text-blue-600
+                  transition-all
+               "
+            >
+
+               <span class="material-symbols-outlined text-[18px]">
+                  edit
+               </span>
+
+            </button>
+
+            <!-- REMOVE -->
+
+            <button
+               type="button"
+               class="
+                  btn-remove-criteria
+                  w-8
+                  h-8
+                  flex
+                  items-center
+                  justify-center
+                  rounded-lg
+                  hover:bg-red-50
+                  text-slate-400
+                  hover:text-red-600
+                  transition-all
+               "
+            >
+
+               <span class="material-symbols-outlined text-[18px]">
+                  delete
+               </span>
+
+            </button>
+
+         </div>
+
+      </div>
+   `;
+
+   container.insertAdjacentHTML(
+      "afterbegin",
+      item
+   );
+
+   bindCriteriaActions();
+
 }
 
 

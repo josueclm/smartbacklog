@@ -199,27 +199,6 @@ function renderUsers(users = []) {
                ${user.team || 'Team'}
             </td>
 
-            <td class="px-6 py-4">
-
-               <div class="w-32">
-
-                  <div class="flex justify-between items-center mb-1">
-
-                     <span class="text-[10px] font-bold text-primary">
-                        ${user.progress || 0}%
-                     </span>
-
-                  </div>
-
-                  <div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
-
-
-                  </div>
-
-               </div>
-
-            </td>
-
             <td class="px-6 py-4 text-right">
 
                <div class="flex items-center justify-end space-x-2">

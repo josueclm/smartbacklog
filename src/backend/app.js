@@ -1,3 +1,7 @@
+require("dotenv").config({
+   path: require("path").join(__dirname, ".env")
+});
+
 const express = require('express');
 const cors = require('cors');
 require('./config/db');
@@ -8,13 +12,16 @@ const projectRoutes = require('./routes/projectRoutes');
 const sprintRoutes = require('./routes/sprintRputes');
 const boardRoutes = require('./routes/boardRoutes');
 const userRoutes = require('./routes/userRoutes');
+const loginRoutes = require("./routes/loginRoutes");
+const iaRoutes = require("./routes/iaRoutes");
+const commentRoutes = require("./routes/commentRoutes");
 
 
-const mockAuth = require('./controllers/mokeUser');
+// const mockAuth = require('./controllers/mokeUser');
 
 const app = express();
 
-app.use(mockAuth); // aplica a todas as rotas
+// app.use(mockAuth); // aplica a todas as rotas
 
 app.use(cors());
 app.use(express.json());
@@ -25,9 +32,13 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/sprints', sprintRoutes);
 app.use('/api/boards', boardRoutes);
 app.use('/api/users', userRoutes);
+app.use( "/api/login", loginRoutes);
+app.use("/api/ia", iaRoutes);
+app.use("/api/comments", commentRoutes);
 
 // Servir frontend
 app.use(express.static(path.join(__dirname, '../frontend')));
+
 
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/login/index.html'));

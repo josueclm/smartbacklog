@@ -200,6 +200,24 @@ try {
   //console.log("Coluna 'status' já existe na tabela 'projects'");
 }
 
+try {
+
+   db.prepare(`
+      ALTER TABLE comments
+      ADD COLUMN user_id INTEGER
+   `).run();
+
+} catch {}
+
+try {
+
+   db.prepare(`
+      ALTER TABLE comments
+      ADD COLUMN updated_at DATETIME
+   `).run();
+
+} catch {}
+
 
 console.log("Base de dados pronta 🚀");
 
