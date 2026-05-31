@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html class="light" lang="pt-BR">
+   <head>
+      <meta charset="utf-8"/>
+      <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+      <title>Sprints | Linearis Pro</title>
+      <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+      <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+      <script id="tailwind-config">
+         tailwind.config = {
+           darkMode: "class",
+           theme: {
+             extend: {
+               "colors": {
+                       "on-tertiary-container": "#ffc6b2",
+                       "on-tertiary-fixed-variant": "#812800",
+                       "on-surface": "#051a3e",
+                       "on-secondary": "#ffffff",
+                       "on-primary-container": "#c4d2ff",
+                       "tertiary-fixed": "#ffdbcf",
+                       "secondary-fixed-dim": "#b7c7e8",
+                       "secondary": "#4f5f7b",
+                       "on-secondary-fixed": "#091c35",
+                       "inverse-surface": "#1d3054",
+                       "secondary-fixed": "#d6e3ff",
+                       "inverse-primary": "#b2c5ff",
+                       "on-error-container": "#93000a",
+                       "outline-variant": "#c3c6d6",
+                       "primary": "#003d9b",
+                       "on-tertiary": "#ffffff",
+                       "on-primary": "#ffffff",
+                       "on-background": "#051a3e",
+                       "error-container": "#ffdad6",
+                       "background": "#faf9ff",
+                       "primary-container": "#0052cc",
+                       "on-surface-variant": "#434654",
+                       "surface-container": "#e9edff",
+                       "on-secondary-fixed-variant": "#374763",
+                       "surface-container-low": "#f1f3ff",
+                       "inverse-on-surface": "#edf0ff",
+                       "tertiary-container": "#a33500",
+                       "primary-fixed-dim": "#b2c5ff",
+                       "tertiary-fixed-dim": "#ffb59b",
+                       "on-tertiary-fixed": "#380d00",
+                       "surface-variant": "#d8e2ff",
+                       "surface-container-high": "#e1e8ff",
+                       "surface": "#faf9ff",
+                       "on-primary-fixed-variant": "#0040a2",
+                       "surface-dim": "#ccdaff",
+                       "primary-fixed": "#dae2ff",
+                       "secondary-container": "#cdddff",
+                       "surface-container-highest": "#d8e2ff",
+                       "surface-container-lowest": "#ffffff",
+                       "outline": "#737685",
+                       "surface-bright": "#faf9ff",
+                       "on-primary-fixed": "#001848",
+                       "tertiary": "#7b2600",
+                       "surface-tint": "#0c56d0",
+                       "error": "#ba1a1a",
+                       "on-secondary-container": "#51617e",
+                       "on-error": "#ffffff",
+                       "warning": "#f59e0b",
+                       "success": "#10b981"
+               },
+               "borderRadius": {
+                       "DEFAULT": "0.5rem",
+                       "lg": "1rem",
+                       "xl": "1.25rem",
+                       "full": "9999px"
+               },
+               "fontFamily": {
+                       "headline": ["Manrope"],
+                       "body": ["Inter"],
+                       "label": ["Inter"]
+               }
+             },
+           },
+         }
+      </script>
+      <style>
+         .material-symbols-outlined {
+         font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+         vertical-align: middle;
+         }
+         .active-nav-glow {
+         box-shadow: 0 0 20px -5px rgba(0, 61, 155, 0.2);
+         }
+         .custom-gradient {
+         background: linear-gradient(135deg, #003d9b 0%, #0052cc 100%);
+         }
+         .ambient-shadow {
+         box-shadow: 0px 12px 32px rgba(5, 26, 62, 0.06);
+         }
+         .dropdown-menu {
+         display: none;
+         }
+         .group:hover .dropdown-menu {
+         display: block;
+         }
+         [x-cloak] { display: none !important; }
+         .success-glow {
+         box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+         background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+         }
+      </style>
+      <script defer="" src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+   </head>
+   <body class="bg-background text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed" x-data="{ openModal: false, archiveConfirm: false, completeSprintModal: false, progress: 42 }">
+      <!-- Sidebar Navigation -->
+      <aside class="fixed left-0 top-0 h-full w-64 bg-slate-50 dark:bg-slate-950 flex flex-col py-6 px-4 gap-2 z-50">
+         <div class="flex items-center gap-3 px-2 mb-8">
+            <div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center text-on-primary-container">
+               <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">layers</span>
+            </div>
+            <div>
+               <h1 class="text-blue-800 dark:text-blue-300 font-headline font-extrabold text-xl tracking-tight leading-none">Linearis Pro</h1>
+               <p class="text-xs text-slate-500 font-medium">Workspace</p>
+            </div>
+         </div>
+         <nav class="flex-1 flex flex-col gap-1">
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-all duration-200 ease-in-out font-headline font-semibold" href="#">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span>Dashboard</span>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-all duration-200 ease-in-out font-headline font-semibold" href="#">
+            <span class="material-symbols-outlined">view_kanban</span>
+            <span>Sprint Board</span>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-all duration-200 ease-in-out font-headline font-semibold" href="#">
+            <span class="material-symbols-outlined">list_alt</span>
+            <span>Backlog</span>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-slate-100 text-blue-700 dark:text-blue-400 font-headline font-bold border-r-4 border-blue-600 transition-all duration-200 ease-in-out" href="#">
+            <span class="material-symbols-outlined">history_toggle_off</span>
+            <span>Sprints</span>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-all duration-200 ease-in-out font-headline font-semibold" href="#">
+            <span class="material-symbols-outlined">group</span>
+            <span>Team</span>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-all duration-200 ease-in-out font-headline font-semibold" href="#">
+            <span class="material-symbols-outlined">settings</span>
+            <span>Settings</span>
+            </a>
+         </nav>
+         <div class="mt-auto pt-6 border-t border-slate-200/50 flex flex-col gap-4">
+            <button class="custom-gradient text-on-primary py-3 px-4 rounded-lg font-headline font-bold text-sm shadow-md hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-lg">add_circle</span>
+            <span>Create Project</span>
+            </button>
+            <a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 transition-all text-sm font-medium" href="#">
+            <span class="material-symbols-outlined">help_outline</span>
+            <span>Support</span>
+            </a>
+         </div>
+      </aside>
+      <!-- Top AppBar -->
+      <header class="fixed top-0 right-0 left-64 h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl z-40 px-8 flex items-center justify-between border-b border-slate-100">
+         <div class="flex items-center bg-slate-50 dark:bg-slate-800/50 px-4 py-1.5 rounded-full w-96 border border-slate-200/50">
+            <span class="material-symbols-outlined text-slate-400 text-lg mr-2">search</span>
+            <input class="bg-transparent border-none focus:ring-0 text-sm w-full font-label placeholder:text-slate-400" placeholder="Search sprints, tasks..." type="text"/>
+         </div>
+         <div class="flex items-center gap-4">
+            <button class="w-10 h-10 rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors relative">
+            <span class="material-symbols-outlined">notifications</span>
+            <span class="absolute top-2.5 right-2.5 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
+            </button>
+            <button class="text-sm font-medium text-slate-500 hover:text-primary transition-colors">Help</button>
+            <div class="w-px h-6 bg-slate-200"></div>
+            <div class="flex items-center gap-3">
+               <img alt="User profile" class="w-8 h-8 rounded-full border border-slate-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPzm3QF76IA8nsZgUY4yel7VtqLgz8Hpn-rvKkKzQrBl2M6dJ3VqjslcpELb9UeaDlVkzI5ijpNJBlwGlMrnklRysLFfJ2HaMgfYZfwURxBld-upvhR9KwAY_mETKsK_xbQ2pb4YfU55bpEQSKU6MR6hwe_rOxiHirSWEoI-yWaQFsB8xam_vlkdUUvd0htHnuBInVmpg2fMo7GdemYtp6IDAMBntZTALRyWxXCtgApjijHrZkUqaLq7JQqWSIzoEWd4p35UHfLo4"/>
+               <div class="flex flex-col">
+                  <span class="text-xs font-bold leading-none">Alex Rivera</span>
+                  <span class="text-[10px] text-slate-500">Lead Designer</span>
+               </div>
+            </div>
+         </div>
+      </header>
+      <!-- Main Content Canvas -->
+      <main class="ml-64 pt-24 pb-12 px-10 min-h-screen">
+         <!-- Page Header -->
+         <div class="flex flex-col gap-6 mb-10">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+               <div>
+                  <h2 class="text-3xl font-headline font-extrabold text-on-surface tracking-tight">Sprints</h2>
+                  <p class="text-on-surface-variant font-body mt-1">Gestão de ciclos de trabalho do projeto</p>
+               </div>
+               <div class="flex flex-wrap items-center gap-3">
+                  <button @click="openModal = true" class="custom-gradient text-on-primary px-6 py-2.5 rounded-lg font-headline font-bold text-sm shadow-md hover:opacity-95 active:scale-95 transition-all flex items-center gap-2">
+                  <span class="material-symbols-outlined text-lg">add</span>
+                  <span>+ Nova Sprint</span>
+                  </button>
+               </div>
+            </div>
+            <!-- Filters -->
+            <div class="flex flex-wrap items-center justify-between gap-4 py-4 border-y border-slate-200/60">
+               <div class="flex bg-surface-container-low p-1 rounded-lg">
+                  <button class="px-4 py-1.5 rounded-md text-xs font-semibold bg-surface-container-lowest text-primary shadow-sm">Todos</button>
+                  <button class="px-4 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-primary transition-colors">Planned</button>
+                  <button class="px-4 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-primary transition-colors">Active</button>
+                  <button class="px-4 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-primary transition-colors">Completed</button>
+               </div>
+               <div class="flex items-center gap-3">
+                  <div class="relative group">
+                     <button class="flex items-center gap-2 px-3 py-2 bg-white border border-outline-variant/30 rounded-lg text-xs font-medium text-on-surface hover:border-primary/50 transition-colors">
+                     <span>Projeto: Todos</span>
+                     <span class="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+                     </button>
+                  </div>
+                  <div class="relative group">
+                     <button class="flex items-center gap-2 px-3 py-2 bg-white border border-outline-variant/30 rounded-lg text-xs font-medium text-on-surface hover:border-primary/50 transition-colors">
+                     <span>Equipa: Todas</span>
+                     <span class="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+                     </button>
+                  </div>
+                  <div class="w-px h-6 bg-slate-200 mx-1"></div>
+                  <button class="flex items-center gap-2 px-4 py-2 bg-surface-container-lowest border border-outline-variant/30 rounded-lg text-xs font-semibold text-on-surface hover:bg-surface-container-low transition-colors">
+                  <span class="material-symbols-outlined text-lg">sort</span>
+                  <span>Order by: Active first</span>
+                  </button>
+               </div>
+            </div>
+         </div>
+         <!-- Two Column Content Layout -->
+         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <!-- LEFT COLUMN: Active Sprint + Cycle Backlog -->
+            <div class="lg:col-span-8 flex flex-col gap-8">
+               <!-- 1. ACTIVE SPRINT -->
+               <section class="bg-surface-container-lowest rounded-xl border-2 border-primary/20 ambient-shadow relative overflow-hidden group">
+                  <div class="absolute top-0 left-0 w-1.5 h-full bg-primary"></div>
+                  <div class="p-8">
+                     <div class="flex justify-between items-start mb-8">
+                        <div>
+                           <div class="flex items-center gap-2 mb-1">
+                              <span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded border border-blue-100">Linear Core</span>
+                           </div>
+                           <div class="flex items-center gap-3 mb-2">
+                              <h3 class="text-2xl font-headline font-extrabold text-on-surface">Sprint #42</h3>
+                              <span class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-extrabold tracking-widest rounded-full border border-primary/20">ACTIVE</span>
+                              <div class="flex items-center gap-1.5 ml-2 px-2.5 py-1 bg-warning/10 text-warning text-[10px] font-bold rounded-full border border-warning/20">
+                                 <span class="w-2 h-2 rounded-full bg-warning animate-pulse"></span>
+                                 <span>AT RISK</span>
+                              </div>
+                           </div>
+                           <div class="flex items-center gap-2 text-on-surface-variant text-sm font-medium">
+                              <span class="material-symbols-outlined text-sm">calendar_month</span>
+                              <span>May 15 – May 29</span>
+                           </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                           <!-- Team Visualization with status -->
+                           <div class="flex items-center gap-3 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
+                              <div class="flex -space-x-2">
+                                 <div class="relative group/avatar">
+                                    <img alt="Team member" class="w-8 h-8 rounded-full border-2 border-white object-cover ring-2 ring-success" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBk_YbmWYHgVZlX14318vh7L3XIqSewkkjpWGReyZd5GJi9VZPNPcVuDpgKPdNUvCDrP25f2IJOAJ3mhA6yKA87BOW9t5Z7n90mj6JQyJ-VBbXwMH16NXIXsxE7lWqQQKluvUzMUZm2QXRBLnKbPzZ8ZXRMMOB47dbibsHRC-YfLOw97jTO_81JtmhLytEXLjDGZPR-bfiTazxF4-Y8er_5MeuA9iKnibT9PjT3PEoFKzNdiU_qQxZ0nQrHuCXrChQoaGlFqT7UdBo"/>
+                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/avatar:block z-50">
+                                       <div class="bg-slate-900 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap">Status: <span class="text-success font-bold">Optimal</span></div>
+                                    </div>
+                                 </div>
+                                 <div class="relative group/avatar">
+                                    <img alt="Team member" class="w-8 h-8 rounded-full border-2 border-white object-cover ring-2 ring-error" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzWU1_fhpgV5oNNv315FmrmM--Gy07XRSta13N0yNLl1Wvk084ZqpwRQ18fuGVPQPQkqC-_btg3g1Srzr7bmPchl6rc4l3pjwyiVMWbvVVlFL--NnxdMS4HCy2Yh7YFArwI-QFLEtGEZ1X8N6YMTGRIE3u6Y5usnBxTEBm-WBp3KqJicPYLfPQ7t58Z1SFDfdY755iPxDZ_YRGze216dDLYOKm7BUuCANwuevJ7CnRxLi8vfjicyN2dC664pqpiYRMBD4RG9LHwOE"/>
+                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/avatar:block z-50">
+                                       <div class="bg-slate-900 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap">Status: <span class="text-error font-bold">Overloaded</span></div>
+                                    </div>
+                                 </div>
+                                 <div class="relative group/avatar">
+                                    <img alt="Team member" class="w-8 h-8 rounded-full border-2 border-white object-cover ring-2 ring-success" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-XOvrTEveuP9G-bEKZM2w27vEkSI0F9fDacDP9Bh8IEeKgHFDN2_ZzzhVza6RKXxpE3qIaeJTT2d-zGJ_wyrYgayN8KaVVVpSJN-lzZQ6i7m6a8ICI7o-DJDZZU8QLVGzzyFkLzE02ET0Nd70cynLOlHEUhlV-dzw8jYWabBvIb_mV5uf3Uo-Vidy4Yid-2snhn6LERhH5Bcgk8Qm_tKK0HkwAWW59Lxjmw20yb7XghX59pzAk-HuGxnrcxIxhR5nYx6Q2_nQKIs"/>
+                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/avatar:block z-50">
+                                       <div class="bg-slate-900 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap">Status: <span class="text-success font-bold">Optimal</span></div>
+                                    </div>
+                                 </div>
+                              </div>
+                              <span class="text-xs font-bold text-slate-700">8 active members</span>
+                           </div>
+                           <div class="relative group">
+                              <button class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-400 transition-colors">
+                              <span class="material-symbols-outlined">more_horiz</span>
+                              </button>
+                              <div class="dropdown-menu absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-xl border border-slate-100 py-1 z-50">
+                                 <button class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2">
+                                 <span class="material-symbols-outlined text-lg">edit</span> Editar sprint
+                                 </button>
+                                 <button class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2">
+                                 <span class="material-symbols-outlined text-lg">content_copy</span> Duplicar sprint
+                                 </button>
+                                 <button class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2">
+                                 <span class="material-symbols-outlined text-lg">analytics</span> Ver analytics
+                                 </button>
+                                 <div class="h-px bg-slate-100 my-1"></div>
+                                 <button @click="archiveConfirm = true" class="w-full text-left px-4 py-2 text-sm text-error hover:bg-red-50 flex items-center gap-2">
+                                 <span class="material-symbols-outlined text-lg">archive</span> Arquivar sprint
+                                 </button>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <!-- Forecast & Health Card -->
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                        <div class="bg-surface-container-low/50 rounded-xl p-6 border border-outline-variant/10">
+                           <div class="flex justify-between items-end mb-4">
+                              <div>
+                                 <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Status do Progresso</p>
+                                 <span class="text-sm font-semibold text-on-surface">5 / 12 tarefas concluídas</span>
+                              </div>
+                              <div class="text-right">
+                                 <span class="text-2xl font-headline font-extrabold text-primary" x-text="progress + '%'">42%</span>
+                              </div>
+                           </div>
+                           <div class="h-3 w-full bg-surface-container rounded-full overflow-hidden">
+                              <div :style="'width: ' + progress + '%'" class="h-full bg-primary rounded-full transition-all duration-500"></div>
+                           </div>
+                           <div class="mt-4 flex flex-col gap-2">
+                              <button class="flex items-center gap-2 text-error text-[11px] font-bold bg-error/5 px-3 py-2 rounded-lg border border-error/20 hover:bg-error/10 transition-colors text-left">
+                              <span class="material-symbols-outlined text-sm">report_problem</span>
+                              <span>At Risk - Suggestion: Remove 4 story points to meet deadline</span>
+                              </button>
+                           </div>
+                        </div>
+                        <div class="bg-blue-50/30 rounded-xl p-6 border border-blue-100/50 flex flex-col">
+                           <p class="text-[10px] font-bold text-primary uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                              <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">insights</span>
+                              Forecast Detalhado
+                           </p>
+                           <div class="space-y-3 flex-grow">
+                              <div class="flex items-center justify-between">
+                                 <span class="text-xs text-on-surface-variant">Probabilidade de conclusão</span>
+                                 <span class="text-sm font-bold text-on-surface">65%</span>
+                              </div>
+                              <div class="flex items-center justify-between">
+                                 <span class="text-xs text-on-surface-variant">Estimativa de atraso</span>
+                                 <span class="text-sm font-bold text-error">2 dias</span>
+                              </div>
+                              <div class="pt-2 border-t border-blue-100/50 mt-auto">
+                                 <p class="text-[10px] text-blue-700 leading-tight italic mb-1">Based on the velocity of the last 3 sprints.</p>
+                                 <p class="text-[10px] font-bold text-blue-800">Sugerimos reduzir o escopo em 4 story points para atingir a meta.</p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <!-- Metrics Groups -->
+                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <!-- Execution Block -->
+                        <div class="bg-slate-50/50 p-4 rounded-xl border border-slate-100">
+                           <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Execution</p>
+                           <div class="grid grid-cols-2 gap-4">
+                              <div class="flex flex-col">
+                                 <span class="text-xs font-medium text-slate-500 mb-0.5">In Progress</span>
+                                 <span class="text-xl font-headline font-extrabold text-on-surface">7</span>
+                              </div>
+                              <div class="flex flex-col">
+                                 <span class="text-xs font-medium text-success mb-0.5">Completed</span>
+                                 <span class="text-xl font-headline font-extrabold text-success">5</span>
+                              </div>
+                           </div>
+                        </div>
+                        <!-- Risk Block -->
+                        <div class="bg-red-50/30 p-4 rounded-xl border border-red-100/50">
+                           <p class="text-[10px] font-bold text-error uppercase tracking-widest mb-3">Risk</p>
+                           <div class="flex flex-col">
+                              <span class="text-xs font-medium text-slate-500 mb-0.5">Critical/Delayed</span>
+                              <span class="text-xl font-headline font-extrabold text-error">2</span>
+                           </div>
+                        </div>
+                        <!-- Capacity Block -->
+                        <div class="bg-primary/5 p-4 rounded-xl border border-primary/10">
+                           <p class="text-[10px] font-bold text-primary uppercase tracking-widest mb-3">Capacity</p>
+                           <div class="grid grid-cols-2 gap-4">
+                              <div class="flex flex-col">
+                                 <span class="text-xs font-medium text-slate-500 mb-0.5">SP Used</span>
+                                 <span class="text-xl font-headline font-extrabold text-on-surface">34 / 52</span>
+                              </div>
+                              <div class="flex flex-col">
+                                 <span class="text-xs font-medium text-slate-500 mb-0.5">Load Factor</span>
+                                 <span class="text-xl font-headline font-extrabold text-primary">80%</span>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <!-- Actions -->
+                     <div class="flex flex-wrap items-center gap-3">
+                        <button class="bg-primary text-on-primary px-8 py-2.5 rounded-lg font-headline font-bold text-sm shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-2">
+                        <span class="material-symbols-outlined text-lg">grid_view</span>
+                        <span>Abrir Board</span>
+                        </button>
+                        <button class="border border-outline-variant text-on-surface hover:bg-slate-50 px-6 py-2.5 rounded-lg font-headline font-bold text-sm transition-all flex items-center gap-2">
+                        <span class="material-symbols-outlined text-lg">list_alt</span>
+                        <span>Ver Backlog</span>
+                        </button>
+                        <!-- Dynamic Concluir Button - Updated to Neutral Style -->
+                        <button @click="completeSprintModal = true" class="px-6 py-2.5 rounded-lg font-headline font-bold text-sm transition-all flex items-center gap-2 ml-auto bg-white border border-outline-variant text-on-surface hover:bg-slate-50 hover:border-primary/50 shadow-sm">
+                        <span class="material-symbols-outlined text-lg">check_circle</span>
+                        <span>Concluir Sprint</span>
+                        </button>
+                     </div>
+                  </div>
+               </section>
+               <!-- 2. CYCLE BACKLOG -->
+               <section>
+                  <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-200/50">
+                     <h3 class="text-lg font-headline font-bold text-on-surface">Backlog de Ciclos</h3>
+                     <div class="flex items-center gap-4">
+                        <button class="flex items-center gap-2 px-4 py-2 bg-white text-primary border-2 border-primary/20 rounded-lg text-xs font-bold hover:bg-primary/5 hover:border-primary/40 transition-all">
+                        <span class="material-symbols-outlined text-sm">auto_awesome</span>
+                        <span>Planejar automaticamente com IA</span>
+                        </button>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Próximos 6 meses</span>
+                     </div>
+                  </div>
+                  <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden shadow-sm">
+                     <!-- Header row -->
+                     <div class="grid grid-cols-12 items-center px-6 py-3 bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-200/50">
+                        <div class="col-span-1"></div>
+                        <div class="col-span-5">Ciclo</div>
+                        <div class="col-span-3">Período</div>
+                        <div class="col-span-3 text-right">Acções</div>
+                     </div>
+                     <!-- Sprint Row 1 (Suggested) -->
+                     <div class="grid grid-cols-12 items-center px-6 py-4 border-b border-outline-variant/5 hover:bg-slate-50 transition-colors cursor-pointer group bg-purple-50/20">
+                        <div class="col-span-1">
+                           <span class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors text-lg">drag_indicator</span>
+                        </div>
+                        <div class="col-span-5">
+                           <div class="flex flex-col gap-1">
+                              <div class="flex items-center gap-2">
+                                 <span class="font-bold text-sm text-on-surface">Sprint #44</span>
+                                 <span class="px-1.5 py-0.5 bg-slate-100 text-slate-400 text-[7px] font-bold rounded-sm uppercase">Future</span>
+                                 <span class="px-2 py-0.5 bg-purple-100 text-purple-700 text-[8px] font-bold rounded-full border border-purple-200 flex items-center gap-1">
+                                 <span class="material-symbols-outlined text-[10px]" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                                 IA SUGGESTED
+                                 </span>
+                              </div>
+                              <p class="text-[10px] text-purple-600 font-medium">12 tarefas sugeridas baseadas na prioridade do roadmap</p>
+                           </div>
+                        </div>
+                        <div class="col-span-3 text-xs text-on-surface-variant font-medium">Jun 16 – Jun 30</div>
+                        <div class="col-span-3 flex items-center justify-end gap-2">
+                           <button class="flex items-center gap-1.5 px-3 py-1.5 bg-purple-600 text-white rounded-lg text-[10px] font-bold hover:bg-purple-700 transition-all">
+                           <span>Ver Sugestões</span>
+                           </button>
+                           <button class="p-1.5 text-slate-400 hover:text-primary hover:bg-slate-100 rounded-lg transition-all">
+                           <span class="material-symbols-outlined text-lg">edit</span>
+                           </button>
+                        </div>
+                     </div>
+                     <!-- Sprint Row 2 (Empty/Standard) -->
+                     <div class="grid grid-cols-12 items-center px-6 py-4 border-b border-outline-variant/5 hover:bg-slate-50 transition-colors cursor-pointer group">
+                        <div class="col-span-1">
+                           <span class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors text-lg">drag_indicator</span>
+                        </div>
+                        <div class="col-span-5">
+                           <div class="flex items-center gap-2">
+                              <span class="font-bold text-sm text-on-surface">Sprint #45</span>
+                              <span class="px-1.5 py-0.5 bg-slate-100 text-slate-400 text-[7px] font-bold rounded-sm uppercase">Future</span>
+                              <span class="px-2 py-0.5 bg-slate-50 text-slate-400 text-[8px] font-bold rounded-full border border-slate-100 italic">Empty Cycle</span>
+                           </div>
+                        </div>
+                        <div class="col-span-3 text-xs text-on-surface-variant font-medium">Jul 01 – Jul 15</div>
+                        <div class="col-span-3 flex items-center justify-end gap-2">
+                           <button class="p-1.5 text-slate-400 hover:text-primary hover:bg-slate-100 rounded-lg transition-all">
+                           <span class="material-symbols-outlined text-lg">edit</span>
+                           </button>
+                           <button class="p-1.5 text-slate-400 hover:text-primary hover:bg-slate-100 rounded-lg transition-all">
+                           <span class="material-symbols-outlined text-lg">add_circle</span>
+                           </button>
+                        </div>
+                     </div>
+                  </div>
+                  <button @click="openModal = true" class="mt-4 w-full py-3 border-2 border-dashed border-slate-200 rounded-xl text-slate-400 font-bold text-xs hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-all flex items-center justify-center gap-2">
+                  <span class="material-symbols-outlined">add_circle</span>
+                  Planejar Novo Ciclo
+                  </button>
+               </section>
+            </div>
+            <!-- RIGHT COLUMN: Secondaries/Summaries -->
+            <div class="lg:col-span-4 flex flex-col gap-8">
+               <!-- PLANNED SPRINT -->
+               <article class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 ambient-shadow p-6 group hover:-translate-y-1 transition-all duration-300">
+                  <div class="flex justify-between items-start mb-4">
+                     <div class="flex flex-col gap-1">
+                        <span class="text-[9px] font-bold text-blue-600/80 uppercase">Linear Core</span>
+                        <span class="px-2 py-0.5 bg-slate-100 text-slate-500 text-[9px] font-extrabold tracking-widest rounded-full uppercase w-fit">Planned</span>
+                     </div>
+                     <button class="text-slate-300 hover:text-slate-500 transition-colors">
+                     <span class="material-symbols-outlined text-lg">more_vert</span>
+                     </button>
+                  </div>
+                  <h4 class="text-lg font-headline font-bold text-on-surface mb-1">Sprint #43</h4>
+                  <div class="flex items-center gap-2 text-slate-500 text-xs font-medium mb-6">
+                     <span class="material-symbols-outlined text-sm">event</span>
+                     <span>Jun 01 – Jun 15</span>
+                  </div>
+                  <div class="flex flex-col gap-3 mb-8">
+                     <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                           <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-primary">
+                              <span class="material-symbols-outlined text-lg">task_alt</span>
+                           </div>
+                           <span class="text-xs font-semibold text-on-surface-variant">12 tarefas</span>
+                        </div>
+                        <span class="text-[9px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">+12</span>
+                     </div>
+                     <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                           <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400">
+                              <span class="material-symbols-outlined text-lg">hotel_class</span>
+                           </div>
+                           <span class="text-xs font-semibold text-on-surface-variant">34 story points</span>
+                        </div>
+                     </div>
+                  </div>
+                  <button class="w-full border-2 border-primary/20 text-primary hover:bg-primary hover:text-white px-4 py-2.5 rounded-lg font-headline font-bold text-xs transition-all duration-200">
+                  Iniciar Sprint
+                  </button>
+               </article>
+               <!-- COMPLETED SPRINT (Insights) -->
+               <article class="bg-white rounded-xl border border-emerald-100 ambient-shadow p-6 group hover:-translate-y-1 transition-all duration-300">
+                  <div class="flex justify-between items-start mb-4">
+                     <div class="flex flex-col gap-1">
+                        <span class="text-[9px] font-bold text-emerald-600/80 uppercase">Linear Core</span>
+                        <span class="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[9px] font-extrabold tracking-widest rounded-full uppercase w-fit">Completed Insights</span>
+                     </div>
+                     <button class="text-slate-300 hover:text-slate-500">
+                     <span class="material-symbols-outlined text-lg">more_vert</span>
+                     </button>
+                  </div>
+                  <h4 class="text-lg font-headline font-bold text-on-surface mb-1">Sprint #41</h4>
+                  <div class="flex items-center gap-2 text-slate-500 text-xs font-medium mb-4">
+                     <span class="material-symbols-outlined text-sm">history</span>
+                     <span>May 01 – May 14</span>
+                  </div>
+                  <div class="space-y-2 mb-6">
+                     <div class="flex items-center justify-between p-2 bg-emerald-50/40 rounded-lg border border-emerald-50 text-[10px] font-bold text-emerald-800">
+                        <span>VELOCITY</span>
+                        <span>15 tarefas</span>
+                     </div>
+                     <div class="flex items-center justify-between p-2 bg-blue-50/40 rounded-lg border border-blue-50 text-[10px] font-bold text-blue-800">
+                        <span>PERFORMANCE</span>
+                        <span>+10% vs ant.</span>
+                     </div>
+                  </div>
+                  <button class="w-full text-slate-500 hover:text-primary px-4 py-2 rounded-lg font-headline font-bold text-xs transition-all flex items-center justify-center gap-2">
+                  <span>Relatório completo</span>
+                  <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                  </button>
+               </article>
+               <!-- Activity Feed Mini -->
+               <div class="bg-slate-50/50 rounded-xl p-6 border border-slate-200/50">
+                  <h5 class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-4">Recentes</h5>
+                  <div class="flex flex-col gap-4">
+                     <div class="flex gap-3">
+                        <div class="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 shrink-0"></div>
+                        <p class="text-[11px] text-slate-600 leading-relaxed">
+                           <span class="font-bold text-slate-800">Mariana</span> moveu <span class="italic font-medium">LP-102</span> para concluído.
+                        </p>
+                     </div>
+                     <div class="flex gap-3">
+                        <div class="w-1.5 h-1.5 rounded-full bg-warning mt-1.5 shrink-0"></div>
+                        <p class="text-[11px] text-slate-600 leading-relaxed">
+                           <span class="font-bold text-slate-800">Sprint #42</span> identificado risco de atraso.
+                        </p>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </main>
+      <!-- Background Decoration -->
+      <div class="fixed top-0 right-0 -z-10 w-1/2 h-1/2 bg-blue-50/30 blur-[120px] pointer-events-none"></div>
+      <!-- Nova Sprint Modal -->
+      <div class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" x-cloak="" x-show="openModal" x-transition:enter="transition ease-out duration-300" x-transition:enter-end="opacity-100" x-transition:enter-start="opacity-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-end="opacity-0" x-transition:leave-start="opacity-100">
+         <div @click.away="openModal = false" class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+               <h3 class="text-xl font-headline font-extrabold text-on-surface tracking-tight">Nova Sprint</h3>
+               <button @click="openModal = false" class="text-slate-400 hover:text-slate-600 transition-colors">
+               <span class="material-symbols-outlined">close</span>
+               </button>
+            </div>
+            <!-- Modal Body / Form -->
+            <div class="p-6 space-y-5">
+               <div>
+                  <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5">Projeto</label>
+                  <select class="w-full bg-slate-50 border-slate-200 rounded-lg py-2.5 px-4 text-sm font-medium focus:ring-primary focus:border-primary">
+                     <option>Linearis Mobile App</option>
+                     <option>Design System Revamp</option>
+                     <option>API Gateway Integration</option>
+                  </select>
+               </div>
+               <div>
+                  <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5">Nome da Sprint</label>
+                  <input class="w-full bg-slate-50 border-slate-200 rounded-lg py-2.5 px-4 text-sm font-medium focus:ring-primary focus:border-primary" placeholder="Ex: Sprint #46" type="text"/>
+               </div>
+               <div class="grid grid-cols-2 gap-4">
+                  <div>
+                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5">Data de Início</label>
+                     <input class="w-full bg-slate-50 border-slate-200 rounded-lg py-2.5 px-4 text-sm font-medium focus:ring-primary focus:border-primary" type="date"/>
+                  </div>
+                  <div>
+                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5">Data de Término</label>
+                     <input class="w-full bg-slate-50 border-slate-200 rounded-lg py-2.5 px-4 text-sm font-medium focus:ring-primary focus:border-primary" type="date"/>
+                  </div>
+               </div>
+               <div class="pt-2">
+                  <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Opções de Duplicação</label>
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                     <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+                     <input checked="" class="rounded text-primary focus:ring-primary w-4 h-4" type="checkbox"/>
+                     <span class="text-xs font-semibold text-on-surface">Copiar tarefas</span>
+                     </label>
+                     <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+                     <input class="rounded text-primary focus:ring-primary w-4 h-4" type="checkbox"/>
+                     <span class="text-xs font-semibold text-on-surface">Copiar membros</span>
+                     </label>
+                     <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+                     <input class="rounded text-primary focus:ring-primary w-4 h-4" type="checkbox"/>
+                     <span class="text-xs font-semibold text-on-surface">Copiar estimativas</span>
+                     </label>
+                  </div>
+               </div>
+               <div>
+                  <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5">Objetivo da Sprint (Opcional)</label>
+                  <textarea class="w-full bg-slate-50 border-slate-200 rounded-lg py-2.5 px-4 text-sm font-medium focus:ring-primary focus:border-primary" placeholder="O que pretendemos alcançar..." rows="3"></textarea>
+               </div>
+            </div>
+            <!-- Modal Footer -->
+            <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-end gap-3">
+               <button @click="openModal = false" class="px-4 py-2 text-sm font-bold text-slate-500 hover:text-slate-700 transition-colors">Fechar</button>
+               <button @click="openModal = false" class="custom-gradient text-on-primary px-6 py-2.5 rounded-lg font-headline font-bold text-sm shadow-md hover:opacity-95 active:scale-95 transition-all">Criar Sprint</button>
+            </div>
+         </div>
+      </div>
+      <!-- Concluir Sprint Confirmation Modal -->
+      <div class="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" x-cloak="" x-show="completeSprintModal" x-transition:enter="transition ease-out duration-300" x-transition:enter-end="opacity-100" x-transition:enter-start="opacity-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-end="opacity-0" x-transition:leave-start="opacity-100">
+         <div @click.away="completeSprintModal = false" class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+            <!-- Modal Header -->
+            <div class="px-6 py-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50">
+               <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                     <span class="material-symbols-outlined text-2xl">check_circle</span>
+                  </div>
+                  <div>
+                     <h3 class="text-lg font-headline font-extrabold text-on-surface leading-tight">Concluir Sprint #42</h3>
+                     <p class="text-xs text-on-surface-variant font-medium">Ciclo: Linear Core</p>
+                  </div>
+               </div>
+               <button @click="completeSprintModal = false" class="text-slate-400 hover:text-slate-600 transition-colors">
+               <span class="material-symbols-outlined">close</span>
+               </button>
+            </div>
+            <!-- Modal Body -->
+            <div class="p-6 space-y-6">
+               <!-- Summary of work -->
+               <div class="bg-blue-50/50 rounded-lg p-4 border border-blue-100 flex items-center justify-between">
+                  <div class="flex flex-col">
+                     <span class="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Resumo da Entrega</span>
+                     <span class="text-sm font-bold text-on-surface mt-1">5 de 12 tarefas concluídas</span>
+                  </div>
+                  <div class="text-right">
+                     <span class="text-xl font-headline font-extrabold text-primary">42%</span>
+                     <div class="text-[10px] text-on-surface-variant">Concluído</div>
+                  </div>
+               </div>
+               <!-- Unfinished tasks action -->
+               <div>
+                  <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Tarefas Pendentes (7)</label>
+                  <p class="text-xs text-on-surface-variant mb-4 leading-relaxed">Existem 7 tarefas que não foram finalizadas. O que você deseja fazer com elas?</p>
+                  <div class="space-y-3" x-data="{ action: 'next' }">
+                     <label :class="action === 'next' ? 'border-primary bg-primary/5 ring-1 ring-primary/20' : 'border-slate-200 hover:bg-slate-50'" class="flex items-start gap-4 p-4 border rounded-xl cursor-pointer transition-all">
+                        <input class="mt-1 text-primary focus:ring-primary" name="unfinished-action" type="radio" value="next" x-model="action"/>
+                        <div>
+                           <span class="block text-sm font-bold text-on-surface mb-0.5">Mover para a Próxima Sprint</span>
+                           <span class="block text-xs text-on-surface-variant">Transferir automaticamente para a Sprint #43 (Inicia em 01 Jun)</span>
+                        </div>
+                     </label>
+                     <label :class="action === 'backlog' ? 'border-primary bg-primary/5 ring-1 ring-primary/20' : 'border-slate-200 hover:bg-slate-50'" class="flex items-start gap-4 p-4 border rounded-xl cursor-pointer transition-all">
+                        <input class="mt-1 text-primary focus:ring-primary" name="unfinished-action" type="radio" value="backlog" x-model="action"/>
+                        <div>
+                           <span class="block text-sm font-bold text-on-surface mb-0.5">Mover para o Backlog</span>
+                           <span class="block text-xs text-on-surface-variant">As tarefas ficarão disponíveis para planejamento futuro</span>
+                        </div>
+                     </label>
+                  </div>
+               </div>
+               <!-- Warning notice -->
+               <div class="flex gap-3 p-3 bg-amber-50 rounded-lg border border-amber-100 items-start">
+                  <span class="material-symbols-outlined text-amber-600 text-sm mt-0.5">info</span>
+                  <p class="text-[11px] text-amber-800 leading-tight">Ao concluir a sprint, as métricas de velocidade da equipe serão atualizadas e o board será limpo para o próximo ciclo.</p>
+               </div>
+            </div>
+            <!-- Modal Footer -->
+            <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-end gap-3">
+               <button @click="completeSprintModal = false" class="px-4 py-2 text-sm font-bold text-slate-500 hover:text-slate-700 transition-colors">Cancelar</button>
+               <button @click="completeSprintModal = false" class="bg-primary text-on-primary px-6 py-2.5 rounded-lg font-headline font-bold text-sm shadow-md hover:bg-primary-container transition-all flex items-center gap-2">
+               <span>Finalizar Sprint</span>
+               <span class="material-symbols-outlined text-sm">arrow_forward</span>
+               </button>
+            </div>
+         </div>
+      </div>
+      <!-- Archive Confirmation Modal -->
+      <div class="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" x-cloak="" x-show="archiveConfirm" x-transition:enter="transition ease-out duration-300" x-transition:enter-end="opacity-100" x-transition:enter-start="opacity-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-end="opacity-0" x-transition:leave-start="opacity-100">
+         <div @click.away="archiveConfirm = false" class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-lg shadow-2xl overflow-hidden">
+            <div class="p-6">
+               <div class="w-12 h-12 bg-red-50 text-error rounded-full flex items-center justify-center mb-4">
+                  <span class="material-symbols-outlined text-3xl">warning</span>
+               </div>
+               <h3 class="text-lg font-headline font-extrabold text-on-surface mb-2">Arquivar Sprint #42?</h3>
+               <p class="text-sm text-on-surface-variant mb-6 leading-relaxed">Esta ação não pode ser desfeita. A sprint será removida do board e as tarefas não finalizadas retornarão ao backlog.</p>
+               <div class="flex gap-3">
+                  <button @click="archiveConfirm = false" class="flex-1 px-4 py-2.5 bg-slate-100 text-slate-700 font-bold text-sm rounded-lg hover:bg-slate-200 transition-colors">Cancelar</button>
+                  <button @click="archiveConfirm = false" class="flex-1 px-4 py-2.5 bg-error text-white font-bold text-sm rounded-lg hover:bg-red-700 transition-colors">Arquivar</button>
+               </div>
+            </div>
+         </div>
+      </div>
+   </body>
+</html>

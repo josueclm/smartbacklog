@@ -6,6 +6,10 @@ export function getBacklogTasks(projectId) {
   return request(`/tasks/backlog?projectId=${projectId}`);
 }
 
+export function getById(id) {
+  return request(`/tasks/${id}`);
+}
+
 export function createTask(data) {
   return request("/tasks", {
     method: "POST",
@@ -31,6 +35,29 @@ export function updateTask(id, data) {
     body: JSON.stringify(data)
   });
 }
+
+export function addToSprint(id, payload) {
+  return request(`/tasks/${id}/add-to-sprint`, {
+    method: "PATCH",
+    body: JSON.stringify(payload)
+  });
+}
+
+
+export function removeTaskFromSprint(id, payload) {
+  return request(`/tasks/${id}/remove-from-sprint`, {
+    method: "PATCH",
+    body: JSON.stringify(payload)
+  });
+}
+
+export function updateSprint(id, data) {
+  return request(`/tasks/sprint/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data)
+  });
+}
+
 
 export function updateStatus(id, status) {
   return request(`/tasks/${id}/status`, {

@@ -1,0 +1,429 @@
+<head>
+
+   <meta charset="utf-8"/>
+
+   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+   <title>Smartbacklog</title>
+
+   <!-- TAILWIND -->
+   <script src="https://cdn.tailwindcss.com"></script>
+
+   <!-- GOOGLE FONTS -->
+   <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap"
+      rel="stylesheet"
+   />
+
+   <!-- ICONS -->
+   <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1"
+      rel="stylesheet"
+   />
+
+   <script id="tailwind-config">
+         tailwind.config = {
+           darkMode: "class",
+           theme: {
+             extend: {
+               "colors": {
+                   "error": "#ba1a1a",
+                   "primary-container": "#0052cc",
+                   "primary-fixed-dim": "#b2c5ff",
+                   "outline-variant": "#c3c6d6",
+                   "error-container": "#ffdad6",
+                   "surface": "#faf9ff",
+                   "secondary-container": "#cdddff",
+                   "on-secondary-fixed-variant": "#374763",
+                   "surface-container-high": "#e1e8ff",
+                   "on-error-container": "#93000a",
+                   "inverse-surface": "#1d3054",
+                   "tertiary-fixed-dim": "#ffb59b",
+                   "surface-variant": "#d8e2ff",
+                   "on-secondary-container": "#51617e",
+                   "on-secondary-fixed": "#091c35",
+                   "secondary-fixed-dim": "#b7c7e8",
+                   "surface-container-lowest": "#ffffff",
+                   "primary": "#003d9b",
+                   "surface-container-highest": "#d8e2ff",
+                   "inverse-primary": "#b2c5ff",
+                   "surface-dim": "#ccdaff",
+                   "background": "#faf9ff",
+                   "secondary": "#4f5f7b",
+                   "on-error": "#ffffff",
+                   "surface-bright": "#faf9ff",
+                   "outline": "#737685",
+                   "on-surface": "#051a3e",
+                   "on-tertiary-container": "#ffc6b2",
+                   "on-tertiary": "#ffffff",
+                   "on-background": "#051a3e",
+                   "on-primary-container": "#c4d2ff",
+                   "surface-container": "#e9edff",
+                   "primary-fixed": "#dae2ff",
+                   "surface-container-low": "#f1f3ff",
+                   "on-primary": "#ffffff",
+                   "on-primary-fixed": "#001848",
+                   "on-tertiary-fixed": "#380d00",
+                   "inverse-on-surface": "#edf0ff",
+                   "on-surface-variant": "#434654",
+                   "tertiary-fixed": "#ffdbcf",
+                   "on-tertiary-fixed-variant": "#812800",
+                   "surface-tint": "#0c56d0",
+                   "on-primary-fixed-variant": "#0040a2"
+               },
+               "borderRadius": {
+                   "DEFAULT": "0.5rem",
+                   "lg": "1rem",
+                   "xl": "1.5rem",
+                   "full": "9999px"
+               },
+               "fontFamily": {
+                   "headline": ["Manrope", "sans-serif"],
+                   "body": ["Inter", "sans-serif"],
+                   "label": ["Inter", "sans-serif"]
+               }
+             },
+           },
+         }
+      </script>
+      <style>
+         .material-symbols-outlined {
+         font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+         }
+         body { font-family: 'Inter', sans-serif; }
+         h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+         .drawer-open { transform: translateX(0); }
+         .drawer-closed { transform: translateX(100%); }
+         .nav-active { @apply bg-white text-blue-700 font-bold shadow-sm; }
+         .nav-active span { font-variation-settings: 'FILL' 1; }
+      </style>
+
+   <!-- GLOBAL CSS -->
+   <link rel="stylesheet" href="../styles/global.css">
+
+</head>
+<body>
+
+   <!-- SIDEBAR -->
+   <div id="sidebar-container"></div>
+
+   <!-- HEADER -->
+   <div id="header-container"></div>
+
+
+   <!-- MAIN -->
+   <main class="lg:pl-64 pt-16">
+
+      <!-- Backlog List Column -->
+         <div class="p-8 max-w-7xl mx-auto">
+            <!-- Page Header -->
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+               <div>
+                  <h2 class="text-3xl font-extrabold text-on-surface tracking-tight mb-1">Team</h2>
+                  <p class="text-on-surface-variant text-sm font-medium">Gestão de membros e colaboração da equipa</p>
+               </div>
+               <button
+                  id="btn_add_user"
+                  class="inline-flex items-center justify-center px-5 py-2.5 bg-gradient-to-br from-primary to-primary-container text-white rounded-lg font-bold shadow-lg hover:shadow-primary/20 transition-all active:scale-95"
+               > <span class="material-symbols-outlined mr-2" data-icon="person_add">person_add</span>
+               + Add Member
+               </button>
+            </div>
+            <!-- Filters Bar -->
+            <div class="flex flex-wrap items-center gap-3 mb-8 bg-surface-container-low p-3 rounded-xl">
+               <!-- <div class="relative group">
+                  <button class="flex items-center space-x-2 bg-surface-container-lowest px-4 py-2 rounded-lg text-sm font-semibold border border-outline-variant/30 hover:border-primary/50 transition-colors">
+                  <span>Team: All Teams</span>
+                  <span class="material-symbols-outlined text-[18px]" data-icon="expand_more">expand_more</span>
+                  </button>
+               </div> -->
+              <!-- ROLE FILTER -->
+            <div class="relative">
+
+               <select
+                  id="filter_role"
+                  class="
+                     bg-surface-container-lowest
+                     px-4
+                     py-2
+                     rounded-lg
+                     text-sm
+                     font-semibold
+                     border
+                     border-outline-variant/30
+                     hover:border-primary/50
+                     transition-colors
+                     appearance-none
+                     pr-10
+                  "
+               >
+
+                  <option value="">
+                     Role: All Roles
+                  </option>
+
+                  <option value="Admin">
+                     Admin
+                  </option>
+
+                  <option value="Scrum Master">
+                     Scrum Master
+                  </option>
+
+                  <option value="Developer">
+                     Developer
+                  </option>
+
+                  <option value="Product Owner">
+                     Product Owner
+                  </option>
+
+               </select>
+
+               <span
+                  class="
+                     material-symbols-outlined
+                     text-[18px]
+                     absolute
+                     right-3
+                     top-1/2
+                     -translate-y-1/2
+                     pointer-events-none
+                     text-slate-400
+                  "
+               >
+                  expand_more
+               </span>
+
+            </div>
+               <div class="ml-auto flex items-center bg-surface-container-lowest border border-outline-variant/30 rounded-lg p-1">
+                  <button class="p-1.5 text-on-surface-variant hover:bg-surface-container-low rounded-md transition-colors">
+                  <span class="material-symbols-outlined text-[20px]" data-icon="grid_view">grid_view</span>
+                  </button>
+                  <button class="p-1.5 bg-primary-fixed text-primary rounded-md">
+                  <span class="material-symbols-outlined text-[20px]" data-icon="list">list</span>
+                  </button>
+               </div>
+            </div>
+            <!-- Member List Layout -->
+            <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 overflow-hidden">
+               <div class="overflow-x-auto">
+                  <table class="w-full text-left border-collapse">
+                     <thead>
+                        <tr class="bg-surface-container-low/50 border-b border-outline-variant/20">
+                           <th class="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Member</th>
+                           <th class="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Role</th>
+                           <!-- <th class="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Team</th> -->
+                           <!-- <th class="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Progress</th> -->
+                           <th class="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant text-right">Actions</th>
+                        </tr>
+                     </thead>
+                     <tbody
+                        id="users_table_body"
+                        class="divide-y divide-outline-variant/10"
+                     >
+                     </tbody>
+
+                     </tbody>
+                  </table>
+               </div>
+            </div>
+         </div>
+         <!-- Task Detail Drawer (Right) -->
+
+   </main>
+         <!-- Success Toast Notification -->
+      <div class="fixed bottom-6 right-6 lg:right-6 left-6 lg:left-auto z-[60] flex items-center gap-3 bg-emerald-600 text-white px-5 py-3.5 rounded-xl shadow-2xl transition-all duration-300 opacity-0 translate-y-10" id="save-toast">
+         <span class="material-symbols-outlined text-white">check_circle</span>
+         <span id="text_mess_sucess" class="text-xs lg:text-sm font-semibold tracking-wide">Alterações guardadas com sucesso</span>
+      </div>
+
+       <!-- Member Details Drawer -->
+      <div class="fixed inset-0 z-[100] transition-all duration-300 drawer-closed" id="member-drawer">
+         <div class="absolute inset-0 bg-on-surface/40 backdrop-blur-sm" onclick="this.parentElement.classList.add('drawer-closed'); this.parentElement.classList.remove('drawer-open')"></div>
+         <div class="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl flex flex-col transform transition-transform duration-300">
+            <div class="px-6 py-6 border-b border-outline-variant/20 flex justify-between items-center bg-surface-container-low">
+               <h3 class="text-xl font-extrabold text-on-surface font-manrope">Perfil</h3>
+               <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high text-on-surface-variant transition-colors" onclick="document.getElementById('member-drawer').classList.add('drawer-closed'); document.getElementById('member-drawer').classList.remove('drawer-open')">
+               <span class="material-symbols-outlined" data-icon="close">close</span>
+               </button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-8">
+               <div class="flex flex-col items-center mb-8">
+                  <div class="relative mb-4">
+                     <img alt="Profile" class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFrNiPLIHkM9yazvLvgEBUb-zb236KxA_cyYe5YRSOaIR_USPAI2GPtAPtTQExGYbHpitAuIOeOHWFYAm0giTV1FeeiAvt3QZiD1BnkXMaNObjPmkdtnEp62BsumGJPGNpA2c0tQv2ECVYNP_FlmUad4pupfoRutmvF2QAb_kJVwLT4g1bfIHuMZ1IT85qpzxawtzkDnWdv4qP5SbyaPGbuEUvfA9rzBT5hG_Xgd0XhjF94mtlSJqbrXK7bgNM6LCC3Juag_KdYzI"/>
+                     <span class="absolute bottom-1 right-1 w-6 h-6 bg-green-500 border-4 border-white rounded-full"></span>
+                  </div>
+                  <h2
+                     id="drawer_user_name"
+                     class="text-2xl font-bold text-on-surface"
+                  >
+                  </h2>
+                  <p
+                     id="drawer_user_role"
+                     class="text-primary font-bold text-sm tracking-wide uppercase mt-1"
+                  >
+                  </p>
+                  <div class="flex items-center space-x-2 mt-4">
+                     <span class="px-3 py-1 bg-surface-container-high rounded-full text-xs font-bold text-on-surface-variant">Core App Team</span>
+                  </div>
+               </div>
+               <div class="space-y-6">
+                  <section>
+                     <h4 class="text-[10px] font-extrabold text-outline uppercase tracking-widest mb-3">Task Overview</h4>
+                     <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-surface-container-low p-4 rounded-xl border border-outline-variant/10">
+                           <p class="text-2xl font-manrope font-extrabold text-on-surface">24</p>
+                           <p class="text-xs font-bold text-on-surface-variant">Assigned Tasks</p>
+                        </div>
+                        <div class="bg-surface-container-low p-4 rounded-xl border border-outline-variant/10">
+                           <p class="text-2xl font-manrope font-extrabold text-primary">18</p>
+                           <p class="text-xs font-bold text-on-surface-variant">Completed Tasks</p>
+                        </div>
+                     </div>
+                  </section>
+                  <section>
+                     <div class="flex justify-between items-center mb-3">
+                        <h4 class="text-[10px] font-extrabold text-outline uppercase tracking-widest">Weekly Progress</h4>
+                        <span class="text-sm font-bold text-primary">75%</span>
+                     </div>
+                     <div class="w-full bg-surface-container-high h-2.5 rounded-full overflow-hidden">
+                        <div class="bg-primary h-full w-3/4 rounded-full shadow-sm shadow-primary/40"></div>
+                     </div>
+                  </section>
+                  <section>
+                     <h4 class="text-[10px] font-extrabold text-outline uppercase tracking-widest mb-3">Contact Information</h4>
+                     <div class="space-y-3">
+                        <div class="flex items-center space-x-3 text-sm text-on-surface">
+                           <span class="material-symbols-outlined text-outline" data-icon="mail">mail</span>
+                           <span id="drawer_user_email"></span>
+                        </div>
+                        <div class="flex items-center space-x-3 text-sm text-on-surface">
+                           <span class="material-symbols-outlined text-outline" data-icon="call">call</span>
+                           <span>+351 912 345 678</span>
+                        </div>
+                     </div>
+                  </section>
+               </div>
+            </div>
+            <div class="p-6 bg-surface-container-low border-t border-outline-variant/20 flex gap-3">
+               <button class="flex-1 px-5 py-3 text-sm font-bold bg-white text-on-surface border border-outline-variant/30 rounded-lg hover:bg-surface-container-high transition-all">Edit Profile</button>
+               <button class="flex-1 px-5 py-3 text-sm font-bold bg-primary text-white rounded-lg shadow-lg shadow-primary/20 hover:bg-primary-container transition-all">Message</button>
+            </div>
+         </div>
+      </div>
+
+
+      <!-- USER MODAL -->
+<div
+   id="user_modal"
+   class="fixed inset-0 z-[120] hidden items-center justify-center bg-black/40 backdrop-blur-sm"
+>
+
+   <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6">
+
+      <div class="flex items-center justify-between mb-6">
+
+         <h3
+            id="modal_title"
+            class="text-xl font-bold"
+         >
+            Novo Utilizador
+         </h3>
+
+         <button
+            id="btn_close_modal"
+            class="text-slate-400 hover:text-slate-700"
+         >
+            ✕
+         </button>
+
+      </div>
+
+      <form id="user_form" class="space-y-4">
+
+         <input
+            type="hidden"
+            id="user_id"
+         >
+
+         <div>
+
+            <label class="text-xs font-bold text-slate-500 uppercase">
+               Nome
+            </label>
+
+            <input
+               id="user_name"
+               type="text"
+               class="w-full mt-1 px-4 py-3 rounded-xl border border-slate-200"
+               required
+            >
+
+         </div>
+
+         <div>
+
+            <label class="text-xs font-bold text-slate-500 uppercase">
+               Email
+            </label>
+
+            <input
+               id="user_email"
+               type="email"
+               class="w-full mt-1 px-4 py-3 rounded-xl border border-slate-200"
+               required
+            >
+
+         </div>
+
+         <div>
+
+            <label class="text-xs font-bold text-slate-500 uppercase">
+               Password
+            </label>
+
+            <input
+               id="user_password"
+               type="password"
+               class="w-full mt-1 px-4 py-3 rounded-xl border border-slate-200"
+            >
+
+         </div>
+
+         <div>
+
+            <label class="text-xs font-bold text-slate-500 uppercase">
+               Role
+            </label>
+
+            <select
+               id="user_role"
+               class="w-full mt-1 px-4 py-3 rounded-xl border border-slate-200"
+            >
+               <option value="Admin">Admin</option>
+               <option value="Scrum Master">Scrum Master</option>
+               <option value="Developer">Developer</option>
+               <option value="Product Owner">Product Owner</option>
+            </select>
+
+         </div>
+
+         <button
+            type="submit"
+            class="w-full bg-primary text-white py-3 rounded-xl font-bold"
+         >
+            Guardar
+         </button>
+
+      </form>
+
+   </div>
+
+</div>
+
+   <script type="module" src="../scripts/layout.js"></script>
+   <script type="module" src="../scripts/utils.js"></script>
+   <script type="module" src="../scripts/user.js"></script>
+
+</body>

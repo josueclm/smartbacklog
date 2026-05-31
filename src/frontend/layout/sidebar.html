@@ -1,0 +1,65 @@
+<aside class="h-screen w-64 fixed left-0 top-0 flex flex-col bg-slate-50 border-r border-slate-200 z-50 transition-transform duration-300 mobile-hidden" id="sidebar">
+         <div class="flex flex-col h-full p-4">
+            <div class="flex items-center justify-between lg:justify-start gap-3 px-2 mb-8">
+               <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 bg-primary-vibrant rounded-lg flex items-center justify-center text-white">
+                     <span class="material-symbols-outlined text-sm">linear_scale</span>
+                  </div>
+                  <div>
+                     <h1 class="text-xl font-bold tracking-tight text-slate-900 leading-tight">Smartbacklog</h1>
+                     <!-- <p class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Enterprise Workspace</p> -->
+                     <p class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold" id="sidebar_user_name">User Name</p>
+                  </div>
+               </div>
+               <button class="lg:hidden p-1 text-slate-500" onclick="toggleSidebar()">
+               <span class="material-symbols-outlined">close</span>
+               </button>
+            </div>
+            <button class="mb-8 w-full py-3 px-4 bg-primary-vibrant text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 hover:bg-blue-700 active:scale-95 transition-all">
+            <span class="material-symbols-outlined text-lg">add</span>
+            <a href="/projects/" class="text-white no-underline">Create Project</a>
+            </button>
+            <nav class="space-y-1 flex-1">
+
+               <a class="sidebar-item" href="/dashboard">
+                  <span class="material-symbols-outlined text-[22px]">grid_view</span>
+                  <span>Dashboard</span>
+               </a>
+
+               <a class="sidebar-item" href="/projects">
+                  <span class="material-symbols-outlined text-[22px]">folder</span>
+                  <span>Projects</span>
+               </a>
+
+               <a class="sidebar-item" href="/backlog">
+                  <span class="material-symbols-outlined text-[22px]">assignment</span>
+                  <span>Backlog</span>
+               </a>
+
+               <a class="sidebar-item" href="/sprint">
+                  <span class="material-symbols-outlined text-[22px]">update</span>
+                  <span>Sprint</span>
+               </a>
+
+               <!-- <a class="sidebar-item" href="/board">
+                  <span class="material-symbols-outlined text-[22px]">view_kanban</span>
+                  <span>Board</span>
+               </a> -->
+
+               <a class="sidebar-item" href="/team">
+                  <span class="material-symbols-outlined text-[22px]">group</span>
+                  <span>Team</span>
+               </a>
+            </nav>
+            <div class="pt-4 border-t border-slate-200 space-y-1">
+               <a class="sidebar-item" href="#">
+               <span class="material-symbols-outlined text-[22px]">settings</span>
+               <span>Settings</span>
+               </a>
+               <a class="sidebar-item text-red-600 hover:bg-red-50" href="#">
+               <span class="material-symbols-outlined text-[22px]">logout</span>
+               <span>Logout</span>
+               </a>
+            </div>
+         </div>
+      </aside>

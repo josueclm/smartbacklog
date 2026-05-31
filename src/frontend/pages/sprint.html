@@ -1,0 +1,606 @@
+<head>
+
+   <meta charset="utf-8"/>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+   <title>Smartbacklog</title>
+   <!-- TAILWIND -->
+   <script src="https://cdn.tailwindcss.com"></script>
+
+   <!-- GOOGLE FONTS -->
+   <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap"
+      rel="stylesheet"
+   />
+
+   <!-- ICONS -->
+   <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1"
+      rel="stylesheet"
+   />
+   <!-- GLOBAL CSS -->
+   <link rel="stylesheet" href="../styles/global.css">
+   <link rel="stylesheet" href="../styles/sprint.css">
+
+   <script id="tailwind-config">
+         tailwind.config = {
+           darkMode: "class",
+           theme: {
+             extend: {
+               "colors": {
+                       "on-tertiary-container": "#ffc6b2",
+                       "on-tertiary-fixed-variant": "#812800",
+                       "on-surface": "#051a3e",
+                       "on-secondary": "#ffffff",
+                       "on-primary-container": "#c4d2ff",
+                       "tertiary-fixed": "#ffdbcf",
+                       "secondary-fixed-dim": "#b7c7e8",
+                       "secondary": "#4f5f7b",
+                       "on-secondary-fixed": "#091c35",
+                       "inverse-surface": "#1d3054",
+                       "secondary-fixed": "#d6e3ff",
+                       "inverse-primary": "#b2c5ff",
+                       "on-error-container": "#93000a",
+                       "outline-variant": "#c3c6d6",
+                       "primary": "#003d9b",
+                       "on-tertiary": "#ffffff",
+                       "on-primary": "#ffffff",
+                       "on-background": "#051a3e",
+                       "error-container": "#ffdad6",
+                       "background": "#faf9ff",
+                       "primary-container": "#0052cc",
+                       "on-surface-variant": "#434654",
+                       "surface-container": "#e9edff",
+                       "on-secondary-fixed-variant": "#374763",
+                       "surface-container-low": "#f1f3ff",
+                       "inverse-on-surface": "#edf0ff",
+                       "tertiary-container": "#a33500",
+                       "primary-fixed-dim": "#b2c5ff",
+                       "tertiary-fixed-dim": "#ffb59b",
+                       "on-tertiary-fixed": "#380d00",
+                       "surface-variant": "#d8e2ff",
+                       "surface-container-high": "#e1e8ff",
+                       "surface": "#faf9ff",
+                       "on-primary-fixed-variant": "#0040a2",
+                       "surface-dim": "#ccdaff",
+                       "primary-fixed": "#dae2ff",
+                       "secondary-container": "#cdddff",
+                       "surface-container-highest": "#d8e2ff",
+                       "surface-container-lowest": "#ffffff",
+                       "outline": "#737685",
+                       "surface-bright": "#faf9ff",
+                       "on-primary-fixed": "#001848",
+                       "tertiary": "#7b2600",
+                       "surface-tint": "#0c56d0",
+                       "error": "#ba1a1a",
+                       "on-secondary-container": "#51617e",
+                       "on-error": "#ffffff",
+                       "warning": "#f59e0b",
+                       "success": "#10b981"
+               },
+               "borderRadius": {
+                       "DEFAULT": "0.5rem",
+                       "lg": "1rem",
+                       "xl": "1.25rem",
+                       "full": "9999px"
+               },
+               "fontFamily": {
+                       "headline": ["Manrope"],
+                       "body": ["Inter"],
+                       "label": ["Inter"]
+               }
+             },
+           },
+         }
+      </script>
+      <script defer="" src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body x-data="{ openModal: false, archiveConfirm: false, progress: 42 }">
+
+   <!-- SIDEBAR -->
+   <div id="sidebar-container"></div>
+
+   <!-- HEADER -->
+   <div id="header-container"></div>
+
+
+  <!-- MAIN -->
+<main class="lg:pl-64 pt-16">
+
+   <!-- PAGE -->
+   <div class="flex flex-col gap-6 p-4 lg:p-8">
+
+      <!-- HEADER -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+
+         <div>
+            <h2 class="text-3xl font-headline font-extrabold text-on-surface tracking-tight">
+               Sprints
+            </h2>
+
+            <p class="text-on-surface-variant font-body mt-1">
+               Gestão de ciclos de trabalho do projeto
+            </p>
+         </div>
+
+         <div class="flex flex-wrap items-center gap-3">
+
+            <button
+               id="btn_open_create_sprint_modal"
+               class="custom-gradient text-on-primary px-6 py-2.5 rounded-lg font-headline font-bold text-sm shadow-md hover:opacity-95 active:scale-95 transition-all flex items-center gap-2"
+            >
+               <span class="material-symbols-outlined text-lg">add</span>
+               <span>Nova Sprint</span>
+            </button>
+
+         </div>
+
+      </div>
+
+      <!-- FILTERS -->
+      <div class="flex flex-wrap items-center justify-between gap-4 py-4 border-y border-slate-200/60">
+
+         <!-- STATUS FILTER -->
+         <div class="flex bg-surface-container-low p-1 rounded-lg">
+
+            <button
+               class="sprint-filter-btn px-4 py-1.5 rounded-md text-xs font-semibold bg-surface-container-lowest text-primary shadow-sm"
+               data-status="ALL"
+            >
+               Todos
+            </button>
+
+            <button
+               class="sprint-filter-btn px-4 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-primary transition-colors"
+               data-status="PLANNED"
+            >
+               Planned
+            </button>
+
+            <button
+               class="sprint-filter-btn px-4 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-primary transition-colors"
+               data-status="ACTIVE"
+            >
+               Active
+            </button>
+
+            <button
+               class="sprint-filter-btn px-4 py-1.5 rounded-md text-xs font-medium text-on-surface-variant hover:text-primary transition-colors"
+               data-status="COMPLETED"
+            >
+               Completed
+            </button>
+
+         </div>
+
+         <!-- RIGHT FILTERS -->
+         <div class="flex items-center gap-3 flex-wrap">
+
+            <!-- PROJECT -->
+            <select
+               id="filter_project_id"
+               class="px-3 py-2 bg-white border border-outline-variant/30 rounded-lg text-xs font-medium text-on-surface focus:ring-primary focus:border-primary"
+            >
+               <!-- <option value="">Projeto: Todos</option> -->
+            </select>
+
+            <!-- TEAM -->
+            <select
+               id="filter_team_id"
+               class="px-3 py-2 bg-white border border-outline-variant/30 rounded-lg text-xs font-medium text-on-surface focus:ring-primary focus:border-primary"
+            >
+               <option value="">Equipa: Todas</option>
+            </select>
+
+            <div class="w-px h-6 bg-slate-200 mx-1"></div>
+
+            <!-- SORT -->
+            <select
+               id="filter_order_by"
+               class="px-3 py-2 bg-white border border-outline-variant/30 rounded-lg text-xs font-medium text-on-surface focus:ring-primary focus:border-primary"
+            >
+               <option value="ACTIVE_FIRST">Active first</option>
+               <option value="DATE_DESC">Mais recentes</option>
+               <option value="DATE_ASC">Mais antigas</option>
+               <option value="NAME_ASC">Nome A-Z</option>
+            </select>
+
+         </div>
+
+      </div>
+
+   </div>
+
+   <!-- CONTENT -->
+   <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start p-4 lg:p-8">
+
+      <!-- LEFT -->
+      <div class="lg:col-span-8 flex flex-col gap-8">
+
+         <!-- ACTIVE SPRINT -->
+         <section
+            id="active_sprint_container"
+            class="bg-surface-container-lowest rounded-xl border-2 border-primary/20 ambient-shadow relative overflow-hidden"
+         >
+
+            <!-- ACTIVE SPRINT CONTENT -->
+            <!-- JS RENDER -->
+
+         </section>
+
+         <!-- SPRINT LIST -->
+         <section>
+
+            <div class="flex items-center justify-between mb-4">
+
+               <h3 class="text-lg font-headline font-bold text-on-surface">
+                  Backlog de Ciclos
+               </h3>
+
+               <div class="flex items-center gap-3">
+
+                  <button style="display: none;"
+                     id="btn_ai_plan_sprints"
+                     class="flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary border border-primary/20 rounded-lg text-[11px] font-bold hover:bg-primary/20 transition-all"
+                  >
+                     <span class="material-symbols-outlined text-sm">auto_awesome</span>
+                     <span>Planejar automaticamente com IA</span>
+                  </button>
+
+                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                     Próximos 6 meses
+                  </span>
+
+               </div>
+
+            </div>
+
+            <!-- LIST -->
+            <div
+               id="sprint_list_container"
+               class="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden shadow-sm"
+            >
+
+               <!-- HEADER -->
+               <div class="grid grid-cols-12 items-center px-6 py-3 bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-200/50">
+
+                  <div class="col-span-1"></div>
+
+                  <div class="col-span-4">
+                     Sprint
+                  </div>
+
+                  <div class="col-span-3">
+                     Status
+                  </div>
+
+                  <div class="col-span-2">
+                     Período
+                  </div>
+
+                  <div class="col-span-2 text-right">
+                     Acções
+                  </div>
+
+               </div>
+
+               <!-- SPRINTS -->
+               <!-- JS RENDER -->
+
+            </div>
+
+            <!-- ADD -->
+            <button
+               id="btn_open_create_sprint_modal_bottom"
+               class="mt-4 w-full py-3 border-2 border-dashed border-slate-200 rounded-xl text-slate-400 font-bold text-xs hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-all flex items-center justify-center gap-2"
+            >
+               <span class="material-symbols-outlined">add_circle</span>
+               Planejar Novo Ciclo
+            </button>
+
+         </section>
+
+      </div>
+
+      <!-- RIGHT -->
+      <div class="lg:col-span-4 flex flex-col gap-8">
+
+         <!-- PLANNED -->
+         <section
+            id="planned_sprints_container"
+            class="flex flex-col gap-6"
+         >
+
+            <!-- JS RENDER -->
+
+         </section>
+
+         <!-- COMPLETED -->
+         <section
+            id="completed_sprints_container"
+            class="flex flex-col gap-6"
+         >
+
+            <!-- JS RENDER -->
+
+         </section>
+
+         <!-- RECENT -->
+         <section class="bg-slate-50/50 rounded-xl p-6 border border-slate-200/50">
+
+            <h5 class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-4">
+               Recentes
+            </h5>
+
+            <div
+               id="recent_activity_container"
+               class="flex flex-col gap-4"
+            >
+
+               <!-- JS RENDER -->
+
+            </div>
+
+         </section>
+
+      </div>
+
+   </div>
+
+</main>
+
+<!-- CREATE SPRINT MODAL -->
+<div
+   id="create_sprint_modal"
+   class="fixed inset-0 z-[60] hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+>
+
+   <div class="bg-white w-full max-w-lg rounded-lg shadow-2xl overflow-hidden">
+
+      <!-- HEADER -->
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+
+         <h3 class="text-xl font-headline font-extrabold text-on-surface tracking-tight">
+            Nova Sprint
+         </h3>
+
+         <button
+            id="btn_close_create_sprint_modal"
+            class="text-slate-400 hover:text-slate-600 transition-colors"
+         >
+            <span class="material-symbols-outlined">close</span>
+         </button>
+
+      </div>
+
+      <!-- BODY -->
+      <div class="p-6 space-y-5">
+
+         <!-- PROJECT -->
+         <div>
+
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5">
+               Projeto
+            </label>
+
+            <select
+               id="create_sprint_project_id"
+               class="w-full bg-slate-50 border-slate-200 rounded-lg py-2.5 px-4 text-sm font-medium focus:ring-primary focus:border-primary"
+            >
+               <option value="">Selecione</option>
+            </select>
+
+         </div>
+
+         <!-- NAME -->
+         <div>
+
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5">
+               Nome da Sprint
+            </label>
+
+            <input
+               id="create_sprint_name"
+               class="w-full bg-slate-50 border-slate-200 rounded-lg py-2.5 px-4 text-sm font-medium focus:ring-primary focus:border-primary"
+               placeholder="Ex: Sprint #46"
+               type="text"
+            />
+
+         </div>
+
+         <!-- DATES -->
+         <div class="grid grid-cols-2 gap-4">
+
+            <div>
+
+               <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5">
+                  Data de Início
+               </label>
+
+               <input
+                  id="create_sprint_start_date"
+                  class="w-full bg-slate-50 border-slate-200 rounded-lg py-2.5 px-4 text-sm font-medium focus:ring-primary focus:border-primary"
+                  type="date"
+               />
+
+            </div>
+
+            <div>
+
+               <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5">
+                  Data de Término
+               </label>
+
+               <input
+                  id="create_sprint_end_date"
+                  class="w-full bg-slate-50 border-slate-200 rounded-lg py-2.5 px-4 text-sm font-medium focus:ring-primary focus:border-primary"
+                  type="date"
+               />
+
+            </div>
+
+         </div>
+
+         <!-- OPTIONS -->
+         <div class="pt-2">
+
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">
+               Opções de Duplicação
+            </label>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+
+               <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+
+                  <input
+                     id="copy_tasks"
+                     checked
+                     class="rounded text-primary focus:ring-primary w-4 h-4"
+                     type="checkbox"
+                  />
+
+                  <span class="text-xs font-semibold text-on-surface">
+                     Copiar tarefas
+                  </span>
+
+               </label>
+
+               <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+
+                  <input
+                     id="copy_members"
+                     class="rounded text-primary focus:ring-primary w-4 h-4"
+                     type="checkbox"
+                  />
+
+                  <span class="text-xs font-semibold text-on-surface">
+                     Copiar membros
+                  </span>
+
+               </label>
+
+               <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+
+                  <input
+                     id="copy_estimatives"
+                     class="rounded text-primary focus:ring-primary w-4 h-4"
+                     type="checkbox"
+                  />
+
+                  <span class="text-xs font-semibold text-on-surface">
+                     Copiar estimativas
+                  </span>
+
+               </label>
+
+            </div>
+
+         </div>
+
+         <!-- GOAL -->
+         <div>
+
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5">
+               Objetivo da Sprint
+            </label>
+
+            <textarea
+               id="create_sprint_goal"
+               class="w-full bg-slate-50 border-slate-200 rounded-lg py-2.5 px-4 text-sm font-medium focus:ring-primary focus:border-primary"
+               placeholder="O que pretendemos alcançar..."
+               rows="3"
+            ></textarea>
+
+         </div>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div class="px-6 py-4 bg-slate-50 flex items-center justify-end gap-3">
+
+         <button
+            id="btn_cancel_create_sprint"
+            class="px-4 py-2 text-sm font-bold text-slate-500 hover:text-slate-700 transition-colors"
+         >
+            Fechar
+         </button>
+
+         <button
+            id="btn_create_sprint"
+            class="custom-gradient text-on-primary px-6 py-2.5 rounded-lg font-headline font-bold text-sm shadow-md hover:opacity-95 active:scale-95 transition-all"
+         >
+            Criar Sprint
+         </button>
+
+      </div>
+
+   </div>
+
+</div>
+
+<!-- ARCHIVE MODAL -->
+<div
+   id="archive_sprint_modal"
+   class="fixed inset-0 z-[70] hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+>
+
+   <div class="bg-white w-full max-w-sm rounded-lg shadow-2xl overflow-hidden">
+
+      <div class="p-6">
+
+         <div class="w-12 h-12 bg-red-50 text-error rounded-full flex items-center justify-center mb-4">
+
+            <span class="material-symbols-outlined text-3xl">
+               warning
+            </span>
+
+         </div>
+
+         <h3
+            id="archive_modal_title"
+            class="text-lg font-headline font-extrabold text-on-surface mb-2"
+         >
+            Arquivar Sprint
+         </h3>
+
+         <p
+            id="archive_modal_description"
+            class="text-sm text-on-surface-variant mb-6 leading-relaxed"
+         >
+            Esta ação não pode ser desfeita.
+         </p>
+
+         <div class="flex gap-3">
+
+            <button
+               id="btn_cancel_archive"
+               class="flex-1 px-4 py-2.5 bg-slate-100 text-slate-700 font-bold text-sm rounded-lg hover:bg-slate-200 transition-colors"
+            >
+               Cancelar
+            </button>
+
+            <button
+               id="btn_confirm_archive"
+               class="flex-1 px-4 py-2.5 bg-error text-white font-bold text-sm rounded-lg hover:bg-red-700 transition-colors"
+            >
+               Arquivar
+            </button>
+
+         </div>
+
+      </div>
+
+   </div>
+
+</div>
+
+         <!-- Success Toast Notification -->
+      <div class="fixed bottom-6 right-6 lg:right-6 left-6 lg:left-auto z-[60] flex items-center gap-3 bg-emerald-600 text-white px-5 py-3.5 rounded-xl shadow-2xl transition-all duration-300 opacity-0 translate-y-10" id="save-toast">
+         <span class="material-symbols-outlined text-white">check_circle</span>
+         <span id="text_mess_sucess" class="text-xs lg:text-sm font-semibold tracking-wide">Alterações guardadas com sucesso</span>
+      </div>
+
+   <script type="module" src="../scripts/layout.js"></script>
+   <script type="module" src="../scripts/utils.js"></script>
+   <script type="module" src="../scripts/sprint.js"></script>
+
+</body>

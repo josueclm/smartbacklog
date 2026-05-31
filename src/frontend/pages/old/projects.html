@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+   <head>
+      <meta charset="utf-8"/>
+      <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+      <title>Linearis Pro - Projetos</title>
+      <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@700;800&amp;display=swap" rel="stylesheet"/>
+      <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+      <script id="tailwind-config">
+         tailwind.config = {
+           darkMode: "class",
+           theme: {
+             extend: {
+               "colors": {
+                       "secondary": "#4f5f7b",
+                       "secondary-fixed-dim": "#b7c7e8",
+                       "outline-variant": "#c3c6d6",
+                       "tertiary-container": "#a33500",
+                       "error-container": "#ffdad6",
+                       "inverse-on-surface": "#edf0ff",
+                       "primary-fixed": "#dae2ff",
+                       "primary": "#003d9b",
+                       "secondary-fixed": "#d6e3ff",
+                       "background": "#faf9ff",
+                       "on-tertiary": "#ffffff",
+                       "surface-container-high": "#e1e8ff",
+                       "on-secondary-fixed-variant": "#374763",
+                       "on-secondary": "#ffffff",
+                       "on-primary-fixed": "#001848",
+                       "surface": "#faf9ff",
+                       "inverse-surface": "#1d3054",
+                       "tertiary-fixed": "#ffdbcf",
+                       "on-primary": "#ffffff",
+                       "on-error": "#ffffff",
+                       "on-secondary-fixed": "#091c35",
+                       "inverse-primary": "#b2c5ff",
+                       "surface-variant": "#d8e2ff",
+                       "tertiary": "#7b2600",
+                       "surface-container": "#e9edff",
+                       "surface-bright": "#faf9ff",
+                       "on-tertiary-container": "#ffc6b2",
+                       "surface-dim": "#ccdaff",
+                       "on-background": "#051a3e",
+                       "surface-tint": "#0c56d0",
+                       "primary-fixed-dim": "#b2c5ff",
+                       "on-primary-fixed-variant": "#0040a2",
+                       "outline": "#737685",
+                       "on-secondary-container": "#51617e",
+                       "tertiary-fixed-dim": "#ffb59b",
+                       "error": "#ba1a1a",
+                       "surface-container-lowest": "#ffffff",
+                       "secondary-container": "#cdddff",
+                       "on-surface-variant": "#434654",
+                       "surface-container-highest": "#d8e2ff",
+                       "on-tertiary-fixed-variant": "#812800",
+                       "on-tertiary-fixed": "#380d00",
+                       "surface-container-low": "#f1f3ff",
+                       "on-error-container": "#93000a",
+                       "on-primary-container": "#c4d2ff",
+                       "primary-container": "#0052cc",
+                       "on-surface": "#051a3e"
+               },
+               "borderRadius": {
+                       "DEFAULT": "0.5rem",
+                       "lg": "1rem",
+                       "xl": "1.25rem",
+                       "full": "9999px"
+               },
+               "fontFamily": {
+                       "headline": ["Manrope"],
+                       "body": ["Inter"],
+                       "label": ["Inter"]
+               }
+             },
+           },
+         }
+      </script>
+      <style>
+         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+         .no-scrollbar::-webkit-scrollbar { display: none; }
+         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+         .skeleton { background: linear-gradient(90deg, #f1f3ff 25%, #e1e8ff 50%, #f1f3ff 75%); background-size: 200% 100%; animation: loading 1.5s infinite; }
+         @keyframes loading { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+      </style>
+      <script defer="" src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+   </head>
+   <body :class="{ 'overflow-hidden': showNewProjectModal }" class="bg-[#f8faff] font-body text-on-surface flex min-h-screen antialiased" x-data="{ showNewProjectModal: false }">
+      <!-- SideNavBar -->
+      <aside class="h-screen w-64 flex-shrink-0 bg-surface-container-lowest flex flex-col p-4 gap-y-1 border-r border-outline-variant/30 sticky top-0 hidden md:flex">
+         <div class="flex items-center gap-3 px-2 mb-8 mt-2">
+            <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-sm">
+               <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">grid_view</span>
+            </div>
+            <div>
+               <h1 class="font-headline font-extrabold text-on-surface text-lg leading-tight">Linearis Pro</h1>
+               <p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider opacity-60">Workspace</p>
+            </div>
+         </div>
+         <nav class="flex-1 flex flex-col gap-1">
+            <a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-lg transition-all font-medium text-sm" href="#">
+            <span class="material-symbols-outlined text-xl">dashboard</span> Dashboard
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 bg-primary/10 text-primary rounded-lg transition-all font-bold text-sm" href="#">
+            <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">folder</span> Projects
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-container rounded-lg transition-all font-medium text-sm" href="#">
+            <span class="material-symbols-outlined text-xl">list_alt</span> Backlog
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-container rounded-lg transition-all font-medium text-sm" href="#">
+            <span class="material-symbols-outlined text-xl">history_toggle_off</span> Sprint
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-container rounded-lg transition-all font-medium text-sm" href="#">
+            <span class="material-symbols-outlined text-xl">view_kanban</span> Board
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-container rounded-lg transition-all font-medium text-sm" href="#">
+            <span class="material-symbols-outlined text-xl">group</span> Team
+            </a>
+         </nav>
+         <div class="mt-auto pt-4 flex flex-col gap-1 border-t border-outline-variant/20">
+            <a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-container rounded-lg transition-all font-medium text-sm" href="#">
+            <span class="material-symbols-outlined text-xl">settings</span> Settings
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-container rounded-lg transition-all font-medium text-sm" href="#">
+            <span class="material-symbols-outlined text-xl text-error">logout</span> Logout
+            </a>
+            <button @click="showNewProjectModal = true" class="mt-4 w-full bg-primary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:bg-primary-container transition-all">
+            <span class="material-symbols-outlined">add</span> Create Project
+            </button>
+         </div>
+      </aside>
+      <main class="flex-1 flex flex-col min-w-0">
+         <!-- TopNavBar -->
+         <header class="w-full sticky top-0 z-40 bg-surface-container-lowest/80 backdrop-blur-xl flex justify-between items-center h-16 px-8 border-b border-outline-variant/30 text-sm">
+            <div class="flex items-center flex-1 max-w-xl">
+               <div class="relative w-full group">
+                  <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-xl">search</span>
+                  <input class="w-full pl-12 pr-4 py-2.5 bg-surface-container-low border border-transparent focus:border-primary/20 focus:bg-white rounded-full transition-all text-on-surface placeholder:text-on-surface-variant/60 outline-none" placeholder="Search projects, tasks or files..." type="text"/>
+               </div>
+            </div>
+            <div class="flex items-center gap-5">
+               <button class="relative p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-colors">
+               <span class="material-symbols-outlined">notifications</span>
+               <span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
+               </button>
+               <div class="w-px h-6 bg-outline-variant/30"></div>
+               <div class="flex items-center gap-3 pl-2">
+                  <div class="text-right hidden sm:block">
+                     <p class="text-xs font-bold text-on-surface">Alexandre M.</p>
+                     <p class="text-[10px] text-on-surface-variant font-medium">Product Manager</p>
+                  </div>
+                  <img alt="User avatar" class="w-9 h-9 rounded-full object-cover ring-2 ring-white shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyVeCzVk46wqkBhYfKxXFcDEbJmFhAmOjW_ufKzN9AQxk91vhr7AKXPKIOqBIvTHYoNv0EHHg2Z5Eifqrc5uIRlV9LLzYd03McMb4mTLgaqR1g7S9vV5GVlTOto5dE-59AXH6oUEyX6HKQVyfPZuMls6-aFoWUm-NYmcZzGHCgJtUnAvqlfDZhM1FYV4QVd2xTk2Tvm9pe9BTHRV0NTPhEXBV_lP8z4MZCEWhm_f-9mrFCi9ifVyT5B92wFH-brQGHN99xq5B6VRM"/>
+               </div>
+            </div>
+         </header>
+         <div class="p-8 max-w-[1600px] mx-auto w-full space-y-8">
+            <!-- Page Header -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+               <div>
+                  <h2 class="font-headline font-extrabold text-3xl text-on-surface tracking-tight">Projetos</h2>
+                  <p class="text-on-surface-variant mt-1 font-medium">Gestão e acompanhamento centralizado da organização</p>
+               </div>
+               <button @click="showNewProjectModal = true" class="bg-primary text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-primary/10 hover:shadow-primary/20 transition-all hover:scale-[1.02]">
+               <span class="material-symbols-outlined">add_circle</span> Novo Projeto
+               </button>
+            </div>
+            <!-- Filters Bar (Improved Structure) -->
+            <div class="bg-surface-container-low p-2 rounded-2xl flex flex-wrap items-center gap-4 border border-outline-variant/20">
+               <div class="flex bg-white p-1 rounded-xl shadow-sm border border-outline-variant/10">
+                  <button class="px-5 py-2 text-xs font-bold bg-primary text-white rounded-lg transition-all shadow-sm">Todos</button>
+                  <button class="px-5 py-2 text-xs font-semibold text-on-surface-variant hover:text-on-surface transition-all">Ativos</button>
+                  <button class="px-5 py-2 text-xs font-semibold text-on-surface-variant hover:text-on-surface transition-all">Em risco</button>
+                  <button class="px-5 py-2 text-xs font-semibold text-on-surface-variant hover:text-on-surface transition-all">Arquivados</button>
+               </div>
+               <div class="h-8 w-px bg-outline-variant/30 hidden lg:block mx-2"></div>
+               <div class="flex items-center gap-3 flex-1">
+                  <div class="relative w-full max-w-[200px]">
+                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-lg text-on-surface-variant">group</span>
+                     <select class="w-full pl-10 pr-4 py-2 bg-white border border-outline-variant/10 text-xs font-semibold rounded-xl focus:ring-2 focus:ring-primary/20 appearance-none outline-none">
+                        <option>Todos os Times</option>
+                        <option>Design</option>
+                        <option>Engenharia</option>
+                     </select>
+                  </div>
+                  <div class="relative w-full max-w-[200px]">
+                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-lg text-on-surface-variant">sort</span>
+                     <select class="w-full pl-10 pr-4 py-2 bg-white border border-outline-variant/10 text-xs font-semibold rounded-xl focus:ring-2 focus:ring-primary/20 appearance-none outline-none">
+                        <option>Mais recentes</option>
+                        <option>Prioridade</option>
+                        <option>Alfabeto</option>
+                     </select>
+                  </div>
+               </div>
+               <div class="relative hidden xl:block">
+                  <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
+                  <input class="pl-11 pr-4 py-2 bg-white border border-outline-variant/10 rounded-xl text-xs font-medium w-56 focus:w-72 transition-all outline-none" placeholder="Search projects..." type="text"/>
+               </div>
+            </div>
+            <!-- Featured Highlight Section -->
+            <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+               <!-- 1. Featured Project Card -->
+               <div class="lg:col-span-8 bg-white rounded-2xl p-8 border border-outline-variant/20 shadow-sm relative overflow-hidden flex flex-col justify-between group">
+                  <div class="absolute top-0 right-0 w-80 h-80 bg-primary/5 blur-[100px] -z-10 rounded-full"></div>
+                  <div class="space-y-6">
+                     <!-- Group [Name + priority + team] -->
+                     <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                           <div class="w-14 h-14 bg-primary rounded-2xl flex items-center justify-center text-white shadow-inner">
+                              <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">rocket_launch</span>
+                           </div>
+                           <div>
+                              <div class="flex items-center gap-3">
+                                 <h3 class="text-2xl font-headline font-bold text-on-surface">Redesign E-commerce 2024</h3>
+                                 <span class="bg-primary/10 text-primary text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Alta Prioridade</span>
+                              </div>
+                              <p class="text-sm text-on-surface-variant font-medium mt-0.5">Time de Growth • Liderado por Marcos A.</p>
+                           </div>
+                        </div>
+                        <div class="hidden sm:flex items-center gap-2 px-4 py-2 bg-green-50 rounded-full border border-green-100">
+                           <span class="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
+                           <span class="text-xs font-bold text-green-700">On Track</span>
+                        </div>
+                     </div>
+                     <!-- Description line clamp 2 -->
+                     <div class="max-w-2xl">
+                        <p class="text-on-surface-variant leading-relaxed line-clamp-2">
+                           Modernização completa da jornada do usuário, focando em conversão mobile e integração com novos meios de pagamento via PIX e carteiras digitais. O foco está em reduzir o churn no checkout em 15% até o Q4.
+                        </p>
+                        <button class="text-primary text-xs font-bold mt-1 hover:underline">See more details</button>
+                     </div>
+                     <!-- Thicker prominent progress -->
+                     <div class="bg-surface-container-low p-5 rounded-2xl border border-outline-variant/10">
+                        <div class="flex justify-between items-end mb-3">
+                           <span class="text-sm font-bold text-on-surface">Progress Status</span>
+                           <span class="text-xl font-black text-primary">75% <span class="text-sm font-bold text-on-surface-variant/60">completed</span></span>
+                        </div>
+                        <div class="w-full bg-white h-4 rounded-full overflow-hidden border border-outline-variant/10">
+                           <div class="bg-primary h-full rounded-full transition-all duration-1000" style="width: 75%"></div>
+                        </div>
+                     </div>
+                     <!-- AI Insight block -->
+                     <a class="block bg-blue-50 border border-blue-100 rounded-xl p-4 transition-all hover:bg-blue-100/50 group/ai" href="#">
+                        <div class="flex items-start gap-3">
+                           <div class="bg-primary text-white p-1.5 rounded-lg">
+                              <span class="material-symbols-outlined text-sm">auto_awesome</span>
+                           </div>
+                           <div class="flex-1">
+                              <p class="text-[11px] font-bold text-primary uppercase tracking-wider mb-1">AI Insight</p>
+                              <p class="text-xs text-on-surface-variant leading-snug">
+                                 A velocidade atual sugere que a Sprint 04 será concluída 2 dias antes do prazo. Nenhuma dependência crítica detectada para a próxima fase.
+                              </p>
+                           </div>
+                           <span class="text-xs font-bold text-primary flex items-center gap-1 mt-auto group-hover/ai:translate-x-1 transition-transform">
+                           See full analysis <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                           </span>
+                        </div>
+                     </a>
+                  </div>
+                  <!-- Buttons with icons -->
+                  <div class="flex items-center gap-3 mt-8">
+                     <button class="bg-primary text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-primary-container transition-all shadow-md">
+                     <span class="material-symbols-outlined text-xl">grid_view</span>
+                     Open Board
+                     </button>
+                     <button class="bg-white border border-outline-variant/40 text-on-surface px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-surface-container transition-all">
+                     <span class="material-symbols-outlined text-xl">list_alt</span>
+                     Backlog
+                     </button>
+                     <button class="bg-white border border-outline-variant/40 text-on-surface px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-surface-container transition-all">
+                     <span class="material-symbols-outlined text-xl">history_toggle_off</span>
+                     Sprints
+                     </button>
+                  </div>
+               </div>
+               <!-- 2. Right Sidebar (Metrics & Risks) -->
+               <div class="lg:col-span-4 flex flex-col gap-6">
+                  <div class="bg-white rounded-2xl p-6 border border-outline-variant/20 shadow-sm">
+                     <div class="flex justify-between items-start">
+                        <div>
+                           <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Velocity (last 3 sprints)</p>
+                           <div class="flex items-center gap-2 mt-1">
+                              <span class="text-3xl font-headline font-black text-on-surface">48 pts</span>
+                              <span class="flex items-center text-xs font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
+                              <span class="material-symbols-outlined text-sm">trending_up</span> +12%
+                              </span>
+                           </div>
+                        </div>
+                        <span class="material-symbols-outlined text-on-surface-variant/40">bar_chart</span>
+                     </div>
+                     <div class="mt-6 flex items-end justify-between gap-1.5 h-20">
+                        <div class="flex-1 bg-primary/10 rounded-lg h-[40%]"></div>
+                        <div class="flex-1 bg-primary/20 rounded-lg h-[60%]"></div>
+                        <div class="flex-1 bg-primary/40 rounded-lg h-[55%]"></div>
+                        <div class="flex-1 bg-primary/60 rounded-lg h-[85%]"></div>
+                        <div class="flex-1 bg-primary rounded-lg h-[100%] shadow-[0_4px_12px_rgba(0,61,155,0.2)]"></div>
+                     </div>
+                  </div>
+                  <div class="bg-[#1d3054] rounded-2xl p-6 text-white shadow-xl">
+                     <div class="flex justify-between items-center mb-6">
+                        <div class="flex items-center gap-2">
+                           <span class="material-symbols-outlined text-blue-400">warning</span>
+                           <h4 class="font-bold">Risks Detected</h4>
+                        </div>
+                        <span class="bg-white/10 text-[10px] font-bold px-2 py-1 rounded-full uppercase">Linearis AI</span>
+                     </div>
+                     <div class="space-y-3">
+                        <button class="w-full flex items-center justify-between p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-all border border-white/10">
+                           <div class="flex items-center gap-3">
+                              <span class="w-2 h-2 rounded-full bg-red-400"></span>
+                              <span class="text-xs font-bold">2 Critical Blocks</span>
+                           </div>
+                           <span class="material-symbols-outlined text-sm text-white/40">chevron_right</span>
+                        </button>
+                        <button class="w-full flex items-center justify-between p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-all border border-white/10">
+                           <div class="flex items-center gap-3">
+                              <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                              <span class="text-xs font-bold">4 Approaching Delays</span>
+                           </div>
+                           <span class="material-symbols-outlined text-sm text-white/40">chevron_right</span>
+                        </button>
+                     </div>
+                     <button class="w-full mt-6 py-3 rounded-xl text-xs font-bold border border-white/30 hover:bg-white/10 transition-all text-white flex items-center justify-center gap-2">
+                     <span class="material-symbols-outlined text-lg">insights</span>
+                     See detailed analysis
+                     </button>
+                  </div>
+               </div>
+            </section>
+            <!-- Projects Grid Section -->
+            <section class="space-y-6">
+               <div class="flex items-center justify-between">
+                  <h3 class="font-headline font-bold text-xl text-on-surface">Todos os Projetos <span class="ml-2 px-3 py-1 bg-surface-container rounded-full text-xs font-bold text-on-surface-variant">12</span></h3>
+               </div>
+               <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  <!-- Standardized Card 1 (Active) -->
+                  <div class="bg-white rounded-2xl p-6 border border-outline-variant/15 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all group relative">
+                     <div class="flex justify-between items-start mb-4">
+                        <div class="space-y-1.5">
+                           <div class="flex items-center gap-2">
+                              <h4 class="font-bold text-on-surface group-hover:text-primary transition-colors">Plataforma SaaS B2B</h4>
+                              <span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings: 'FILL' 1;">verified</span>
+                           </div>
+                           <span class="bg-blue-100 text-blue-700 text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wider">Active</span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                           <button class="text-on-surface-variant/40 hover:text-on-surface p-1.5 rounded-lg hover:bg-surface-container transition-all">
+                           <span class="material-symbols-outlined text-xl">more_vert</span>
+                           </button>
+                        </div>
+                     </div>
+                     <p class="text-xs text-on-surface-variant leading-relaxed line-clamp-2 mb-6">
+                        Desenvolvimento do core da plataforma multi-tenant com foco em escalabilidade global e integração API.
+                     </p>
+                     <div class="flex items-center justify-between mb-4">
+                        <div class="flex -space-x-2">
+                           <img alt="Team" class="w-8 h-8 rounded-full border-2 border-white object-cover shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAV8YZYIu2DhstjFSGtWJ4LNMSp9gP-_x0zXDkFidUfchCLh9CBXnLCXBhenbtpLMQcd-mQAVKsELg7NM97E8buYYIUYWm6wWVHhIEs33FqA1ivOIm-mtSMnUjd29J_eS75m0XP4IVwo7QDhouLBdJgCM-onAQPdnM14y97QTeeZu4FpSrMxPselZz_FVYN2FNilz4g_Rgdski4AtBZMKdPiYpxoVs9AXYCJYs1WBzqlFOeX9SaUomUmbqWe2rOpRLUIAn8RUaEcBE"/>
+                           <img alt="Team" class="w-8 h-8 rounded-full border-2 border-white object-cover shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4ZHb0uH-v7SVW3cT-g-cEUjSdv9lpRXhCIMCnlCkRR-_NMQqTX_-3sn7c57yLxPS1Zovbh1PYs2ZVnX6e3gZSQXXi7A4f67voBsiz1vJ-E-VzGkzxpSVkSc72X4Muv4qSR8p5GeSQ9mxdxLX6fdsvSJHzwGKPqCrhMU-fGB4-lBI3BV0hMphXe5WSWDToIfTuMhfwQE_G-eA9PPZKkZUVHfefUqfJYGE3t1F-3rmzpxg5BYpa0-oemyT_unZSm_ZJrMjpqJSKnig"/>
+                           <div class="w-8 h-8 rounded-full border-2 border-white bg-surface-container flex items-center justify-center text-[10px] font-bold text-on-surface-variant">+3</div>
+                        </div>
+                        <div class="flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg">
+                           <span class="material-symbols-outlined text-sm">auto_awesome</span>
+                           <span class="text-[10px] font-bold uppercase">AI Tracked</span>
+                        </div>
+                     </div>
+                     <div class="space-y-2 mb-6">
+                        <div class="flex justify-between text-[11px] font-bold">
+                           <span class="text-on-surface-variant/70 uppercase">Progress</span>
+                           <span class="text-primary">45%</span>
+                        </div>
+                        <div class="w-full bg-surface-container-low h-3 rounded-full overflow-hidden border border-outline-variant/10">
+                           <div class="bg-primary h-full rounded-full transition-all" style="width: 45%"></div>
+                        </div>
+                     </div>
+                     <div class="grid grid-cols-3 gap-1 py-3 border-y border-outline-variant/10 mb-6">
+                        <div class="text-center group/metric cursor-default">
+                           <span class="material-symbols-outlined text-xs text-on-surface-variant/40 block mb-1">check_circle</span>
+                           <span class="text-[11px] font-bold text-on-surface">12/24</span>
+                           <p class="text-[9px] text-on-surface-variant uppercase font-medium">Tasks</p>
+                        </div>
+                        <div class="text-center border-x border-outline-variant/10">
+                           <span class="material-symbols-outlined text-xs text-on-surface-variant/40 block mb-1">rotate_right</span>
+                           <span class="text-[11px] font-bold text-on-surface">03</span>
+                           <p class="text-[9px] text-on-surface-variant uppercase font-medium">Sprints</p>
+                        </div>
+                        <div class="text-center">
+                           <span class="material-symbols-outlined text-xs text-error block mb-1">warning</span>
+                           <span class="text-[11px] font-bold text-error">01</span>
+                           <p class="text-[9px] text-on-surface-variant uppercase font-medium">Block</p>
+                        </div>
+                     </div>
+                     <button class="w-full py-3 bg-primary text-white text-xs font-bold rounded-xl shadow-md hover:bg-primary-container transition-all active:scale-95">
+                     Open Board
+                     </button>
+                  </div>
+                  <!-- Standardized Card 2 (At Risk) -->
+                  <div class="bg-white rounded-2xl p-6 border border-outline-variant/15 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all group">
+                     <div class="flex justify-between items-start mb-4">
+                        <div class="space-y-1.5">
+                           <div class="flex items-center gap-2">
+                              <h4 class="font-bold text-on-surface group-hover:text-primary transition-colors">App Mobile Consumidor</h4>
+                           </div>
+                           <span class="bg-amber-100 text-amber-700 text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wider">At Risk</span>
+                        </div>
+                        <button class="text-on-surface-variant/40 hover:text-on-surface p-1.5 rounded-lg hover:bg-surface-container transition-all">
+                        <span class="material-symbols-outlined text-xl">more_vert</span>
+                        </button>
+                     </div>
+                     <p class="text-xs text-on-surface-variant leading-relaxed line-clamp-2 mb-6">
+                        Lançamento da v3.0 com foco em nova experiência de onboarding e performance otimizada.
+                     </p>
+                     <div class="flex items-center justify-between mb-4">
+                        <div class="flex -space-x-2">
+                           <img alt="Team" class="w-8 h-8 rounded-full border-2 border-white object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcF21PxpUl-1NNk3cyN8_JgWwcU6-GMS9B5GuU4tI6yeUQvVyyHY4pTCGVsrFqlT3E07UbeniWT0_gehxGbf_7VFHtNEA4MH5HxLb8YDsTw6fujidcOq7uMJd0vBN8bO5n4kwjfoD53uqESJwqFZeamvKnJTj7r9U0UzMdJRVi4kJOGHV99gZgltl_fM1NIQBNs7MEayll8ZgsU7FeD47cM2q3jxmUO33Iytzp2nFNBbCR-plxe5i5X8AUTQcoNPQFBdON0QJICc4"/>
+                           <div class="w-8 h-8 rounded-full border-2 border-white bg-surface-container flex items-center justify-center text-[10px] font-bold text-on-surface-variant">+8</div>
+                        </div>
+                        <div class="flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 rounded-lg">
+                           <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">warning</span>
+                           <span class="text-[10px] font-bold uppercase">4 Delays</span>
+                        </div>
+                     </div>
+                     <div class="space-y-2 mb-6">
+                        <div class="flex justify-between text-[11px] font-bold">
+                           <span class="text-on-surface-variant/70 uppercase">Progress</span>
+                           <span class="text-amber-600">82%</span>
+                        </div>
+                        <div class="w-full bg-surface-container-low h-3 rounded-full overflow-hidden border border-outline-variant/10">
+                           <div class="bg-amber-500 h-full rounded-full" style="width: 82%"></div>
+                        </div>
+                     </div>
+                     <div class="grid grid-cols-3 gap-1 py-3 border-y border-outline-variant/10 mb-6">
+                        <div class="text-center">
+                           <span class="material-symbols-outlined text-xs text-on-surface-variant/40 block mb-1">check_circle</span>
+                           <span class="text-[11px] font-bold text-on-surface">116/142</span>
+                           <p class="text-[9px] text-on-surface-variant uppercase">Tasks</p>
+                        </div>
+                        <div class="text-center border-x border-outline-variant/10">
+                           <span class="material-symbols-outlined text-xs text-on-surface-variant/40 block mb-1">rotate_right</span>
+                           <span class="text-[11px] font-bold text-on-surface">08</span>
+                           <p class="text-[9px] text-on-surface-variant uppercase">Sprints</p>
+                        </div>
+                        <div class="text-center">
+                           <span class="material-symbols-outlined text-xs text-error block mb-1">warning</span>
+                           <span class="text-[11px] font-bold text-error">04</span>
+                           <p class="text-[9px] text-on-surface-variant uppercase">Blocks</p>
+                        </div>
+                     </div>
+                     <button class="w-full py-3 bg-primary text-white text-xs font-bold rounded-xl shadow-md hover:bg-primary-container transition-all">
+                     Open Board
+                     </button>
+                  </div>
+                  <!-- Loading State Mockup -->
+                  <div class="bg-white rounded-2xl p-6 border border-outline-variant/15 shadow-sm opacity-60">
+                     <div class="flex justify-between items-start mb-6">
+                        <div class="space-y-2 flex-1">
+                           <div class="h-4 w-3/4 skeleton rounded"></div>
+                           <div class="h-3 w-1/4 skeleton rounded"></div>
+                        </div>
+                     </div>
+                     <div class="h-12 w-full skeleton rounded-xl mb-6"></div>
+                     <div class="h-3 w-full skeleton rounded-full mb-2"></div>
+                     <div class="h-10 w-full skeleton rounded-xl mt-6"></div>
+                  </div>
+               </div>
+               <!-- Empty State Example -->
+               <div class="hidden flex-col items-center justify-center py-20 bg-surface-container-lowest rounded-3xl border-2 border-dashed border-outline-variant/30">
+                  <div class="w-24 h-24 bg-surface-container rounded-full flex items-center justify-center mb-6">
+                     <span class="material-symbols-outlined text-5xl text-on-surface-variant/30">folder_open</span>
+                  </div>
+                  <h4 class="text-xl font-headline font-bold text-on-surface">Nenhum projeto encontrado</h4>
+                  <p class="text-on-surface-variant mt-2 max-w-xs text-center">Tente ajustar seus filtros ou crie um novo projeto para começar.</p>
+                  <button @click="showNewProjectModal = true" class="mt-6 px-6 py-3 bg-primary text-white rounded-xl font-bold flex items-center gap-2">
+                  <span class="material-symbols-outlined">add</span> Novo Projeto
+                  </button>
+               </div>
+            </section>
+         </div>
+         <div class="h-20 md:hidden"></div>
+      </main>
+      <!-- BottomNavBar (Mobile Only) -->
+      <nav class="fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-outline-variant/20 flex items-center justify-around md:hidden z-50 px-4">
+         <button class="flex flex-col items-center gap-1 text-on-surface-variant">
+         <span class="material-symbols-outlined">dashboard</span>
+         <span class="text-[9px] font-bold uppercase">Dash</span>
+         </button>
+         <button class="flex flex-col items-center gap-1 text-primary">
+         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">folder</span>
+         <span class="text-[9px] font-bold uppercase">Projetos</span>
+         </button>
+         <div @click="showNewProjectModal = true" class="w-14 h-14 bg-primary rounded-2xl -mt-10 shadow-lg flex items-center justify-center text-white ring-4 ring-background border-4 border-white cursor-pointer hover:scale-105 transition-transform">
+            <span class="material-symbols-outlined text-2xl">add</span>
+         </div>
+         <button class="flex flex-col items-center gap-1 text-on-surface-variant">
+         <span class="material-symbols-outlined">list_alt</span>
+         <span class="text-[9px] font-bold uppercase">Backlog</span>
+         </button>
+         <button class="flex flex-col items-center gap-1 text-on-surface-variant">
+         <span class="material-symbols-outlined">person</span>
+         <span class="text-[9px] font-bold uppercase">Profile</span>
+         </button>
+      </nav>
+      <!-- New Project Modal -->
+      <div aria-labelledby="modal-title" aria-modal="true" class="fixed inset-0 z-[100] overflow-y-auto" role="dialog" style="display: none;" x-show="showNewProjectModal" x-transition:enter="transition ease-out duration-300" x-transition:enter-end="opacity-100" x-transition:enter-start="opacity-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-end="opacity-0" x-transition:leave-start="opacity-100">
+         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Backdrop -->
+            <div @click="showNewProjectModal = false" aria-hidden="true" class="fixed inset-0 transition-opacity bg-inverse-surface/40 backdrop-blur-sm"></div>
+            <!-- Modal Panel -->
+            <div class="inline-block w-full max-w-lg p-8 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl" x-show="showNewProjectModal" x-transition:enter="transition ease-out duration-300" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:leave="transition ease-in duration-200" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100">
+               <div class="flex items-center justify-between mb-6">
+                  <h3 class="text-xl font-headline font-extrabold text-on-surface" id="modal-title">Criar Novo Projeto</h3>
+                  <button @click="showNewProjectModal = false" class="text-on-surface-variant/40 hover:text-on-surface transition-colors">
+                  <span class="material-symbols-outlined">close</span>
+                  </button>
+               </div>
+               <form class="space-y-5">
+                  <div>
+                     <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Nome do Projeto</label>
+                     <input class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant/30 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm" placeholder="Ex: Redesign Mobile App" type="text"/>
+                  </div>
+                  <div>
+                     <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Descrição</label>
+                     <textarea class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant/30 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm" placeholder="Descreva brevemente os objetivos..." rows="3"></textarea>
+                  </div>
+                  <div class="grid grid-cols-2 gap-4">
+                     <div>
+                        <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Time Responsável</label>
+                        <select class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant/30 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm">
+                           <option>Design</option>
+                           <option>Engenharia</option>
+                           <option>Growth</option>
+                           <option>Produto</option>
+                        </select>
+                     </div>
+                     <div>
+                        <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Data de Início</label>
+                        <input class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant/30 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm" type="date"/>
+                     </div>
+                  </div>
+                  <div class="flex items-center justify-between p-4 bg-blue-50 border border-blue-100 rounded-xl">
+                     <div class="flex items-center gap-3">
+                        <div class="bg-primary text-white p-1.5 rounded-lg">
+                           <span class="material-symbols-outlined text-sm">auto_awesome</span>
+                        </div>
+                        <span class="text-xs font-bold text-primary">Gerar estrutura inicial com IA</span>
+                     </div>
+                     <input class="w-5 h-5 text-primary border-blue-200 rounded focus:ring-primary" type="checkbox"/>
+                  </div>
+                  <div class="flex gap-3 mt-8">
+                     <button @click="showNewProjectModal = false" class="flex-1 px-6 py-3 border border-outline-variant/30 rounded-xl font-bold text-on-surface hover:bg-surface-container transition-all" type="button">
+                     Cancelar
+                     </button>
+                     <button class="flex-1 px-6 py-3 bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/20 hover:bg-primary-container hover:scale-[1.02] transition-all" type="submit">
+                     Criar Projeto
+                     </button>
+                  </div>
+               </form>
+            </div>
+         </div>
+      </div>
+   </body>
+</html>

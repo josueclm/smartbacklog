@@ -54,7 +54,7 @@ class ProjectService {
         name = ?,
         description = ?,
         status = ?,
-        updated_at = CURRENT_TIMESTAMP
+        created_at = CURRENT_TIMESTAMP
       WHERE id = ?
     `).run(
       data.name,

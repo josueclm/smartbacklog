@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="pt">
+   <head>
+      <meta charset="utf-8"/>
+      <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+      <title>AgileFlow - Team Management</title>
+      <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+      <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+      <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+      <script id="tailwind-config">
+         tailwind.config = {
+           darkMode: "class",
+           theme: {
+             extend: {
+               "colors": {
+                   "error": "#ba1a1a",
+                   "primary-container": "#0052cc",
+                   "primary-fixed-dim": "#b2c5ff",
+                   "outline-variant": "#c3c6d6",
+                   "error-container": "#ffdad6",
+                   "surface": "#faf9ff",
+                   "secondary-container": "#cdddff",
+                   "on-secondary-fixed-variant": "#374763",
+                   "surface-container-high": "#e1e8ff",
+                   "on-error-container": "#93000a",
+                   "inverse-surface": "#1d3054",
+                   "tertiary-fixed-dim": "#ffb59b",
+                   "surface-variant": "#d8e2ff",
+                   "on-secondary-container": "#51617e",
+                   "on-secondary-fixed": "#091c35",
+                   "secondary-fixed-dim": "#b7c7e8",
+                   "surface-container-lowest": "#ffffff",
+                   "primary": "#003d9b",
+                   "surface-container-highest": "#d8e2ff",
+                   "inverse-primary": "#b2c5ff",
+                   "surface-dim": "#ccdaff",
+                   "background": "#faf9ff",
+                   "secondary": "#4f5f7b",
+                   "on-error": "#ffffff",
+                   "surface-bright": "#faf9ff",
+                   "outline": "#737685",
+                   "on-surface": "#051a3e",
+                   "on-tertiary-container": "#ffc6b2",
+                   "on-tertiary": "#ffffff",
+                   "on-background": "#051a3e",
+                   "on-primary-container": "#c4d2ff",
+                   "surface-container": "#e9edff",
+                   "primary-fixed": "#dae2ff",
+                   "surface-container-low": "#f1f3ff",
+                   "on-primary": "#ffffff",
+                   "on-primary-fixed": "#001848",
+                   "on-tertiary-fixed": "#380d00",
+                   "inverse-on-surface": "#edf0ff",
+                   "on-surface-variant": "#434654",
+                   "tertiary-fixed": "#ffdbcf",
+                   "on-tertiary-fixed-variant": "#812800",
+                   "surface-tint": "#0c56d0",
+                   "on-primary-fixed-variant": "#0040a2"
+               },
+               "borderRadius": {
+                   "DEFAULT": "0.5rem",
+                   "lg": "1rem",
+                   "xl": "1.5rem",
+                   "full": "9999px"
+               },
+               "fontFamily": {
+                   "headline": ["Manrope", "sans-serif"],
+                   "body": ["Inter", "sans-serif"],
+                   "label": ["Inter", "sans-serif"]
+               }
+             },
+           },
+         }
+      </script>
+      <style>
+         .material-symbols-outlined {
+         font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+         }
+         body { font-family: 'Inter', sans-serif; }
+         h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+         .drawer-open { transform: translateX(0); }
+         .drawer-closed { transform: translateX(100%); }
+         .nav-active { @apply bg-white text-blue-700 font-bold shadow-sm; }
+         .nav-active span { font-variation-settings: 'FILL' 1; }
+      </style>
+   </head>
+   <body class="bg-surface text-on-surface flex min-h-screen">
+      <!-- SideNavBar Shell -->
+      <aside class="hidden md:flex flex-col h-screen p-4 space-y-2 bg-slate-50 border-r border-slate-100 w-64 fixed left-0 top-0 z-50">
+         <div class="flex items-center space-x-3 mb-8 px-2">
+            <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+               <span class="material-symbols-outlined text-white text-sm" data-icon="token">token</span>
+            </div>
+            <div>
+               <h2 class="text-lg font-manrope font-extrabold text-slate-900">Project Workspace</h2>
+               <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Agile Team</p>
+            </div>
+         </div>
+         <nav class="flex-1 space-y-1">
+            <a class="flex items-center space-x-3 px-3 py-2 text-slate-600 hover:bg-slate-200/50 rounded-lg transition-all" href="#">
+            <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+            <span class="font-medium text-sm">Dashboard</span>
+            </a>
+            <a class="flex items-center space-x-3 px-3 py-2 text-slate-600 hover:bg-slate-200/50 rounded-lg transition-all" href="#">
+            <span class="material-symbols-outlined" data-icon="folder_copy">folder_copy</span>
+            <span class="font-medium text-sm">Projects</span>
+            </a>
+            <a class="flex items-center space-x-3 px-3 py-2 text-slate-600 hover:bg-slate-200/50 rounded-lg transition-all" href="#">
+            <span class="material-symbols-outlined" data-icon="list_alt">list_alt</span>
+            <span class="font-medium text-sm">Backlog</span>
+            </a>
+            <a class="flex items-center space-x-3 px-3 py-2 text-slate-600 hover:bg-slate-200/50 rounded-lg transition-all" href="#">
+            <span class="material-symbols-outlined" data-icon="sprint">sprint</span>
+            <span class="font-medium text-sm">Sprint</span>
+            </a>
+            <a class="flex items-center space-x-3 px-3 py-2 text-slate-600 hover:bg-slate-200/50 rounded-lg transition-all" href="#">
+            <span class="material-symbols-outlined" data-icon="view_kanban">view_kanban</span>
+            <span class="font-medium text-sm">Board</span>
+            </a>
+            <a class="flex items-center space-x-3 px-3 py-2 bg-white text-blue-700 font-bold shadow-sm rounded-lg transition-all" href="#">
+            <span class="material-symbols-outlined" data-icon="group" style="font-variation-settings: 'FILL' 1;">group</span>
+            <span class="font-medium text-sm">Team</span>
+            </a>
+         </nav>
+         <div class="space-y-1 pt-4 border-t border-slate-200/60">
+            <a class="flex items-center space-x-3 px-3 py-2 text-slate-600 hover:bg-slate-200/50 rounded-lg transition-all" href="#">
+            <span class="material-symbols-outlined" data-icon="settings">settings</span>
+            <span class="font-medium text-sm">Settings</span>
+            </a>
+            <a class="flex items-center space-x-3 px-3 py-2 text-error hover:bg-error-container/20 rounded-lg transition-all" href="#">
+            <span class="material-symbols-outlined" data-icon="logout">logout</span>
+            <span class="font-medium text-sm">Logout</span>
+            </a>
+         </div>
+         <button class="mt-4 w-full py-2.5 px-4 bg-gradient-to-br from-primary to-primary-container text-white rounded-lg font-semibold text-sm shadow-md active:scale-95 transition-all">
+         Create Project
+         </button>
+      </aside>
+      <!-- Main Content Canvas -->
+      <main class="flex-1 md:ml-64 bg-surface min-h-screen">
+         <!-- TopNavBar Shell -->
+         <header class="flex justify-between items-center px-8 py-4 w-full sticky top-0 z-40 bg-white/80 backdrop-blur-md shadow-sm">
+            <div class="flex items-center space-x-8">
+               <h1 class="text-xl font-bold text-blue-700 font-manrope">AgileFlow</h1>
+               <div class="hidden lg:flex items-center bg-surface-container-low px-3 py-1.5 rounded-lg border border-outline-variant/20">
+                  <span class="material-symbols-outlined text-outline text-[20px]" data-icon="search">search</span>
+                  <input class="bg-transparent border-none focus:ring-0 text-sm w-48 ml-2" placeholder="Search members..." type="text"/>
+               </div>
+            </div>
+            <div class="flex items-center space-x-4">
+               <button class="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors relative">
+               <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+               <span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+               </button>
+               <div class="h-8 w-[1px] bg-outline-variant/30"></div>
+               <div class="flex items-center space-x-3">
+                  <img alt="Alex Santos" class="w-9 h-9 rounded-full object-cover border border-primary-container/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6iP2Kcrm_hE3zY8e-dhZ8rCwCZVSFiIwvAt2TQwewMWlLX8Vup2CQBOxmfwdzxphh9fKS_ElmtcyuIBHifRNdzx84YnYBpPsZFnMzb0EUsiL0OmRDM_SUJeV44juMR9goJrGioV3DlFul8KMQGjF34KuuJf5xtHeyqFT-UXpqx3SXKv3eiTIkDrRHBrHetTIJ8hNBbmfQpvK9z5T0TmIP6nXCQN5ekgk5XwM9_nq788_huQ9o39xxs1Kx8ku8UB6BDp_VlEpRH_0"/>
+                  <span class="hidden sm:block text-sm font-semibold text-on-surface">Alex Santos</span>
+               </div>
+            </div>
+         </header>
+         <div class="p-8 max-w-7xl mx-auto">
+            <!-- Page Header -->
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+               <div>
+                  <h2 class="text-3xl font-extrabold text-on-surface tracking-tight mb-1">Team</h2>
+                  <p class="text-on-surface-variant text-sm font-medium">Gestão de membros e colaboração da equipa</p>
+               </div>
+               <button class="inline-flex items-center justify-center px-5 py-2.5 bg-gradient-to-br from-primary to-primary-container text-white rounded-lg font-bold shadow-lg hover:shadow-primary/20 transition-all active:scale-95" onclick="document.getElementById('member-drawer').classList.remove('drawer-closed'); document.getElementById('member-drawer').classList.add('drawer-open')">
+               <span class="material-symbols-outlined mr-2" data-icon="person_add">person_add</span>
+               + Add Member
+               </button>
+            </div>
+            <!-- Filters Bar -->
+            <div class="flex flex-wrap items-center gap-3 mb-8 bg-surface-container-low p-3 rounded-xl">
+               <div class="relative group">
+                  <button class="flex items-center space-x-2 bg-surface-container-lowest px-4 py-2 rounded-lg text-sm font-semibold border border-outline-variant/30 hover:border-primary/50 transition-colors">
+                  <span>Team: All Teams</span>
+                  <span class="material-symbols-outlined text-[18px]" data-icon="expand_more">expand_more</span>
+                  </button>
+               </div>
+               <div class="relative group">
+                  <button class="flex items-center space-x-2 bg-surface-container-lowest px-4 py-2 rounded-lg text-sm font-semibold border border-outline-variant/30 hover:border-primary/50 transition-colors">
+                  <span>Role: All Roles</span>
+                  <span class="material-symbols-outlined text-[18px]" data-icon="expand_more">expand_more</span>
+                  </button>
+               </div>
+               <div class="ml-auto flex items-center bg-surface-container-lowest border border-outline-variant/30 rounded-lg p-1">
+                  <button class="p-1.5 text-on-surface-variant hover:bg-surface-container-low rounded-md transition-colors">
+                  <span class="material-symbols-outlined text-[20px]" data-icon="grid_view">grid_view</span>
+                  </button>
+                  <button class="p-1.5 bg-primary-fixed text-primary rounded-md">
+                  <span class="material-symbols-outlined text-[20px]" data-icon="list">list</span>
+                  </button>
+               </div>
+            </div>
+            <!-- Member List Layout -->
+            <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 overflow-hidden">
+               <div class="overflow-x-auto">
+                  <table class="w-full text-left border-collapse">
+                     <thead>
+                        <tr class="bg-surface-container-low/50 border-b border-outline-variant/20">
+                           <th class="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Member</th>
+                           <th class="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Role</th>
+                           <th class="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Team</th>
+                           <th class="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Progress</th>
+                           <th class="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant text-right">Actions</th>
+                        </tr>
+                     </thead>
+                     <tbody class="divide-y divide-outline-variant/10">
+                        <!-- Member Row 1 -->
+                        <tr class="hover:bg-surface-container-low/30 transition-colors group">
+                           <td class="px-6 py-4">
+                              <div class="flex items-center space-x-4">
+                                 <div class="relative flex-shrink-0">
+                                    <img alt="Beatriz Silva" class="w-10 h-10 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrJGxDQqlq2lG562LnNPqAMgEwM-eQmtegBXEUhlhfRmGio7Bmy4bkr1Ir-jWCO_UAMJUS5yHTuDh5RRGqd4A2IgJk4hTeVKp7BNJLIUoJ5aYKlNO92KJgR_aVUgGK5blHVptRjlISYOUtJ-VZAmvB3Tc52Zwm8lEjFJLauqydiptZ9_1xHdXswuDpCbIEsmHmSxvLXAm0B4SOE46b55JQhOM78slJ8t8y7hPKBV9tSA9G3Pubm4frOxxOHUty_6PmbK4sG2JXI4o"/>
+                                    <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></span>
+                                 </div>
+                                 <div>
+                                    <p class="font-bold text-on-surface text-sm">Beatriz Silva</p>
+                                    <p class="text-xs text-on-surface-variant">beatriz@agileflow.com</p>
+                                 </div>
+                              </div>
+                           </td>
+                           <td class="px-6 py-4">
+                              <span class="text-xs font-semibold px-2.5 py-1 bg-primary-fixed text-primary rounded-full">Frontend Dev</span>
+                           </td>
+                           <td class="px-6 py-4 text-sm font-medium text-on-surface-variant">Core App</td>
+                           <td class="px-6 py-4">
+                              <div class="w-32">
+                                 <div class="flex justify-between items-center mb-1">
+                                    <span class="text-[10px] font-bold text-primary">75%</span>
+                                 </div>
+                                 <div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+                                    <div class="bg-primary h-full w-3/4"></div>
+                                 </div>
+                              </div>
+                           </td>
+                           <td class="px-6 py-4 text-right">
+                              <div class="flex items-center justify-end space-x-2">
+                                 <button class="text-xs font-bold text-primary hover:underline px-3 py-1.5 rounded-md hover:bg-primary-container/10" onclick="document.getElementById('member-drawer').classList.remove('drawer-closed'); document.getElementById('member-drawer').classList.add('drawer-open')">Ver detalhes</button>
+                                 <div class="relative group/menu">
+                                    <button class="p-1.5 text-outline hover:text-on-surface hover:bg-surface-container-low rounded-full transition-colors">
+                                    <span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span>
+                                    </button>
+                                    <div class="absolute right-0 top-full mt-1 w-40 bg-white border border-outline-variant/20 rounded-lg shadow-xl py-1 z-20 invisible group-focus-within/menu:visible opacity-0 group-focus-within/menu:opacity-100 transition-all">
+                                       <button class="w-full text-left px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low flex items-center">
+                                       <span class="material-symbols-outlined text-[18px] mr-2" data-icon="edit">edit</span> Editar
+                                       </button>
+                                       <button class="w-full text-left px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low flex items-center">
+                                       <span class="material-symbols-outlined text-[18px] mr-2" data-icon="swap_horiz">swap_horiz</span> Mudar de team
+                                       </button>
+                                       <div class="h-[1px] bg-outline-variant/10 my-1"></div>
+                                       <button class="w-full text-left px-4 py-2 text-sm text-error hover:bg-error-container/20 flex items-center">
+                                       <span class="material-symbols-outlined text-[18px] mr-2" data-icon="delete">delete</span> Remover
+                                       </button>
+                                    </div>
+                                 </div>
+                              </div>
+                           </td>
+                        </tr>
+                        <!-- Member Row 2 -->
+                        <tr class="hover:bg-surface-container-low/30 transition-colors group">
+                           <td class="px-6 py-4">
+                              <div class="flex items-center space-x-4">
+                                 <div class="relative flex-shrink-0">
+                                    <img alt="Ricardo Gomes" class="w-10 h-10 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSAvM_ZMYNaoq7S52jF3SuNYUKQLsqoqsvz4J2vdo7pXxsCQEGN2SKWqIj8FiQSArAcK3qVzf3Bcnol7pNUqpMbrYzG4lGBosCMCNnSjamWIm2UZllSk3tjPXHIR0YC4iHcw6SUe3lrb9mR1fZ0AexOtC8XPLnbuKAECFT8c8hx4Sknoa5-RXCbj-UzmOvCubiyR1EaLCI-tGUqme2TFEw0rWYYzTlyapAsltsiCkgNkvTrzBss4Y-R-dmQauB4PI6COMzBHGGtwQ"/>
+                                    <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></span>
+                                 </div>
+                                 <div>
+                                    <p class="font-bold text-on-surface text-sm">Ricardo Gomes</p>
+                                    <p class="text-xs text-on-surface-variant">ricardo@agileflow.com</p>
+                                 </div>
+                              </div>
+                           </td>
+                           <td class="px-6 py-4">
+                              <span class="text-xs font-semibold px-2.5 py-1 bg-secondary-fixed text-on-secondary-fixed rounded-full">UI/UX Designer</span>
+                           </td>
+                           <td class="px-6 py-4 text-sm font-medium text-on-surface-variant">Design Ops</td>
+                           <td class="px-6 py-4">
+                              <div class="w-32">
+                                 <div class="flex justify-between items-center mb-1">
+                                    <span class="text-[10px] font-bold text-primary">82%</span>
+                                 </div>
+                                 <div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+                                    <div class="bg-primary h-full w-[82%]"></div>
+                                 </div>
+                              </div>
+                           </td>
+                           <td class="px-6 py-4 text-right">
+                              <div class="flex items-center justify-end space-x-2">
+                                 <button class="text-xs font-bold text-primary hover:underline px-3 py-1.5 rounded-md hover:bg-primary-container/10" onclick="document.getElementById('member-drawer').classList.remove('drawer-closed'); document.getElementById('member-drawer').classList.add('drawer-open')">Ver detalhes</button>
+                                 <div class="relative group/menu">
+                                    <button class="p-1.5 text-outline hover:text-on-surface hover:bg-surface-container-low rounded-full transition-colors">
+                                    <span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span>
+                                    </button>
+                                    <div class="absolute right-0 top-full mt-1 w-40 bg-white border border-outline-variant/20 rounded-lg shadow-xl py-1 z-20 invisible group-focus-within/menu:visible opacity-0 group-focus-within/menu:opacity-100 transition-all">
+                                       <button class="w-full text-left px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low flex items-center">
+                                       <span class="material-symbols-outlined text-[18px] mr-2" data-icon="edit">edit</span> Editar
+                                       </button>
+                                       <button class="w-full text-left px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low flex items-center">
+                                       <span class="material-symbols-outlined text-[18px] mr-2" data-icon="swap_horiz">swap_horiz</span> Mudar de team
+                                       </button>
+                                       <div class="h-[1px] bg-outline-variant/10 my-1"></div>
+                                       <button class="w-full text-left px-4 py-2 text-sm text-error hover:bg-error-container/20 flex items-center">
+                                       <span class="material-symbols-outlined text-[18px] mr-2" data-icon="delete">delete</span> Remover
+                                       </button>
+                                    </div>
+                                 </div>
+                              </div>
+                           </td>
+                        </tr>
+                        <!-- Member Row 3 -->
+                        <tr class="hover:bg-surface-container-low/30 transition-colors group">
+                           <td class="px-6 py-4">
+                              <div class="flex items-center space-x-4">
+                                 <div class="relative flex-shrink-0">
+                                    <img alt="Marta Santos" class="w-10 h-10 rounded-full object-cover grayscale opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_dKFjtvN63aeJzjwOBgrDuykSwwb1IHSidYEpseY-tboTcye_mXffxEyc1Ac0S-e855CzAo6iOeGz0tw3TmbTnXnF7MD1AbS_em-cplXqt1biWTFshSEVzB57b5I76kbDaAeJVDgQ6hsalKm-GDV638--hyY4N0R8CzJYfNj8uSCMzzHJpaj0wDRbas4TFbVsAXVpSyO8A1h-NDLpi1IYbcmnSA325avgXZc6rooTKhOEyulQtNTbUSidL-vdDsSBxHN7ybZe0IU"/>
+                                    <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-slate-400 border-2 border-white rounded-full"></span>
+                                 </div>
+                                 <div>
+                                    <p class="font-bold text-on-surface text-sm">Marta Santos</p>
+                                    <p class="text-xs text-on-surface-variant">marta@agileflow.com</p>
+                                 </div>
+                              </div>
+                           </td>
+                           <td class="px-6 py-4">
+                              <span class="text-xs font-semibold px-2.5 py-1 bg-tertiary-fixed text-on-tertiary-fixed rounded-full">Product Manager</span>
+                           </td>
+                           <td class="px-6 py-4 text-sm font-medium text-on-surface-variant">Core App</td>
+                           <td class="px-6 py-4">
+                              <div class="w-32">
+                                 <div class="flex justify-between items-center mb-1">
+                                    <span class="text-[10px] font-bold text-primary">37%</span>
+                                 </div>
+                                 <div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+                                    <div class="bg-primary h-full w-[37%]"></div>
+                                 </div>
+                              </div>
+                           </td>
+                           <td class="px-6 py-4 text-right">
+                              <div class="flex items-center justify-end space-x-2">
+                                 <button class="text-xs font-bold text-primary hover:underline px-3 py-1.5 rounded-md hover:bg-primary-container/10" onclick="document.getElementById('member-drawer').classList.remove('drawer-closed'); document.getElementById('member-drawer').classList.add('drawer-open')">Ver detalhes</button>
+                                 <div class="relative group/menu">
+                                    <button class="p-1.5 text-outline hover:text-on-surface hover:bg-surface-container-low rounded-full transition-colors">
+                                    <span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span>
+                                    </button>
+                                    <div class="absolute right-0 top-full mt-1 w-40 bg-white border border-outline-variant/20 rounded-lg shadow-xl py-1 z-20 invisible group-focus-within/menu:visible opacity-0 group-focus-within/menu:opacity-100 transition-all">
+                                       <button class="w-full text-left px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low flex items-center">
+                                       <span class="material-symbols-outlined text-[18px] mr-2" data-icon="edit">edit</span> Editar
+                                       </button>
+                                       <button class="w-full text-left px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low flex items-center">
+                                       <span class="material-symbols-outlined text-[18px] mr-2" data-icon="swap_horiz">swap_horiz</span> Mudar de team
+                                       </button>
+                                       <div class="h-[1px] bg-outline-variant/10 my-1"></div>
+                                       <button class="w-full text-left px-4 py-2 text-sm text-error hover:bg-error-container/20 flex items-center">
+                                       <span class="material-symbols-outlined text-[18px] mr-2" data-icon="delete">delete</span> Remover
+                                       </button>
+                                    </div>
+                                 </div>
+                              </div>
+                           </td>
+                        </tr>
+                     </tbody>
+                  </table>
+               </div>
+            </div>
+            <!-- Bento Grid Section (Statistical Deep Dive) -->
+            <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+               <div class="md:col-span-2 bg-surface-container-low rounded-2xl p-6 relative overflow-hidden group">
+                  <div class="relative z-10">
+                     <h3 class="text-xl font-bold mb-2">Team Engagement</h3>
+                     <p class="text-sm text-on-surface-variant max-w-sm">Detailed overview of cross-project collaboration and individual performance metrics for the current sprint.</p>
+                     <div class="mt-8 flex items-end gap-2">
+                        <div class="w-12 bg-primary/20 h-24 rounded-t-lg group-hover:h-32 transition-all duration-500"></div>
+                        <div class="w-12 bg-primary/40 h-36 rounded-t-lg group-hover:h-28 transition-all duration-500"></div>
+                        <div class="w-12 bg-primary/60 h-48 rounded-t-lg group-hover:h-52 transition-all duration-500"></div>
+                        <div class="w-12 bg-primary/80 h-32 rounded-t-lg group-hover:h-44 transition-all duration-500"></div>
+                        <div class="w-12 bg-primary h-56 rounded-t-lg group-hover:h-40 transition-all duration-500"></div>
+                     </div>
+                  </div>
+                  <div class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
+               </div>
+               <div class="bg-primary rounded-2xl p-6 text-white flex flex-col justify-between shadow-xl shadow-primary/10">
+                  <div>
+                     <span class="material-symbols-outlined text-4xl mb-4" data-icon="groups">groups</span>
+                     <h3 class="text-2xl font-bold">Total Members</h3>
+                     <p class="text-primary-fixed-dim text-sm mt-1">2 new joined this week</p>
+                  </div>
+                  <div class="text-5xl font-manrope font-extrabold mt-8">32</div>
+               </div>
+            </div>
+         </div>
+      </main>
+      <!-- Member Details Drawer -->
+      <div class="fixed inset-0 z-[100] transition-all duration-300 drawer-closed" id="member-drawer">
+         <div class="absolute inset-0 bg-on-surface/40 backdrop-blur-sm" onclick="this.parentElement.classList.add('drawer-closed'); this.parentElement.classList.remove('drawer-open')"></div>
+         <div class="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl flex flex-col transform transition-transform duration-300">
+            <div class="px-6 py-6 border-b border-outline-variant/20 flex justify-between items-center bg-surface-container-low">
+               <h3 class="text-xl font-extrabold text-on-surface font-manrope">Member Profile</h3>
+               <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high text-on-surface-variant transition-colors" onclick="document.getElementById('member-drawer').classList.add('drawer-closed'); document.getElementById('member-drawer').classList.remove('drawer-open')">
+               <span class="material-symbols-outlined" data-icon="close">close</span>
+               </button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-8">
+               <div class="flex flex-col items-center mb-8">
+                  <div class="relative mb-4">
+                     <img alt="Profile" class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrJGxDQqlq2lG562LnNPqAMgEwM-eQmtegBXEUhlhfRmGio7Bmy4bkr1Ir-jWCO_UAMJUS5yHTuDh5RRGqd4A2IgJk4hTeVKp7BNJLIUoJ5aYKlNO92KJgR_aVUgGK5blHVptRjlISYOUtJ-VZAmvB3Tc52Zwm8lEjFJLauqydiptZ9_1xHdXswuDpCbIEsmHmSxvLXAm0B4SOE46b55JQhOM78slJ8t8y7hPKBV9tSA9G3Pubm4frOxxOHUty_6PmbK4sG2JXI4o"/>
+                     <span class="absolute bottom-1 right-1 w-6 h-6 bg-green-500 border-4 border-white rounded-full"></span>
+                  </div>
+                  <h2 class="text-2xl font-bold text-on-surface">Beatriz Silva</h2>
+                  <p class="text-primary font-bold text-sm tracking-wide uppercase mt-1">Frontend Developer</p>
+                  <div class="flex items-center space-x-2 mt-4">
+                     <span class="px-3 py-1 bg-surface-container-high rounded-full text-xs font-bold text-on-surface-variant">Core App Team</span>
+                  </div>
+               </div>
+               <div class="space-y-6">
+                  <section>
+                     <h4 class="text-[10px] font-extrabold text-outline uppercase tracking-widest mb-3">Task Overview</h4>
+                     <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-surface-container-low p-4 rounded-xl border border-outline-variant/10">
+                           <p class="text-2xl font-manrope font-extrabold text-on-surface">24</p>
+                           <p class="text-xs font-bold text-on-surface-variant">Assigned Tasks</p>
+                        </div>
+                        <div class="bg-surface-container-low p-4 rounded-xl border border-outline-variant/10">
+                           <p class="text-2xl font-manrope font-extrabold text-primary">18</p>
+                           <p class="text-xs font-bold text-on-surface-variant">Completed Tasks</p>
+                        </div>
+                     </div>
+                  </section>
+                  <section>
+                     <div class="flex justify-between items-center mb-3">
+                        <h4 class="text-[10px] font-extrabold text-outline uppercase tracking-widest">Weekly Progress</h4>
+                        <span class="text-sm font-bold text-primary">75%</span>
+                     </div>
+                     <div class="w-full bg-surface-container-high h-2.5 rounded-full overflow-hidden">
+                        <div class="bg-primary h-full w-3/4 rounded-full shadow-sm shadow-primary/40"></div>
+                     </div>
+                  </section>
+                  <section>
+                     <h4 class="text-[10px] font-extrabold text-outline uppercase tracking-widest mb-3">Contact Information</h4>
+                     <div class="space-y-3">
+                        <div class="flex items-center space-x-3 text-sm text-on-surface">
+                           <span class="material-symbols-outlined text-outline" data-icon="mail">mail</span>
+                           <span>beatriz@agileflow.com</span>
+                        </div>
+                        <div class="flex items-center space-x-3 text-sm text-on-surface">
+                           <span class="material-symbols-outlined text-outline" data-icon="call">call</span>
+                           <span>+351 912 345 678</span>
+                        </div>
+                     </div>
+                  </section>
+               </div>
+            </div>
+            <div class="p-6 bg-surface-container-low border-t border-outline-variant/20 flex gap-3">
+               <button class="flex-1 px-5 py-3 text-sm font-bold bg-white text-on-surface border border-outline-variant/30 rounded-lg hover:bg-surface-container-high transition-all">Edit Profile</button>
+               <button class="flex-1 px-5 py-3 text-sm font-bold bg-primary text-white rounded-lg shadow-lg shadow-primary/20 hover:bg-primary-container transition-all">Message</button>
+            </div>
+         </div>
+      </div>
+      <!-- Success Toast Mockup -->
+      <div class="fixed bottom-8 right-8 z-[60] flex items-center bg-inverse-surface text-inverse-on-surface px-4 py-3 rounded-xl shadow-2xl space-x-3 max-w-xs animate-bounce-slow">
+         <div class="w-8 h-8 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center">
+            <span class="material-symbols-outlined text-[18px]" data-icon="check_circle">check_circle</span>
+         </div>
+         <div>
+            <p class="text-sm font-bold">Success!</p>
+            <p class="text-xs text-inverse-on-surface/80">Member added successfully.</p>
+         </div>
+         <button class="text-inverse-on-surface/50 hover:text-white">
+         <span class="material-symbols-outlined text-[18px]" data-icon="close">close</span>
+         </button>
+      </div>
+      <!-- BottomNavBar for Mobile -->
+      <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-50 flex justify-around items-center py-3 px-4 rounded-t-2xl">
+         <a class="flex flex-col items-center space-y-1 text-slate-400" href="#">
+         <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+         <span class="text-[10px] font-bold">Home</span>
+         </a>
+         <a class="flex flex-col items-center space-y-1 text-slate-400" href="#">
+         <span class="material-symbols-outlined" data-icon="view_kanban">view_kanban</span>
+         <span class="text-[10px] font-bold">Boards</span>
+         </a>
+         <a class="flex flex-col items-center space-y-1 text-blue-700" href="#">
+         <span class="material-symbols-outlined" data-icon="group" style="font-variation-settings: 'FILL' 1;">group</span>
+         <span class="text-[10px] font-bold">Team</span>
+         </a>
+         <a class="flex flex-col items-center space-y-1 text-slate-400" href="#">
+         <span class="material-symbols-outlined" data-icon="settings">settings</span>
+         <span class="text-[10px] font-bold">Settings</span>
+         </a>
+      </nav>
+   </body>
+</html>

@@ -9,7 +9,10 @@ import {
   reorder
 } from "../services/taskService.js";
 
-import {getSprints} from "../services/sprintService.js";
+import {
+  getSprints,
+  getSprintById
+} from "../services/sprintService.js";
 
 import {
   getProject,
@@ -22,20 +25,14 @@ const API = "http://localhost:3000/api/tasks";
 // =========================
 // STATE
 // =========================
-// let currentProjectId = 1;
-let currentProjectId =
-   new URLSearchParams(window.location.search)
-      .get("projectId");
-      
+let currentProjectId = null;
 let currentTask = null;
 let currentTaskId = null; // null = create | id = edit
 let allTasks = [];
 let draggedTaskId = null;
 
-
-const filterProjectSelect = document.getElementById(
-   "filter_project_id"
-);
+let sprintId = new URLSearchParams(window.location.search)
+      .get("sprintId");
 
 const createTaskProjectSelect = document.getElementById(
    "create_task_project_id"
@@ -54,9 +51,8 @@ function getFormData() {
   const status = (document.getElementById("estado_task").value);
   const priority = (document.getElementById("prioridade_task").value);
   const story_points = document.getElementById("story_points_task").value;
-  
-  const projecto_id = createTaskProjectSelect.value || currentProjectId;
 
+  const projecto_id = createTaskProjectSelect.value;
 
   const acceptance_criteria = getAcceptanceCriteria();
 
@@ -69,7 +65,7 @@ function getFormData() {
     status,
     priority,
     sprint_id: sprint_id || null,
-    projectId: projecto_id || currentProjectId
+    projectId: projecto_id
   };
 }
 
@@ -158,6 +154,7 @@ async function saveTask() {
     // reload UI
     loadTasks();
     closeDrawer();
+    await loadBoard();
 
   } catch (err) {
     finishSubmit(false);
@@ -188,7 +185,7 @@ async function loadTaskToForm(task) {
   document.getElementById("seccao_comment").style.display = "block";
   currentTaskId = task.id;
 
-  console.log(currentTask)
+  console.log(task)
 
   document.getElementById("story_points_task").value = task.story_points || "";
   document.getElementById("title_task").value = task.title || "";
@@ -196,7 +193,9 @@ async function loadTaskToForm(task) {
   document.getElementById("description_task").value = task.description || "";
   document.getElementById("user_story_task").value = task.user_story || "";
 
-  document.getElementById("sprint_task_id").value = task.sprint_id || "";
+  // sprint
+  setSelectValue("sprint_task_id", (task.sprint_id));
+  console.log(task.sprint_id);
 
   // projeto
   setSelectValue("create_task_project_id", (task.project_id));
@@ -219,29 +218,6 @@ async function loadTaskToForm(task) {
 // =========================
 // RENDER CRITERIA
 // =========================
-
-function renderAcceptanceCriteria11(json) {
-  const container = document.getElementById("lista_criterio_aceitacao");
-
-  container.innerHTML = "";
-
-  let items = [];
-
-  try {
-    items = JSON.parse(json || "[]");
-  } catch {}
-
-  items.forEach(item => {
-    container.innerHTML += `
-      <label class="flex items-start gap-3 p-4 bg-white border border-slate-200 rounded-xl">
-        <input type="checkbox" ${item.done ? "checked" : ""}>
-        <span>${item.text}</span>
-      </label>
-    `;
-  });
-}
-
-
 function renderAcceptanceCriteria(json) {
 
    const container =
@@ -382,7 +358,6 @@ function renderAcceptanceCriteria(json) {
 }
 
 
-
 function reversePriority(p) {
   if (p === "HIGH") return "Alta";
   if (p === "MEDIUM") return "Média";
@@ -425,32 +400,6 @@ async function loadSelects() {
 // =========================
 // PROJECTS
 // =========================
-// async function loadProjects() {
-//   try {
-//     const select = document.getElementById("projeto_id");
-//     if(currentProjectId){
-//       const projects = await getProject(currentProjectId);
-//       console.log(projects)
-//       document.getElementById("text_nome_projecto").innerText = projects.name;
-//       document.getElementById("projeto_atual_id").innerText = projects.name;
-//       select.innerHTML = `
-//         <option value="${projects.id}">${projects.name}</option>
-//       `
-//     }else{
-//       const projects = await getProjects();
-//       select.innerHTML = projects.map(p => `
-//         <option value="${p.id}">${p.name}</option>
-//       `).join("");
-//     }
-
-
-
-//   } catch (err) {
-//     console.error("Erro ao carregar projetos:", err);
-//   }
-// }
-
-
 /*
 |--------------------------------------------------------------------------
 | LOAD PROJECTS
@@ -520,21 +469,6 @@ export async function loadProjects() {
 
          /*
          |--------------------------------------------------------------------------
-         | FILTER SELECT
-         |--------------------------------------------------------------------------
-         */
-
-         const optionFilter =
-            document.createElement("option");
-
-         optionFilter.value = project.id;
-
-         optionFilter.textContent = project.name;
-
-         filterProjectSelect.appendChild(optionFilter);
-
-         /*
-         |--------------------------------------------------------------------------
          | CREATE TASK PROJECT SELECT
          |--------------------------------------------------------------------------
          */
@@ -549,11 +483,6 @@ export async function loadProjects() {
          createTaskProjectSelect.appendChild(optionCreate);
 
       });
-
-      if (currentProjectId) {
-         filterProjectSelect.value = currentProjectId;
-         // alert("Projetos carregados com sucesso!" + currentProjectId);
-      }
 
 
    } catch (error) {
@@ -640,58 +569,56 @@ function formatLabel(value) {
 // LOAD TASKS
 // =========================
 
-function applyFilters() {
-  const container = document.querySelector(".space-y-3");
+// function applyFilters() {
+//   const container = document.querySelector(".space-y-3");
 
-  const prioridade = document.getElementById("prioridade_id").value;
-  const estado = document.getElementById("estado_id").value;
+//   const prioridade = document.getElementById("prioridade_id").value;
+//   const estado = document.getElementById("estado_id").value;
 
-  let filtered = [...allTasks];
+//   let filtered = [...allTasks];
 
-  console.log("APPLY FILTERS:", { prioridade, estado, search: document.getElementById("search_input").value });
-  console.log(filtered)
+//   const search = document.getElementById("search_input")?.value?.toLowerCase();
 
-  const search = document.getElementById("search_input")?.value?.toLowerCase();
+//   if (search) {
+//     filtered = filtered.filter(t =>
+//       t.title.toLowerCase().includes(search)
+//     );
+//   }
 
-  if (search) {
-    filtered = filtered.filter(t =>
-      t.title.toLowerCase().includes(search)
-    );
-  }
-  
+//   // filtro prioridade
+//   if (prioridade !== "ALL") {
+//     filtered = filtered.filter(t => t.priority === prioridade);
+//   }
 
+//   // filtro estado
+//   if (estado !== "ALL") {
+//     filtered = filtered.filter(t => t.status === estado);
+//   }
 
-  // filtro prioridade
-  if (prioridade !== "ALL") {
-    filtered = filtered.filter(t => t.priority === prioridade);
-  }
+//   // métricas
+//   const total = filtered.length;
+//   const open = filtered.filter(t => t.status !== "DONE").length;
+//   const completed = filtered.filter(t => t.status === "DONE").length;
 
-  // filtro estado
-  if (estado !== "ALL") {
-    filtered = filtered.filter(t => t.status === estado);
-  }
+//   document.getElementById("total_task").innerText = total;
+//   document.getElementById("total_task1").innerText = total;
+//   document.getElementById("open_task").innerText = open;
+//   document.getElementById("completed_task").innerText = completed;
 
-  // métricas
-  const total = filtered.length;
-  const open = filtered.filter(t => t.status !== "DONE").length;
-  const completed = filtered.filter(t => t.status === "DONE").length;
-
-  document.getElementById("total_task").innerText = total;
-  document.getElementById("total_task1").innerText = total;
-  document.getElementById("open_task").innerText = open;
-  document.getElementById("completed_task").innerText = completed;
-
-  // render
-  container.innerHTML = filtered.map(task => TaskCard(task)).join("");
-}
-
+//   // render
+//   container.innerHTML = filtered.map(task => TaskCard(task)).join("");
+// }
 
 async function loadTasks() {
+
+  const sprint = await getSprintById(sprintId);
+  currentProjectId = sprint.project_id;
   const tasks = await getBacklogTasks(currentProjectId);
+
 
   allTasks = tasks;
 
-  applyFilters();
+  // applyFilters();
 }
 
 // async function loadTasks() {
@@ -885,8 +812,7 @@ async function openTask(id) {
 
   if (!tasks) {
     console.error("Tarefa não encontrada:", id);
-    return;
-  }
+    return;}
 
   document.querySelector("#task-drawer h4").innerText = tasks.title;
 
@@ -958,24 +884,44 @@ async function changePriority(priority) {
   loadTasks();
 }
 
-document.getElementById("bt_add_new_task")
-  .addEventListener("click", function () {
-    document.querySelector("#task-drawer h4").innerText = "";
-    currentTask = null;
-    currentTaskId = null; // null = create | id = edit
+function prepareFormForCreate() {
 
-    document.getElementById("title_task").value = "";
-    document.getElementById("description_task").value =  "";
-    document.getElementById("user_story_task").value = "";
-    document.getElementById("sprint_task_id").value = "";
-    document.getElementById("story_points_task").value = "";
-    document.getElementById("seccao_comment").style.display = "none";
+     document.querySelector("#task-drawer h4").innerText = "";
+     currentTask = null;
+     currentTaskId = null; // null = create | id = edit
 
-    const container = document.getElementById("lista_criterio_aceitacao");
-    container.innerHTML = "";
-    openDrawer();
-});
+     document.getElementById("title_task").value = "";
+     document.getElementById("description_task").value =  "";
+     document.getElementById("user_story_task").value = "";
+     document.getElementById("sprint_task_id").value = "";
+     document.getElementById("story_points_task").value = "";
+     document.getElementById("seccao_comment").style.display = "none";
 
+     const container = document.getElementById("lista_criterio_aceitacao");
+     container.innerHTML = "";
+     openDrawer();
+}
+
+ document.getElementById("bt_add_new_task")
+   .addEventListener("click", function () {
+    prepareFormForCreate();
+ });
+
+ 
+ document
+   .querySelectorAll(".bt_add_new_task")
+   .forEach(button => {
+
+      button.addEventListener(
+         "click",
+         function () {
+
+            prepareFormForCreate();
+
+         }
+      );
+
+   });
 
 function openDrawer() {
     const drawer = document.getElementById('task-drawer');
@@ -1000,6 +946,7 @@ function closeDrawer() {
     document.body.classList.remove('overflow-hidden');
   }
 }
+
 
 function addAccCrit(text = "") {
 
@@ -1203,45 +1150,41 @@ function addAccCrit(text = "") {
                }
             });
          }
+
          
  window.addEventListener('DOMContentLoaded', () => {
     const drawer = document.getElementById('task-drawer');
     drawer.classList.add('hidden-drawer');
-    document.getElementById('main-content').style.paddingRight = '32px'; 
 
-    loadTasks();
-    loadSelects();
     blindEventListeners();
+    loadSelects();
+   //  document.getElementById('main-content').style.paddingRight = '32px'; 
 });
 
 
-function blindEventListeners() {
+
+
+
+
+
+ function blindEventListeners() {
   document.getElementById("bt_add_criterio_aceitacao")
-  .addEventListener("click", function () {
-
-    showAcceptanceCriteriaPanel()
-
+    .addEventListener("click", function () {
+      showAcceptanceCriteriaPanel()
   });
 
-  document.getElementById("prioridade_id")
-    .addEventListener("change", applyFilters);
-
-  document.getElementById("estado_id")
-    .addEventListener("change", applyFilters);
-
-  document.getElementById("search_input")
-    .addEventListener("keyup", applyFilters); 
-
-
-  filterProjectSelect.addEventListener("change", async () => {
-    currentProjectId = filterProjectSelect.value;
-    console.log("Filtrando por projeto: " + currentProjectId);
-    await loadTasks();
-    applyFilters();
-  });
 }
 
-  
+
+
+// document.getElementById("prioridade_id")
+//   .addEventListener("change", applyFilters);
+
+// document.getElementById("estado_id")
+//   .addEventListener("change", applyFilters);
+
+//  document.getElementById("search_input")
+//   .addEventListener("keyup", applyFilters); 
 
 // =========================
 // INIT
@@ -1261,3 +1204,4 @@ window.closeDrawer  = closeDrawer;
 window.openDrawer  = openDrawer;
 
 
+//loadTasks();

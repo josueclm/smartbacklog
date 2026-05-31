@@ -31,7 +31,7 @@ class TaskService {
       task.story_points || 0,
       task.position || Date.now(), // fallback para ordenação
       task.projectId || null,
-      task.sprintId || null,
+      task.sprint_id || null,
       task.assignedTo || null
     );
 
@@ -87,6 +87,8 @@ class TaskService {
 
   // =========================
   // UPDATE
+          //status = ?,
+          //      data.status,
   // =========================
   update(id, data) {
     db.prepare(`
@@ -96,9 +98,9 @@ class TaskService {
         priority = ?,
         user_story = ?,
         acceptance_criteria = ?,
-        status = ?,
         story_points = ?,
         assigned_to = ?,
+        sprint_id = ?,
         updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
     `).run(
@@ -107,9 +109,9 @@ class TaskService {
       data.priority,
       data.user_story,
       data.acceptance_criteria,
-      data.status,
       data.story_points,
       data.assignedTo,
+      data.sprint_id,
       id
     );
 
@@ -154,11 +156,11 @@ class TaskService {
   // =========================
   // ADD TO SPRINT
   // =========================
-  addToSprint(taskId, sprintId) {
+  addToSprint(taskId, sprintId, status) {
     db.prepare(`
-      UPDATE tasks SET sprint_id = ?
+      UPDATE tasks SET sprint_id = ?, status = ?
       WHERE id = ?
-    `).run(sprintId, taskId);
+    `).run(sprintId, status, taskId);
 
     return this.getById(taskId);
   }

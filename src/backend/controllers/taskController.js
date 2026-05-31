@@ -126,9 +126,12 @@ exports.updateStatus = (req, res) => {
 exports.addToSprint = (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const { sprintId } = req.body;
+    const { sprint_id } = req.body;
+    const { status } = req.body;
 
-    const task = taskService.addToSprint(id, sprintId);
+    console.log("Adding task", id, "to sprint", sprint_id, "with status", status);
+
+    const task = taskService.addToSprint(id, sprint_id,status);
     res.json(task);
   } catch (err) {
     res.status(500).json({ error: err.message });

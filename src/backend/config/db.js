@@ -159,6 +159,66 @@ db.prepare(`
 `).run();
 
 
+try {
+
+   db.prepare(`
+      ALTER TABLE tasks
+      ADD COLUMN due_date DATE
+   `).run();
+
+} catch (err) {
+
+  //console.log("Coluna 'due_date' já existe na tabela 'tasks'");
+   // coluna já existe
+
+}
+
+try {
+
+   db.prepare(`
+      ALTER TABLE sprints
+      ADD COLUMN goal TEXT
+   `).run();
+
+} catch (err) {
+
+   // coluna já existe
+  //console.log("Coluna 'goal' já existe na tabela 'sprints'");
+}
+
+
+try {
+
+   db.prepare(`
+      ALTER TABLE projects
+      ADD COLUMN status INTEGER DEFAULT 1
+   `).run();
+
+} catch (err) {
+
+   // coluna já existe
+  //console.log("Coluna 'status' já existe na tabela 'projects'");
+}
+
+try {
+
+   db.prepare(`
+      ALTER TABLE comments
+      ADD COLUMN user_id INTEGER
+   `).run();
+
+} catch {}
+
+try {
+
+   db.prepare(`
+      ALTER TABLE comments
+      ADD COLUMN updated_at DATETIME
+   `).run();
+
+} catch {}
+
+
 console.log("Base de dados pronta 🚀");
 
 module.exports = db;
