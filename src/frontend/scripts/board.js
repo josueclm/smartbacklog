@@ -182,6 +182,7 @@ async function saveTask() {
 // }
 
 async function loadTaskToForm(task) {
+  document.getElementById("seccao_comment").style.display = "block";
   currentTaskId = task.id;
 
   console.log(task)
@@ -893,6 +894,9 @@ function prepareFormForCreate() {
      document.getElementById("description_task").value =  "";
      document.getElementById("user_story_task").value = "";
      document.getElementById("sprint_task_id").value = "";
+     document.getElementById("story_points_task").value = "";
+     document.getElementById("seccao_comment").style.display = "none";
+
      const container = document.getElementById("lista_criterio_aceitacao");
      container.innerHTML = "";
      openDrawer();

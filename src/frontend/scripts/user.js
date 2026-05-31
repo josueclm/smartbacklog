@@ -195,10 +195,6 @@ function renderUsers(users = []) {
 
             </td>
 
-            <td class="px-6 py-4 text-sm font-medium text-on-surface-variant">
-               ${user.team || 'Team'}
-            </td>
-
             <td class="px-6 py-4 text-right">
 
                <div class="flex items-center justify-end space-x-2">
